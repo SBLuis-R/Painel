@@ -337,8 +337,8 @@ function migrateDef(d){if(d.filters!==undefined)d.filters=migrateNode(d.filters)
 /* ================= Sincronização (Supabase) =================
    Preencha as DUAS constantes abaixo com os dados do seu projeto Supabase.
    Deixe ambas em branco ("") para rodar em MODO LOCAL (sem sincronizar). */
-const SB_URL = "https://Qij0wuMC2OUdrzk7.supabase.co"; // ex.: https://xxxxxxxx.supabase.co
-const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrYm16a3pwYWFsaXJzYnd6eGl4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3MDg1OTcsImV4cCI6MjA5ODI4NDU5N30.LxO3KZ-SQfkaFjLDACaZmfWLZeyvIeF11LQfvrac5mo"; // chave "anon public" (Settings → API)
+const SB_URL = "https://ertfujuheybptfjjywjf.supabase.co"; // ex.: https://xxxxxxxx.supabase.co
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVydGZ1anVoZXlicHRmamp5d2pmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3MDgxNzYsImV4cCI6MjA5ODI4NDE3Nn0.9JR_51-I8Au1xTYJjmB6E0DTCQZTWcW-XAmMddqhLvA"; // chave "anon public" (Settings → API)
 
 let DASHBOARDS=[], CURRENT=null, saveTimer=null;
 const sbOn=()=>!!(SB_URL&&SB_KEY);
