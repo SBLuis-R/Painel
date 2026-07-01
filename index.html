@@ -34,6 +34,9 @@
   .eyebrow{display:flex;align-items:center;gap:10px;margin:0 0 14px}
   .eyebrow .n{font-family:"Space Mono";font-size:12px;color:var(--teal);border:1px solid var(--teal);border-radius:5px;padding:1px 7px}
   .eyebrow h2{font-family:"Space Grotesk";font-weight:600;font-size:20px;letter-spacing:-.01em;margin:0}
+  .gtools{margin-left:auto;display:flex;gap:8px}
+  .gtools button{background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px;padding:2px 4px}
+  .gtools button:hover{color:var(--teal)} .gtools .danger:hover{color:var(--alert)}
   .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
   .card{background:var(--panel);border:1px solid var(--hair);border-radius:12px;padding:18px;position:relative}
   .card.wide{grid-column:1/-1} .card.hiddenc{opacity:.5} .card.warnc{border-color:var(--alert)}
@@ -84,6 +87,10 @@
   .applybar .ghost{background:var(--paper);color:var(--ink);border:1px solid var(--hair)}
   .backdrop{position:fixed;inset:0;background:rgba(20,32,43,.4);z-index:39;opacity:0;pointer-events:none;transition:.2s}
   .backdrop.on{opacity:1;pointer-events:auto}
+  .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-46%) scale(.98);width:420px;max-width:94vw;background:var(--panel);border:1px solid var(--hair);border-radius:14px;box-shadow:0 20px 60px rgba(20,32,43,.25);z-index:41;opacity:0;pointer-events:none;transition:.18s;overflow:hidden}
+  .modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+  .modal-h{background:var(--ink);color:#EAF1F1;padding:14px 18px} .modal-h h3{margin:0;font-family:"Space Grotesk";font-size:16px}
+  .modal-b{padding:16px 18px}
   .cond{display:flex;gap:6px;margin-bottom:8px;align-items:center;flex-wrap:wrap}
   .cond select,.cond input{font-size:13px;padding:6px 8px}
   .cond .col{flex:1 1 38%}.cond .op{flex:0 0 60px}.cond .rhs{flex:0 0 74px}
@@ -127,6 +134,7 @@
       <label class="toggle"><input type="checkbox" id="showHidden"> mostrar ocultas</label>
       <button class="hbtn" id="bParam">Parâmetros</button>
       <button class="hbtn" id="bNew">Nova métrica</button>
+      <button class="hbtn" id="bGroup">＋ Grupo</button>
       <button class="hbtn" id="bExport">Exportar</button>
       <button class="hbtn" id="bImport">Importar</button>
       <button class="hbtn" id="bResetAll">Restaurar tudo</button>
@@ -162,6 +170,12 @@
   <div class="applybar"><button class="go" id="editSave">Salvar</button><button class="ghost" data-close>Cancelar</button></div>
 </aside>
 
+<div class="modal" id="groupDelModal">
+  <div class="modal-h"><h3>Excluir grupo</h3></div>
+  <div class="modal-b" id="groupDelBody"></div>
+  <div class="applybar"><button class="go" id="groupDelOk">Confirmar</button><button class="ghost" data-close>Cancelar</button></div>
+</div>
+
 <script>
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 function num(v){if(v===null||v===undefined||v==="")return 0;if(typeof v==="number")return v;const n=parseFloat(String(v).replace(/\./g,"").replace(",",".") );return isNaN(n)?0:n;}
@@ -184,7 +198,10 @@ function valStr(v){return v instanceof Date?fmtDate(v):(v===null||v===undefined?
 let RAW=[], COLS=[], FILENAME="", DEFS=[], REF=new Date(), SHOWHIDDEN=false;
 const PDEFAULT={emitCte:true,emitMdfe:true,emitThreshold:0,planBands:[50,150,300],semChurn:"Sem churn"};
 let PARAMS=clone(PDEFAULT);
-const GROUPS=["Visão geral","Velocidade de ativação","Funil de ativação","Treinamento","Engajamento e risco","Churn","Financeiro","CES","Valor de plano","Personalizadas"];
+const DEFAULT_GROUPS=["Visão geral","Velocidade de ativação","Funil de ativação","Treinamento","Engajamento e risco","Churn","Financeiro","CES","Valor de plano","Personalizadas"];
+let GROUPS=DEFAULT_GROUPS.slice();
+function deriveGroups(defs){const out=[];const names=(defs||[]).map(d=>d.group).filter(Boolean);DEFAULT_GROUPS.forEach(g=>{if(names.includes(g))out.push(g);});names.forEach(g=>{if(!out.includes(g))out.push(g);});return out.length?out:["Minhas métricas"];}
+function ensureGroup(){if(!GROUPS.length)GROUPS.push("Minhas métricas");}
 const VIRT_CAT=[["__emitiu","emitiu?"],["__treinou","treinou?"],["__certificado","tem certificado?"],["__ativo","situação Ativa?"],["__churn","deu churn?"],["__faixa_plano","faixa de plano"]];
 const VIRT_NUM=[["__dias_desde_login","dias desde o último login"],["__dias_ate_1a_emissao","dias até a 1ª emissão"],["__dias_ate_churn","dias até o churn"]];
 const VIRTS=[...VIRT_CAT,...VIRT_NUM];
@@ -342,8 +359,8 @@ function migrateDef(d){if(d.filters!==undefined)d.filters=migrateNode(d.filters)
 /* ================= Sincronização (Supabase) =================
    Preencha as DUAS constantes abaixo com os dados do seu projeto Supabase.
    Deixe ambas em branco ("") para rodar em MODO LOCAL (sem sincronizar). */
-const SB_URL = "https://ertfujuheybptfjjywjf.supabase.co"; // ex.: https://xxxxxxxx.supabase.co
-const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVydGZ1anVoZXlicHRmamp5d2pmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3MDgxNzYsImV4cCI6MjA5ODI4NDE3Nn0.9JR_51-I8Au1xTYJjmB6E0DTCQZTWcW-XAmMddqhLvA"; // chave "anon public" (Settings → API)
+const SB_URL = ""; // ex.: https://xxxxxxxx.supabase.co
+const SB_KEY = ""; // chave "anon public" (Settings → API)
 
 let DASHBOARDS=[], CURRENT=null, saveTimer=null;
 const sbOn=()=>!!(SB_URL&&SB_KEY);
@@ -360,8 +377,8 @@ const sbDelete=id=>sb("DELETE","dashboards?id=eq."+encodeURIComponent(id));
 
 function setStatus(s){const el=$("#syncStatus");if(!el)return;el.className="sync "+(s||"");
   el.textContent=s==="saving"?"salvando…":s==="saved"?"● salvo":s==="error"?"⚠ erro ao salvar":"";}
-function currentConfig(){return {params:PARAMS,defs:DEFS};}
-function applyConfig(cfg){PARAMS=Object.assign(clone(PDEFAULT),(cfg&&cfg.params)||{});DEFS=((cfg&&cfg.defs)||[]).map(migrateDef);}
+function currentConfig(){return {params:PARAMS,defs:DEFS,groups:GROUPS};}
+function applyConfig(cfg){PARAMS=Object.assign(clone(PDEFAULT),(cfg&&cfg.params)||{});DEFS=((cfg&&cfg.defs)||[]).map(migrateDef);GROUPS=(cfg&&cfg.groups&&cfg.groups.length)?cfg.groups.slice():deriveGroups(DEFS);ensureGroup();}
 function scheduleSave(){if(!sbOn()||!CURRENT)return;setStatus("saving");clearTimeout(saveTimer);
   saveTimer=setTimeout(async()=>{try{await sbSave(CURRENT,currentConfig());setStatus("saved");}catch(e){setStatus("error");console.error(e);}},800);}
 function populateDashSel(){const sel=$("#dashSel");if(!sel)return;sel.innerHTML=DASHBOARDS.map(d=>`<option value="${esc(d.id)}" ${d.id===CURRENT?"selected":""}>${esc(d.name)}</option>`).join("");}
@@ -372,22 +389,22 @@ async function afterDataLoaded(){
       if(!DASHBOARDS.length)DASHBOARDS=await sbList()||[];
       if(!CURRENT){
         if(DASHBOARDS.length){await selectDashboard(DASHBOARDS[0].id);return;}
-        if(!DEFS.length)DEFS=SEED();
+        if(!DEFS.length){DEFS=SEED();GROUPS=DEFAULT_GROUPS.slice();}
         const d=await sbCreate("Painel principal",currentConfig());DASHBOARDS=[{id:d.id,name:d.name}];CURRENT=d.id;populateDashSel();setStatus("saved");
       }
-    }catch(e){setStatus("error");console.error(e);if(!DEFS.length)DEFS=SEED();}
-  } else {$("#dashGroup").style.display="none";if(!DEFS.length)DEFS=SEED();}
+    }catch(e){setStatus("error");console.error(e);if(!DEFS.length){DEFS=SEED();GROUPS=DEFAULT_GROUPS.slice();}}
+  } else {$("#dashGroup").style.display="none";if(!DEFS.length){DEFS=SEED();GROUPS=DEFAULT_GROUPS.slice();}}
   render();}
 function bindDash(){
   const sel=$("#dashSel");if(sel)sel.onchange=e=>selectDashboard(e.target.value).catch(err=>{setStatus("error");alert("Erro ao carregar: "+err.message);});
   const nw=$("#dashNew");if(nw)nw.onclick=async()=>{const name=prompt("Nome do novo painel:","Novo painel");if(!name)return;
     const blank=!confirm("Começar com as métricas padrão do modelo?\n\nOK = métricas padrão\nCancelar = painel em branco (montar do zero)");
-    try{const d=await sbCreate(name,{params:clone(PDEFAULT),defs:blank?[]:SEED()});DASHBOARDS.push({id:d.id,name:d.name});CURRENT=d.id;applyConfig(d.config);populateDashSel();render();setStatus("saved");}catch(e){alert("Erro: "+e.message);}};
+    try{const d=await sbCreate(name,{params:clone(PDEFAULT),defs:blank?[]:SEED(),groups:blank?["Minhas métricas"]:DEFAULT_GROUPS.slice()});DASHBOARDS.push({id:d.id,name:d.name});CURRENT=d.id;applyConfig(d.config);populateDashSel();render();setStatus("saved");}catch(e){alert("Erro: "+e.message);}};
   const rn=$("#dashRename");if(rn)rn.onclick=async()=>{if(!CURRENT)return;const cur=DASHBOARDS.find(d=>d.id===CURRENT);const name=prompt("Renomear painel:",cur?cur.name:"");if(!name)return;
     try{await sbRename(CURRENT,name);if(cur)cur.name=name;populateDashSel();}catch(e){alert("Erro: "+e.message);}};
   const dl=$("#dashDelete");if(dl)dl.onclick=async()=>{if(!CURRENT)return;if(!confirm("Excluir este painel? Não dá pra desfazer."))return;
     try{await sbDelete(CURRENT);DASHBOARDS=DASHBOARDS.filter(d=>d.id!==CURRENT);const keep=CURRENT;CURRENT=null;
-      if(DASHBOARDS.length)await selectDashboard(DASHBOARDS[0].id);else{DEFS=SEED();await afterDataLoaded();}}catch(e){alert("Erro: "+e.message);}};
+      if(DASHBOARDS.length)await selectDashboard(DASHBOARDS[0].id);else{DEFS=SEED();GROUPS=DEFAULT_GROUPS.slice();await afterDataLoaded();}}catch(e){alert("Erro: "+e.message);}};
 }
 bindDash();
 
@@ -455,13 +472,17 @@ function renderCard(d){
 function render(){
   $("#meta").innerHTML=`<span>arquivo <b>${esc(FILENAME)}</b></span><span>registros <b>${fmt(RAW.length)}</b></span><span>ref. <b>${REF.toLocaleDateString("pt-BR")}</b></span>`;
   let html="";
-  if(!DEFS.length)html+=`<section class="panel"><div class="empty-note" style="font-size:15px;line-height:1.5">Painel em branco. Clique em <b>Nova métrica</b> no topo para montar métricas com as colunas desta planilha (${fmt(COLS.length)} colunas detectadas).</div></section>`;
+  DEFS.forEach(d=>{if(d.group&&!GROUPS.includes(d.group))GROUPS.push(d.group);});
+  if(!DEFS.length)html+=`<section class="panel"><div class="empty-note" style="font-size:15px;line-height:1.5">Painel em branco. Use <b>＋ Grupo</b> para criar seções e <b>Nova métrica</b> para montar métricas com as colunas desta planilha (${fmt(COLS.length)} colunas detectadas).</div></section>`;
   GROUPS.forEach((g,gi)=>{const defs=DEFS.filter(d=>d.group===g&&(SHOWHIDDEN||!d.hidden));
-    if(!defs.length){if(g==="Personalizadas"&&DEFS.length)html+=`<section class="panel"><div class="eyebrow"><span class="n">${String(gi).padStart(2,"0")}</span><h2>${g}</h2></div><div class="empty-note">Nenhuma métrica personalizada. Use “Nova métrica” no topo.</div></section>`;return;}
-    html+=`<section class="panel"><div class="eyebrow"><span class="n">${String(gi).padStart(2,"0")}</span><h2>${g}</h2></div><div class="grid">${defs.map(renderCard).join("")}</div></section>`;});
+    const gt=`<span class="gtools"><button data-gact="rename" data-gi="${gi}" title="renomear grupo">✎</button><button data-gact="up" data-gi="${gi}" title="subir">↑</button><button data-gact="down" data-gi="${gi}" title="descer">↓</button><button class="danger" data-gact="del" data-gi="${gi}" title="excluir grupo">🗑</button></span>`;
+    const head=`<div class="eyebrow"><span class="n">${String(gi).padStart(2,"0")}</span><h2>${esc(g)}</h2>${gt}</div>`;
+    const inner=defs.length?`<div class="grid">${defs.map(renderCard).join("")}</div>`:`<div class="empty-note">— sem métricas neste grupo —</div>`;
+    html+=`<section class="panel">${head}${inner}</section>`;});
   html+=`<div class="footnote">Toda métrica é uma definição editável — abra “como é calculada” ou clique em “editar”. Os filtros agora aceitam grupos aninhados com E / OU / OU-exclusivo. "Emitiu", faixas de plano e "sem churn" vêm dos Parâmetros. Ref. = data mais recente da planilha (${REF.toLocaleDateString("pt-BR")}).</div>`;
   $("#report").innerHTML=html;
-  $$('[data-act]').forEach(b=>b.onclick=()=>cardAction(b.dataset.act,b.dataset.id));}
+  $$('[data-act]').forEach(b=>b.onclick=()=>cardAction(b.dataset.act,b.dataset.id));
+  $$('[data-gact]').forEach(b=>b.onclick=()=>groupAction(b.dataset.gact,+b.dataset.gi));}
 function cardAction(act,id){const i=DEFS.findIndex(d=>d.id===id);if(i<0)return;const d=DEFS[i];
   if(act==="edit"){openEdit(id);return;}
   if(act==="hide")d.hidden=!d.hidden;
@@ -470,6 +491,22 @@ function cardAction(act,id){const i=DEFS.findIndex(d=>d.id===id);if(i<0)return;c
   if(act==="up"||act==="down"){const grp=DEFS.filter(x=>x.group===d.group);const pos=grp.indexOf(d);const tgt=act==="up"?pos-1:pos+1;
     if(tgt>=0&&tgt<grp.length){const j=DEFS.indexOf(grp[tgt]);DEFS[i]=DEFS[j];DEFS[j]=d;}}
   render();scheduleSave();}
+function groupAction(act,gi){const name=GROUPS[gi];if(name===undefined)return;
+  if(act==="rename"){const nn=prompt("Renomear grupo:",name);if(!nn||nn===name)return;if(GROUPS.includes(nn)){alert("Já existe um grupo com esse nome.");return;}GROUPS[gi]=nn;DEFS.forEach(d=>{if(d.group===name)d.group=nn;});render();scheduleSave();return;}
+  if(act==="up"||act==="down"){const t=act==="up"?gi-1:gi+1;if(t<0||t>=GROUPS.length)return;const tmp=GROUPS[gi];GROUPS[gi]=GROUPS[t];GROUPS[t]=tmp;render();scheduleSave();return;}
+  if(act==="del")askGroupDelete(gi);}
+function askGroupDelete(gi){const name=GROUPS[gi];const members=DEFS.filter(d=>d.group===name);
+  if(!members.length){if(confirm(`Excluir o grupo vazio "${name}"?`)){GROUPS.splice(gi,1);ensureGroup();render();scheduleSave();}return;}
+  const others=GROUPS.filter((g,i)=>i!==gi);
+  $("#groupDelBody").innerHTML=`<p style="margin-top:0">O grupo <b>${esc(name)}</b> tem <b>${members.length}</b> métrica(s). O que fazer com elas?</p>`+
+    (others.length?`<div class="chk"><input type="radio" name="gdel" id="gd_move" checked><label for="gd_move" style="text-transform:none">Mover para outro grupo:</label></div><div id="gd_targetWrap" style="margin:0 0 10px 26px"><select id="gd_target">${others.map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join("")}</select></div>`:"")+
+    `<div class="chk"><input type="radio" name="gdel" id="gd_delete" ${others.length?"":"checked"}><label for="gd_delete" style="text-transform:none">Excluir o grupo e as métricas dele</label></div>`;
+  const upd=()=>{const w=$("#gd_targetWrap");if(w)w.style.display=($("#gd_move")&&$("#gd_move").checked)?"block":"none";};
+  if($("#gd_move"))$("#gd_move").onchange=upd;if($("#gd_delete"))$("#gd_delete").onchange=upd;upd();
+  $("#groupDelOk").onclick=()=>{const move=$("#gd_move")&&$("#gd_move").checked;
+    if(move){const tgt=$("#gd_target").value;members.forEach(d=>d.group=tgt);}else{DEFS=DEFS.filter(d=>d.group!==name);}
+    const idx=GROUPS.indexOf(name);if(idx>=0)GROUPS.splice(idx,1);ensureGroup();render();scheduleSave();closeAll();};
+  openModal("#groupDelModal");}
 
 /* ---- condition row ---- */
 function condRow(preset){
@@ -530,13 +567,14 @@ function readSeg(wrap){return {label:wrap.querySelector(".seglabel").value||"seg
 /* ---- editor ---- */
 let EDIT=null;
 function openEdit(id){EDIT=clone(DEFS.find(d=>d.id===id));$("#editTitle").textContent="Editar: "+EDIT.name;buildEditor();openDrawer("#dEdit");}
-function openNew(){EDIT={id:"c"+Date.now(),group:"Personalizadas",type:"single",name:"",calc:"count",filters:{logic:"and",children:[]}};$("#editTitle").textContent="Nova métrica";buildEditor();openDrawer("#dEdit");}
+function openNew(){ensureGroup();EDIT={id:"c"+Date.now(),group:GROUPS[GROUPS.length-1]||"Minhas métricas",type:"single",name:"",calc:"count",filters:{logic:"and",children:[]}};$("#editTitle").textContent="Nova métrica";buildEditor();openDrawer("#dEdit");}
 function buildEditor(){
   const d=EDIT;
   const numCols=COLS.filter(c=>c.numeric).map(c=>c.name).concat(VIRT_NUM.map(v=>v[0]));
   const colOptions=sel=>numCols.map(c=>`<option value="${esc(c)}" ${sel===c?"selected":""}>${esc(colLabel(c))}</option>`).join("");
   const allColOptions=sel=>COLS.map(c=>`<option value="${esc(c.name)}" ${sel===c.name?"selected":""}>${esc(c.name)}</option>`).join("")+`<optgroup label="derivadas">`+VIRTS.map(v=>`<option value="${v[0]}" ${sel===v[0]?"selected":""}>${esc(v[1])}</option>`).join("")+`</optgroup>`;
   let h=`<div class="fld"><label>Nome</label><input type="text" id="e_name" value="${esc(d.name)}"></div>
+    <div class="fld"><label>Grupo</label><select id="e_group">${GROUPS.map(g=>`<option value="${esc(g)}" ${d.group===g?"selected":""}>${esc(g)}</option>`).join("")}<option value="__new__">＋ novo grupo…</option></select></div>
     <div class="fld"><label>Tipo de visual</label><select id="e_type"><option value="single" ${d.type==="single"?"selected":""}>Número único</option><option value="bars" ${d.type==="bars"?"selected":""}>Barras por segmento</option><option value="funnel" ${d.type==="funnel"?"selected":""}>Funil</option></select></div>`;
   if(d.type==="single"){
     h+=`<div class="fld"><label>Cálculo</label><select id="e_calc">
@@ -571,6 +609,7 @@ function buildEditor(){
   }
   $("#editBody").innerHTML=h;
   const tsel=$("#e_type");if(tsel)tsel.onchange=()=>{EDIT=readEditor();EDIT.type=tsel.value;normalizeType(EDIT);buildEditor();};
+  const gsel=$("#e_group");if(gsel)gsel.onchange=()=>{if(gsel.value==="__new__"){const nn=prompt("Nome do novo grupo:");if(nn&&!GROUPS.includes(nn))GROUPS.push(nn);const sel=(nn&&GROUPS.includes(nn))?nn:(EDIT.group||GROUPS[0]);gsel.innerHTML=GROUPS.map(g=>`<option value="${esc(g)}" ${g===sel?"selected":""}>${esc(g)}</option>`).join("")+`<option value="__new__">＋ novo grupo…</option>`;}};
   if(d.type==="single"){
     const calc=$("#e_calc");
     const sync=()=>{const c=calc.value;$("#e_colWrap").style.display=["median","mean","sum","moda"].includes(c)?"block":"none";const nw=$("#e_numWrap");if(nw)nw.style.display=c==="rate"?"block":"none";};
@@ -597,6 +636,7 @@ function normalizeType(d){
   if(d.type==="funnel"){d.steps=d.steps&&d.steps.length?d.steps:[{label:"Etapa 1",filters:{logic:"and",children:[]}}];}}
 function readEditor(){const d=clone(EDIT);
   d.name=$("#e_name")?$("#e_name").value:d.name;d.type=$("#e_type")?$("#e_type").value:d.type;
+  d.group=$("#e_group")?$("#e_group").value:d.group;if(d.group==="__new__")d.group=EDIT.group||GROUPS[0]||"Minhas métricas";
   if(d.type==="single"){
     if($("#e_calc"))d.calc=$("#e_calc").value;
     d.style=$("#e_style")?$("#e_style").value:d.style;d.unit=$("#e_unit")?$("#e_unit").value:d.unit;
@@ -613,7 +653,7 @@ function readEditor(){const d=clone(EDIT);
     else{if($("#e_segs"))d.segments=[...$("#e_segs").children].map(readSeg);delete d.autoCol;delete d.exclude;}
   } else if(d.type==="funnel"){if($("#e_steps"))d.steps=[...$("#e_steps").children].map(readSeg);}
   return d;}
-$("#editSave").onclick=()=>{const d=readEditor();normalizeType(d);const i=DEFS.findIndex(x=>x.id===d.id);if(i>=0)DEFS[i]=d;else DEFS.push(d);render();scheduleSave();closeAll();};
+$("#editSave").onclick=()=>{const d=readEditor();normalizeType(d);if(d.group&&!GROUPS.includes(d.group))GROUPS.push(d.group);const i=DEFS.findIndex(x=>x.id===d.id);if(i>=0)DEFS[i]=d;else DEFS.push(d);render();scheduleSave();closeAll();};
 
 /* ---- params ---- */
 function buildParamForm(){const b=PARAMS;$("#paramBody").innerHTML=`
@@ -626,18 +666,20 @@ $("#paramReset").onclick=()=>{PARAMS=clone(PDEFAULT);buildParamForm();render();s
 
 /* ---- drawers ---- */
 function openDrawer(id){closeAll();$(id).classList.add("open");$("#backdrop").classList.add("on");}
-function closeAll(){$$(".drawer").forEach(d=>d.classList.remove("open"));$("#backdrop").classList.remove("on");}
+function openModal(id){closeAll();$(id).classList.add("open");$("#backdrop").classList.add("on");}
+function closeAll(){$$(".drawer,.modal").forEach(d=>d.classList.remove("open"));$("#backdrop").classList.remove("on");}
 $("#bParam").onclick=()=>{buildParamForm();openDrawer("#dParam");};
 $("#bNew").onclick=()=>openNew();
+$("#bGroup").onclick=()=>{const n=prompt("Nome do novo grupo:");if(!n)return;if(GROUPS.includes(n)){alert("Já existe um grupo com esse nome.");return;}GROUPS.push(n);render();scheduleSave();};
 $("#backdrop").onclick=closeAll;$$("[data-close]").forEach(b=>b.onclick=closeAll);
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeAll();});
 $("#showHidden").onchange=e=>{SHOWHIDDEN=e.target.checked;render();};
-$("#bResetAll").onclick=()=>{if(confirm("Restaurar todas as métricas e parâmetros ao padrão?")){DEFS=SEED();PARAMS=clone(PDEFAULT);SHOWHIDDEN=false;$("#showHidden").checked=false;render();scheduleSave();}};
+$("#bResetAll").onclick=()=>{if(confirm("Restaurar todas as métricas e parâmetros ao padrão?")){DEFS=SEED();PARAMS=clone(PDEFAULT);GROUPS=DEFAULT_GROUPS.slice();SHOWHIDDEN=false;$("#showHidden").checked=false;render();scheduleSave();}};
 
 /* ---- export / import ---- */
 $("#bExport").onclick=()=>{const blob=new Blob([JSON.stringify({version:4,params:PARAMS,defs:DEFS},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="config_painel_ativacao.json";a.click();URL.revokeObjectURL(a.href);};
 $("#bImport").onclick=()=>$("#cfg").click();
 $("#cfg").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
-  r.onload=ev=>{try{const j=JSON.parse(ev.target.result);if(j.params)PARAMS=Object.assign(clone(PDEFAULT),j.params);if(Array.isArray(j.defs))DEFS=j.defs.map(migrateDef);render();scheduleSave();}catch(err){alert("JSON inválido: "+err.message);}};
+  r.onload=ev=>{try{const j=JSON.parse(ev.target.result);if(j.params)PARAMS=Object.assign(clone(PDEFAULT),j.params);if(Array.isArray(j.defs))DEFS=j.defs.map(migrateDef);GROUPS=(Array.isArray(j.groups)&&j.groups.length)?j.groups.slice():deriveGroups(DEFS);ensureGroup();render();scheduleSave();}catch(err){alert("JSON inválido: "+err.message);}};
   r.readAsText(f);e.target.value="";};
 </script>
