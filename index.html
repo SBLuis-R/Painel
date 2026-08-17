@@ -69,7 +69,7 @@
   .coldist .clab{text-align:center;font-family:"Space Mono";font-size:12px;margin-top:6px;color:var(--muted)}
   .footnote{margin-top:46px;padding-top:18px;border-top:1px solid var(--hair);font-size:12px;color:var(--muted);line-height:1.6}
   .hidden{display:none}
-  .drawer{position:fixed;top:0;right:0;height:100vh;width:460px;max-width:96vw;background:var(--panel);border-left:1px solid var(--hair);box-shadow:-12px 0 40px rgba(20,32,43,.12);z-index:40;transform:translateX(100%);transition:transform .2s;overflow-y:auto}
+  .drawer{position:fixed;top:0;right:0;height:100vh;width:480px;max-width:96vw;background:var(--panel);border-left:1px solid var(--hair);box-shadow:-12px 0 40px rgba(20,32,43,.12);z-index:40;transform:translateX(100%);transition:transform .2s;overflow-y:auto}
   .drawer.open{transform:translateX(0)}
   .drawer-h{position:sticky;top:0;background:var(--ink);color:#EAF1F1;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;z-index:2}
   .drawer-h h3{margin:0;font-family:"Space Grotesk";font-size:17px}
@@ -91,13 +91,37 @@
   .modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
   .modal-h{background:var(--ink);color:#EAF1F1;padding:14px 18px} .modal-h h3{margin:0;font-family:"Space Grotesk";font-size:16px}
   .modal-b{padding:16px 18px}
-  .cond{display:flex;gap:6px;margin-bottom:8px;align-items:center;flex-wrap:wrap}
-  .cond select,.cond input{font-size:13px;padding:6px 8px}
-  .cond .col{flex:1 1 38%}.cond .op{flex:0 0 60px}.cond .rhs{flex:0 0 74px}
-  .cond .rhsValue{flex:1 1 100%;display:flex;gap:6px}.cond .rhsValue .val{flex:1}
-  .cond .rhsCol{flex:1 1 100%;display:flex;gap:6px;align-items:center}
-  .cond .rhsCol .rcol{flex:1}.cond .rhsCol .aop{flex:0 0 58px}.cond .rhsCol .aval{flex:0 0 72px}
-  .cond .del{flex:0 0 auto;background:var(--alert-soft);color:var(--alert);border:0;border-radius:6px;width:30px;height:32px;cursor:pointer;font-size:16px}
+  .cond{display:flex;gap:6px;margin-bottom:10px;align-items:center;flex-wrap:wrap}
+  .cond select,.cond input{font-size:13px;padding:7px 9px}
+  .cond .c-col{flex:1 1 46%;min-width:150px}
+  .cond .c-op{flex:0 0 56px} .cond .c-rhs{flex:0 0 76px}
+  .cond .c-valwrap{flex:1 1 100%;display:flex;gap:6px;align-items:center}
+  .cond .c-valwrap .c-val{flex:1;display:flex;gap:6px;align-items:center}
+  .cond .c-valwrap .c-val>input:not(.c-manual),.cond .c-valwrap .c-val>select{flex:1;min-width:0}
+  .cond .c-colwrap{flex:1 1 100%;display:flex;gap:6px;align-items:center}
+  .cond .c-colwrap .combo{flex:1} .cond .c-colwrap .c-aop{flex:0 0 56px} .cond .c-colwrap .c-aval{flex:0 0 74px}
+  .cond .c-timechk{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);flex:0 0 auto}
+  .cond .c-timechk input{width:auto}
+  .cond .c-manual{flex:0 0 auto;background:var(--paper);color:var(--muted);border:1px solid var(--hair);border-radius:6px;height:32px;padding:0 8px;cursor:pointer;font-size:11px;font-weight:600}
+  .cond .c-manual:hover{color:var(--teal);border-color:var(--teal)}
+  .cond .del{flex:0 0 auto;background:var(--alert-soft);color:var(--alert);border:0;border-radius:6px;width:32px;height:32px;cursor:pointer;font-size:16px}
+  /* searchable column combo */
+  .combo{position:relative;display:inline-flex}
+  .combo-inp{width:100%;padding:7px 9px;border:1px solid var(--hair);border-radius:7px;font-size:13px;background:#fff;font-family:"Inter";color:var(--ink)}
+  .combo-inp:focus{outline:2px solid var(--teal);border-color:var(--teal)}
+  .combo-panel{position:absolute;top:calc(100% + 3px);left:0;right:0;z-index:6;background:#fff;border:1px solid var(--hair);border-radius:9px;box-shadow:0 10px 30px rgba(20,32,43,.16);max-height:240px;overflow-y:auto;display:none}
+  .combo-panel.open{display:block}
+  .combo-it{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 10px;cursor:pointer;font-size:13px}
+  .combo-it:hover{background:var(--teal-soft)}
+  .combo-it .cn{color:var(--ink)} .combo-it .ty{font-family:"Space Mono";font-size:10.5px;color:var(--muted);background:var(--paper);border:1px solid var(--hair);border-radius:4px;padding:0 5px}
+  .combo-it.empty{color:var(--muted);font-style:italic;cursor:default}
+  /* aesthetic pass */
+  .fld{margin-bottom:18px} .fld>label{margin-bottom:7px}
+  .fgroup{padding:12px;border-radius:11px} .gchildren{padding-left:12px}
+  .segblock{padding:14px;border-radius:11px}
+  .card{transition:box-shadow .15s,border-color .15s} .card:hover{box-shadow:0 8px 22px rgba(20,32,43,.07)}
+  section.panel{margin-top:38px}
+  .drawer-b{padding:20px 22px}
   .addbtn{font-size:12.5px;color:var(--teal);background:none;border:1px dashed var(--teal);border-radius:7px;padding:5px 9px;cursor:pointer;font-weight:600}
   /* filter group tree */
   .fgroup{border:1px solid var(--hair);border-radius:9px;padding:10px;margin-bottom:8px;background:#fff}
@@ -117,6 +141,49 @@
   .sync{font-family:"Space Mono";font-size:11px;color:#9DB2B2;min-width:62px;text-align:left}
   .sync.saving{color:#E9C46A}.sync.saved{color:#7FB89A}.sync.error{color:#E27B6B}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  /* ===== design pass — SaaS: roxo→ciano + apoio por tipo ===== */
+  :root{--violet:#7C3AED;--violet-deep:#5B21B6;--violet-soft:#F1EBFE;--cyan:#06B6D4;--cyan-deep:#0891B2;--amber:#E08A0B;--paper:#F3F4FA;--panel:#FFFFFF;--hair:#E5E7F1;--muted:#6E7391}
+  header.bar{background:#14202B;border-bottom:none}
+  header.bar::after{content:"";display:block;height:3px;background: var(--violet)}
+  .mark{color:#fff} .mark .tick{color:#67E8F9}
+  .hbtn{border-radius:9px}
+  .hbtn.primary{background: var(--violet);border-color:transparent;color:#fff; transition: 0.4s;}
+  .hbtn.primary:hover{background: var(--cyan)}
+  .dashsel{background:#2a1652;border-color:#4a3a72}
+  section.panel{margin-top:40px}
+  .eyebrow{align-items:center;gap:12px;border-bottom:1px solid var(--hair);padding-bottom:12px;margin-bottom:18px}
+  .eyebrow .n{background:linear-gradient(120deg,var(--violet),var(--cyan));color:#fff;border:none;padding:2px 10px;border-radius:999px;font-weight:700}
+  .eyebrow h2{letter-spacing:-.01em} .eyebrow .note{color:#8A8FA6}
+  .gtools button:hover{color:var(--violet)}
+  .card{border-radius:16px;border-color:var(--hair);box-shadow:0 1px 2px rgba(20,32,43,.04),0 6px 16px rgba(20,32,43,.05);transition:box-shadow .16s,border-color .16s,transform .16s}
+  .card:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(20,32,43,.06),0 16px 34px rgba(90,33,182,.10);border-color:#D9CFF0}
+  .card .lab{color:#7A7F96}
+  .barrow .track{background:#EDEFF7;border-color:var(--hair);border-radius:6px}
+  .barrow .fill{background:linear-gradient(90deg,var(--cyan-deep),var(--cyan));border-radius:6px}
+  .coldist .colbar{border-radius:6px 6px 0 0}
+  /* barras por tipo de medida */
+  .bar-rate{background:linear-gradient(90deg,var(--cyan-deep),#22D3EE)!important}
+  .coldist .bar-rate{background:linear-gradient(180deg,#22D3EE,var(--cyan-deep))!important}
+  .bar-count{background:linear-gradient(90deg,var(--violet),#A78BFA)!important}
+  .coldist .bar-count{background:linear-gradient(180deg,#A78BFA,var(--violet))!important}
+  .bar-mean,.bar-median{background:linear-gradient(90deg,#F59E0B,var(--amber))!important}
+  .coldist .bar-mean,.coldist .bar-median{background:linear-gradient(180deg,#F59E0B,var(--amber))!important}
+  .barrow .fill.alert{background:linear-gradient(90deg,#b23a18,#d9612f)!important}
+  details.calc summary{color:var(--violet)}
+  .readout.good{color:#0E9488}
+  input[type=text],input[type=number],select,.combo-inp{border-radius:9px}
+  .combo-inp:focus,input:focus,select:focus{outline-color:var(--violet)}
+  .fgroup{border-radius:12px} .gchildren{border-left-color:#E3DCF7} .segblock{border-radius:12px}
+  .drawer{border-radius:20px 0 0 20px}
+  .drawer-h,.modal-h{background:linear-gradient(105deg,#331463,#5B21B6)}
+  .modal{border-radius:20px}
+  .applybar .go{background:linear-gradient(120deg,var(--violet),var(--cyan))}
+  .addbtn{border-color:var(--violet);color:var(--violet)}
+  .addbtn:hover{background:var(--violet-soft)}
+  .combo-it:hover{background:var(--violet-soft)}
+  .combo-it .ty{color:var(--cyan-deep)}
+  .n{border-color:transparent}
 </style>
 
 <header class="bar">
@@ -182,6 +249,18 @@ function num(v){if(v===null||v===undefined||v==="")return 0;if(typeof v==="numbe
 function toNumOrNull(v){if(v===null||v===undefined||v==="")return null;if(typeof v==="number")return v;const n=parseFloat(String(v).replace(",","."));return isNaN(n)?null:n;}
 function isFlag(v){if(v===null||v===undefined||v==="")return false;return v===1||v==="1"||v===true||(typeof v==="string"&&v.trim()!==""&&v.trim()!=="0"&&!/^(false|nao|não)$/i.test(v.trim()));}
 function parseDate(v){if(v===null||v===undefined||v==="")return null;if(v instanceof Date)return isNaN(v)?null:v;if(typeof v==="number"){const d=new Date(Math.round((v-25569)*86400*1000));return isNaN(d)?null:d;}const s=String(v).trim();const m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?/);if(m)return new Date(+m[3],+m[2]-1,+m[1],+(m[4]||0),+(m[5]||0),+(m[6]||0));const d=new Date(s);return isNaN(d)?null:d;}
+function parseDateStrict(v){
+  if(v instanceof Date)return isNaN(v)?null:{t:v.getTime(),hasTime:true};
+  if(v===null||v===undefined||typeof v==="number")return null;
+  const s=String(v).trim();
+  let m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})\s*([AaPp])[Mm]/);
+  if(m){let hh=(+m[4])%12;if(/p/i.test(m[7]))hh+=12;return {t:Date.UTC(+m[3],+m[1]-1,+m[2],hh,+m[5],+m[6]),hasTime:true};}
+  m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+  if(m){return {t:Date.UTC(+m[3],+m[2]-1,+m[1],+(m[4]||0),+(m[5]||0),+(m[6]||0)),hasTime:m[4]!==undefined};}
+  m=s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+  if(m){return {t:Date.UTC(+m[1],+m[2]-1,+m[3],+(m[4]||0),+(m[5]||0),+(m[6]||0)),hasTime:m[4]!==undefined};}
+  return null;}
+const asDate=parseDateStrict;
 const DAY=86400000;
 function median(a){if(!a.length)return null;const b=[...a].sort((x,y)=>x-y);const m=Math.floor(b.length/2);return b.length%2?b[m]:(b[m-1]+b[m])/2;}
 function mean(a){return a.length?a.reduce((s,x)=>s+x,0)/a.length:null;}
@@ -221,6 +300,10 @@ function matchCond(r,c){const v=getVal(r,c.col);
   if(c.op==="preenchido")return !isEmptyVal(v);
   if(c.op==="vazio")return isEmptyVal(v);
   if(c.op==="contem")return valStr(v).toLowerCase().includes(valStr(rhsRaw(r,c)).toLowerCase());
+  const LD=asDate(v),RD=(c.valType==="col")?(c.aop?null:asDate(getVal(r,c.rcol))):asDate(c.val);
+  if(LD&&RD){const lt=LD.t;let ds,de;if(RD.hasTime){ds=de=RD.t;}else{ds=RD.t;de=RD.t+DAY-1;}
+    if(c.op==="="||c.op==="≠"){const inr=lt>=ds&&lt<=de;return c.op==="="?inr:!inr;}
+    if(c.op===">")return lt>de; if(c.op==="<")return lt<ds; if(c.op==="≥")return lt>=ds; if(c.op==="≤")return lt<=de; return false;}
   const nv=toNumOrNull(v),nt=rhsNum(r,c);
   if(c.op==="="||c.op==="≠"){let eq;if(nv!==null&&nt!==null)eq=nv===nt;else eq=valStr(v).trim().toLowerCase()===valStr(rhsRaw(r,c)).trim().toLowerCase();return c.op==="="?eq:!eq;}
   if(nv===null||nt===null)return false;
@@ -363,7 +446,6 @@ const SB_URL = "https://ertfujuheybptfjjywjf.supabase.co"; // ex.: https://xxxxx
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVydGZ1anVoZXlicHRmamp5d2pmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3MDgxNzYsImV4cCI6MjA5ODI4NDE3Nn0.9JR_51-I8Au1xTYJjmB6E0DTCQZTWcW-XAmMddqhLvA"; // chave "anon public" (Settings → API)
 
 
-
 let DASHBOARDS=[], CURRENT=null, saveTimer=null;
 const sbOn=()=>!!(SB_URL&&SB_KEY);
 async function sb(method,path,body,prefer){
@@ -432,8 +514,15 @@ function read(file){$("#err").classList.add("hidden");const r=new FileReader();
   }catch(err){showErr(err.message||String(err));}};
   r.onerror=()=>showErr("Não consegui ler o arquivo.");r.readAsArrayBuffer(file);}
 function showErr(m){const e=$("#err");e.textContent="Erro: "+m;e.classList.remove("hidden");}
-function detectCols(rows){const keys=Object.keys(rows[0]);const sample=rows.slice(0,300);
-  return keys.map(k=>{let n=0,t=0;sample.forEach(r=>{const v=r[k];if(v!==""&&v!=null){t++;if(toNumOrNull(v)!==null)n++;}});return {name:k,numeric:t>0&&n/t>0.8};});}
+function detectCols(rows){const keys=Object.keys(rows[0]);const sample=rows.slice(0,400);
+  return keys.map(k=>{const vals=[];for(const r of sample){const v=r[k];if(!isEmptyVal(v))vals.push(v);}
+    const t=vals.length;let nd=0,nn=0;const distinct=new Set();
+    vals.forEach(v=>{if(asDate(v))nd++;else if(toNumOrNull(v)!==null)nn++;if(distinct.size<80)distinct.add(valStr(v));});
+    let type="text";
+    if(t){if(nd/t>0.8)type="date";else if(nn/t>0.8)type="number";else{const low=[...distinct].map(x=>String(x).toLowerCase());
+      if(distinct.size<=2&&low.every(x=>["sim","não","nao","true","false","1","0","s","n","yes","no","verdadeiro","falso","x"].includes(x)))type="bool";
+      else if(distinct.size<=15)type="cat";else type="text";}}
+    return {name:k,numeric:type==="number",type,values:[...distinct].slice(0,80)};});}
 function distinctVals(col){const set=new Set();for(const r of RAW){const v=getVal(r,col);if(!isEmptyVal(v)){set.add(valStr(v));if(set.size>40)break;}}return [...set];}
 
 /* ---- render ---- */
@@ -462,13 +551,13 @@ function renderCard(d){
   const warn=miss.length?`<div class="warn">⚠ coluna(s) ausente(s) nesta planilha: ${miss.map(esc).join(", ")}</div>`:"";let inner="";
   if(d.type==="single"){const res=evalSingle(d);
     inner=`<div class="lab">${esc(d.name)}</div><div class="readout ${d.style||""} ${res.kind==="text"?"txt":""}">${fmtSingle(d,res)}${d.unit?`<span class="u">${esc(d.unit)}</span>`:""}</div><div class="sub">${subSingle(d,res)}</div>`;
-  } else if(d.type==="funnel"){const r=evalFunnel(d);const w=v=>40+60*(r.top?v/r.top:0);const grad=["var(--teal)","#15807b","#0f5d59","#0b4a47","#083a37"];
+  } else if(d.type==="funnel"){const r=evalFunnel(d);const w=v=>40+60*(r.top?v/r.top:0);const grad=["#7C3AED","#6D5AE0","#4F86D6","#2FA8C7","#12B5A8"];
     inner=`<div class="lab">${esc(d.name)}</div><div style="margin-top:12px">`+r.steps.map((s,i)=>`<div class="fstep" style="width:${w(s.v)}%;background:${grad[i%grad.length]}">${esc(s.label)} <span class="fv">${fmt(s.v)}${i>0&&r.top?`<small>${pct(s.v/r.top)} do topo</small>`:""}</span></div>`).join("")+`</div>`;
   } else if(d.type==="bars"){const r=evalBars(d);
     if(r.orient==="v"){const mx=Math.max(...r.segs.map(s=>s.v||0),1);
-      inner=`<div class="lab">${esc(d.name)}</div><div class="coldist" style="grid-template-columns:repeat(${r.segs.length},1fr);margin-top:14px">`+r.segs.map(s=>`<div class="col"><div class="colbar" style="height:${((s.v||0)/mx)*100}%"></div><div class="clab">${esc(s.label)}<br>${fmt(s.v)}</div></div>`).join("")+`</div>`;
+      inner=`<div class="lab">${esc(d.name)}</div><div class="coldist" style="grid-template-columns:repeat(${r.segs.length},1fr);margin-top:14px">`+r.segs.map(s=>`<div class="col"><div class="colbar bar-${r.measureKind}" style="height:${((s.v||0)/mx)*100}%"></div><div class="clab">${esc(s.label)}<br>${fmt(s.v)}</div></div>`).join("")+`</div>`;
     } else {const isRate=r.measureKind==="rate";const mx=isRate?1:Math.max(...r.segs.map(s=>s.v||0),1);
-      inner=`<div class="lab">${esc(d.name)}</div><div style="margin-top:12px">`+r.segs.map(s=>`<div class="barrow"><span class="k">${esc(s.label)}</span><span class="track"><span class="fill" style="width:${s.v===null?0:Math.max(2,(s.v/mx)*100)}%"></span></span><span class="v">${s.disp}</span></div>`).join("")+`</div>`;}
+      inner=`<div class="lab">${esc(d.name)}</div><div style="margin-top:12px">`+r.segs.map(s=>`<div class="barrow"><span class="k">${esc(s.label)}</span><span class="track"><span class="fill bar-${r.measureKind}" style="width:${s.v===null?0:Math.max(2,(s.v/mx)*100)}%"></span></span><span class="v">${s.disp}</span></div>`).join("")+`</div>`;}
   }
   return `<div class="${cls}">${warn}${inner}${calcDetails(d)}${tools(d)}</div>`;}
 function render(){
@@ -511,29 +600,72 @@ function askGroupDelete(gi){const name=GROUPS[gi];const members=DEFS.filter(d=>d
   openModal("#groupDelModal");}
 
 /* ---- condition row ---- */
+function el(tag,cls){const e=document.createElement(tag);if(cls)e.className=cls;return e;}
+const CTYPE_LABEL={number:"nº",date:"data",bool:"S/N",cat:"categoria",text:"texto"};
+function colMeta(name){return COLS.find(c=>c.name===name);}
+function colType(name){if(name&&name.startsWith("__"))return VIRT_NUM.some(v=>v[0]===name)?"number":(name==="__faixa_plano"?"cat":"bool");const m=colMeta(name);return m?m.type:"text";}
+function colValues(name){if(name==="__faixa_plano")return bandList();if(name&&name.startsWith("__")&&!VIRT_NUM.some(v=>v[0]===name))return ["Sim","Não"];const m=colMeta(name);return (m&&m.values)||[];}
+function columnOptions(){let arr=COLS.map(c=>({value:c.name,label:c.name,type:CTYPE_LABEL[c.type]||"texto"}));return arr.concat(VIRTS.map(v=>({value:v[0],label:v[1],type:"derivada"})));}
+function makeCombo(value){
+  const options=columnOptions();const wrap=el("span","combo");const input=el("input","combo-inp");input.type="text";input.placeholder="buscar coluna…";input.setAttribute("autocomplete","off");
+  const panel=el("div","combo-panel");wrap._val=value||"";
+  const labelOf=v=>{const o=options.find(o=>o.value===v);return o?o.label:(v||"");};
+  input.value=labelOf(wrap._val);
+  function draw(q){panel.innerHTML="";const ql=(q||"").trim().toLowerCase();
+    const list=options.filter(o=>!ql||o.label.toLowerCase().includes(ql)||o.value.toLowerCase().includes(ql)).slice(0,80);
+    if(!list.length){const e=el("div","combo-it empty");e.textContent="nenhuma coluna";panel.appendChild(e);return;}
+    list.forEach(o=>{const it=el("div","combo-it");it.innerHTML=`<span class="cn">${esc(o.label)}</span><span class="ty">${o.type}</span>`;
+      it.onmousedown=ev=>{ev.preventDefault();wrap._val=o.value;input.value=o.label;panel.classList.remove("open");if(wrap._onChange)wrap._onChange(o.value);};panel.appendChild(it);});}
+  input.onfocus=()=>{input.select();draw("");panel.classList.add("open");};
+  input.oninput=()=>{draw(input.value);panel.classList.add("open");};
+  input.onblur=()=>setTimeout(()=>panel.classList.remove("open"),150);
+  input.onkeydown=ev=>{if(ev.key==="Enter"){const f=panel.querySelector(".combo-it:not(.empty)");if(f){ev.preventDefault();f.onmousedown(new MouseEvent("mousedown"));}}else if(ev.key==="Escape"){panel.classList.remove("open");}};
+  wrap.append(input,panel);wrap._get=()=>wrap._val;return wrap;}
+function isoDate(t){const d=new Date(t),p=n=>String(n).padStart(2,"0");return `${d.getUTCFullYear()}-${p(d.getUTCMonth()+1)}-${p(d.getUTCDate())}`;}
+function isoDateTime(t){const d=new Date(t),p=n=>String(n).padStart(2,"0");return `${isoDate(t)}T${p(d.getUTCHours())}:${p(d.getUTCMinutes())}`;}
+function makeValueField(colName,op,initVal){
+  const wrap=el("span","c-val");let type=colType(colName),values=colValues(colName)||[];
+  if(op==="contem")type="text";
+  let manual=(type==="cat"||type==="bool")&&initVal&&!values.map(String).includes(String(initVal));
+  function build(){wrap.innerHTML="";let read;
+    if(!manual&&type==="date"){const pd=initVal?parseDateStrict(initVal):null;const wt=!!(pd&&pd.hasTime);
+      const inp=el("input","c-date");inp.type=wt?"datetime-local":"date";if(pd)inp.value=wt?isoDateTime(pd.t):isoDate(pd.t);
+      const lab=el("label","c-timechk");const chk=el("input");chk.type="checkbox";chk.checked=wt;lab.append(chk,document.createTextNode("hora"));
+      chk.onchange=()=>{let base=inp.value?parseDateStrict(inp.value.replace("T"," ")):null;inp.type=chk.checked?"datetime-local":"date";if(base)inp.value=chk.checked?isoDateTime(base.t):isoDate(base.t);};
+      wrap.append(inp,lab);read=()=>inp.value;
+    }else if(!manual&&(type==="bool"||type==="cat")&&values.length){const sel=el("select","c-pick");values.forEach(v=>sel.add(new Option(v,v)));if(initVal!=null&&values.map(String).includes(String(initVal)))sel.value=initVal;wrap.append(sel);read=()=>sel.value;
+    }else if(!manual&&type==="number"){const inp=el("input","c-num");inp.type="number";inp.placeholder="número";if(initVal!=null)inp.value=initVal;wrap.append(inp);read=()=>inp.value;
+    }else{const dl="dl"+Math.random().toString(36).slice(2,7);const inp=el("input","c-txt");inp.setAttribute("list",dl);inp.placeholder="valor";if(initVal!=null)inp.value=initVal;const dle=el("datalist");dle.id=dl;(colValues(colName)||[]).slice(0,40).forEach(v=>{const o=document.createElement("option");o.value=v;dle.appendChild(o);});wrap.append(inp,dle);read=()=>inp.value;}
+    wrap._read=read;
+    const tg=el("button","c-manual");tg.type="button";tg.textContent=manual?"auto":"abc";tg.title=manual?"campo inteligente":"digitar manual";tg.onmousedown=e=>e.preventDefault();
+    tg.onclick=()=>{initVal=wrap._read?wrap._read():initVal;manual=!manual;build();};
+    if(type!=="text"||manual)wrap.append(tg);}
+  build();return wrap;}
 function condRow(preset){
-  const colOpt=COLS.map(c=>`<option value="${esc(c.name)}">${esc(c.name)}</option>`).join("")+`<optgroup label="derivadas">`+VIRTS.map(v=>`<option value="${v[0]}">${esc(v[1])}</option>`).join("")+`</optgroup>`;
-  const ops=["=","≠",">","<","≥","≤","contem","preenchido","vazio"].map(o=>`<option ${preset&&preset.op===o?"selected":""}>${o}</option>`).join("");
-  const aops=[["","—"],["+","+"],["-","−"],["*","×"],["/","÷"]].map(([v,l])=>`<option value="${v}">${l}</option>`).join("");
-  const dl="dl"+Math.random().toString(36).slice(2,8);
-  const div=document.createElement("div");div.className="cond";
-  div.innerHTML=`<select class="col">${colOpt}</select><select class="op">${ops}</select>`+
-    `<select class="rhs"><option value="value">valor</option><option value="col">coluna</option></select>`+
-    `<span class="rhsValue"><input class="val" list="${dl}" placeholder="valor"><datalist id="${dl}"></datalist></span>`+
-    `<span class="rhsCol"><select class="rcol">${colOpt}</select><select class="aop">${aops}</select><input class="aval" type="number" placeholder="nº"></span>`+
-    `<button class="del" type="button">×</button>`;
-  const colSel=div.querySelector(".col"),opSel=div.querySelector(".op"),rhsSel=div.querySelector(".rhs"),valIn=div.querySelector(".val"),dlEl=div.querySelector("datalist"),rcolSel=div.querySelector(".rcol"),aopSel=div.querySelector(".aop"),avalIn=div.querySelector(".aval"),rhsValue=div.querySelector(".rhsValue"),rhsCol=div.querySelector(".rhsCol");
-  const refreshDL=()=>dlEl.innerHTML=distinctVals(colSel.value).map(v=>`<option value="${esc(v)}">`).join("");
-  function sync(){const noRhs=["preenchido","vazio"].includes(opSel.value);rhsSel.style.display=noRhs?"none":"";const useCol=!noRhs&&rhsSel.value==="col";rhsValue.style.display=(!noRhs&&!useCol)?"":"none";rhsCol.style.display=useCol?"":"none";avalIn.style.display=(useCol&&aopSel.value!=="")?"":"none";}
-  colSel.onchange=refreshDL;opSel.onchange=sync;rhsSel.onchange=sync;aopSel.onchange=sync;
-  if(preset){colSel.value=preset.col;if(preset.valType==="col"){rhsSel.value="col";if(preset.rcol)rcolSel.value=preset.rcol;if(preset.aop){aopSel.value=preset.aop;avalIn.value=preset.aval??"";}}else{valIn.value=preset.val??"";}}
-  refreshDL();sync();
-  div.querySelector(".del").onclick=()=>div.remove();
+  const div=el("div","cond");
+  const colBox=makeCombo(preset&&preset.col);colBox.classList.add("c-col");
+  const opSel=el("select","c-op");["=","≠",">","<","≥","≤","contem","preenchido","vazio"].forEach(o=>opSel.add(new Option(o,o)));if(preset)opSel.value=preset.op;
+  const rhsSel=el("select","c-rhs");rhsSel.add(new Option("valor","value"));rhsSel.add(new Option("coluna","col"));
+  const valWrap=el("span","c-valwrap");const colWrap=el("span","c-colwrap");
+  const rcolBox=makeCombo(preset&&preset.rcol);
+  const aopSel=el("select","c-aop");[["","—"],["+","+"],["-","−"],["*","×"],["/","÷"]].forEach(([v,l])=>aopSel.add(new Option(l,v)));if(preset&&preset.aop)aopSel.value=preset.aop;
+  const avalIn=el("input","c-aval");avalIn.type="number";avalIn.placeholder="nº";if(preset&&preset.aval!=null)avalIn.value=preset.aval;
+  colWrap.append(rcolBox,aopSel,avalIn);
+  const del=el("button","del");del.type="button";del.textContent="×";del.onclick=()=>div.remove();
+  div.append(colBox,opSel,rhsSel,valWrap,colWrap,del);
+  let initVal=(preset&&preset.valType!=="col")?(preset.val??""):"";
+  function buildVal(){valWrap.innerHTML="";const f=makeValueField(colBox._get(),opSel.value,initVal);valWrap._field=f;valWrap.append(f);}
+  function sync(){const noRhs=["preenchido","vazio"].includes(opSel.value);rhsSel.style.display=noRhs?"none":"";const useCol=!noRhs&&rhsSel.value==="col";valWrap.style.display=(!noRhs&&!useCol)?"":"none";colWrap.style.display=useCol?"":"none";avalIn.style.display=(useCol&&aopSel.value!=="")?"":"none";}
+  colBox._onChange=()=>{initVal="";buildVal();};
+  opSel.onchange=()=>{sync();buildVal();};rhsSel.onchange=sync;aopSel.onchange=sync;
+  if(preset&&preset.valType==="col")rhsSel.value="col";
+  sync();buildVal();
+  div._readCond=()=>{const col=colBox._get(),op=opSel.value;
+    if(["preenchido","vazio"].includes(op))return {col,op,val:""};
+    if(rhsSel.value==="col"){const c={col,op,valType:"col",rcol:rcolBox._get()};if(aopSel.value){c.aop=aopSel.value;c.aval=avalIn.value;}return c;}
+    return {col,op,valType:"value",val:(valWrap._field&&valWrap._field._read)?valWrap._field._read():""};};
   return div;}
-function readCondEl(el){const col=el.querySelector(".col").value,op=el.querySelector(".op").value;
-  if(["preenchido","vazio"].includes(op))return {col,op,val:""};
-  if(el.querySelector(".rhs").value==="col"){const c={col,op,valType:"col",rcol:el.querySelector(".rcol").value};const aop=el.querySelector(".aop").value;if(aop){c.aop=aop;c.aval=el.querySelector(".aval").value;}return c;}
-  return {col,op,valType:"value",val:el.querySelector(".val").value};}
+function readCondEl(el){return el._readCond?el._readCond():{col:"",op:"=",val:""};}
 
 /* ---- recursive filter-group editor ---- */
 function fgroupEl(node,topLevel){
