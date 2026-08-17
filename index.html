@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
 <!-- Painel de Ativação v4 — filtros em árvore (E/OU/OU-exclusivo aninhados). 100% local. -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -37,7 +39,53 @@
   .gtools{margin-left:auto;display:flex;gap:8px}
   .gtools button{background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px;padding:2px 4px}
   .gtools button:hover{color:var(--teal)} .gtools .danger:hover{color:var(--alert)}
-  .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+  .grid{display:grid;gap:14px;grid-template-columns:repeat(4,minmax(0,1fr))}
+  .card.size-sm{grid-column:span 1} .card.size-md{grid-column:span 2} .card.size-lg{grid-column:span 3} .card.size-full{grid-column:1/-1}
+  @media (max-width:1180px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))} .card.size-lg,.card.size-full{grid-column:1/-1}}
+  @media (max-width:640px){.grid{grid-template-columns:1fr} .card.size-md,.card.size-lg,.card.size-full{grid-column:1/-1}}
+  .chartcard{padding:16px 18px 14px}
+  .chead{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:6px}
+  .chead-l{min-width:0} .chead .lab{padding-right:0}
+  .csub{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .chead-r{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+  .cval{font-family:"Space Mono";font-weight:700;font-size:22px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+  .cval small{font-family:inherit;font-weight:500;font-size:11px;color:var(--muted);letter-spacing:0}
+  .expand{background:var(--paper);border:1px solid var(--hair);color:var(--muted);border-radius:7px;width:28px;height:28px;cursor:pointer;font-size:13px;line-height:1}
+  .expand:hover{color:var(--teal);border-color:var(--teal)}
+  .chartwrap{position:relative;margin-top:8px}
+  .chart{width:100%;height:auto;display:block;overflow:visible}
+  .chart .gline{stroke:var(--hair);stroke-width:1;vector-effect:non-scaling-stroke}
+  .chart .ax{stroke:var(--hair);stroke-width:1;vector-effect:non-scaling-stroke}
+  .chart .tickY,.chart .tickX{font-size:10.5px;fill:var(--muted);font-family:"Space Mono"}
+  .chart .tickY{text-anchor:end}
+  .chart .ln{fill:none;stroke:var(--teal);stroke-width:2.2;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+  .chart .ln.raw{opacity:.3;stroke-width:1.4} .chart .ln.smooth{stroke-width:2.4}
+  .chart .area{fill:var(--teal);opacity:.08;stroke:none}
+  .chart .ci{fill:var(--teal);opacity:.13;stroke:none}
+  .chart .dot{fill:var(--teal);stroke:var(--panel);stroke-width:1.5}
+  .chart .dot.fraco{fill:var(--panel);stroke:var(--teal)}
+  .chart .dot.parcial{fill:var(--panel);stroke:var(--muted);stroke-dasharray:2 2}
+  .chart .dot.on{r:5.5}
+  .chart .vlast{font-size:11.5px;fill:var(--teal);font-weight:700;font-family:"Space Mono"}
+  .chart .cross{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3;opacity:.5;vector-effect:non-scaling-stroke}
+  .chart .hz{fill:transparent;cursor:pointer}
+  .chart .hbar{fill:var(--teal);opacity:.85;cursor:pointer} .chart .hbar:hover{opacity:1}
+  .chart .mk{stroke:var(--ink);stroke-width:1;stroke-dasharray:4 3;opacity:.45;vector-effect:non-scaling-stroke}
+  .chart .mkt{font-size:10px;fill:var(--muted)}
+  .chtip{position:absolute;z-index:5;background:var(--ink);color:#fff;border-radius:8px;padding:7px 10px;font-size:12px;line-height:1.45;pointer-events:none;white-space:nowrap;box-shadow:0 6px 18px rgba(20,32,43,.2)}
+  .chtip b{display:block;font-size:11px;opacity:.75;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+  .chtip span{display:block} .chtip .tn{opacity:.7;font-size:11px}
+  .chleg{display:flex;gap:14px;font-size:11.5px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
+  .chleg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+  .chleg .sw-ln{height:3px;border-radius:2px;background:var(--ink)}
+  .bigchart .chart{height:auto} .bigchart{margin-bottom:6px}
+  .ptrow{cursor:pointer} .ptrow .verlink{color:var(--teal);font-weight:600;text-align:right}
+  .eyebrow .fold{background:none;border:0;color:var(--muted);cursor:pointer;font-size:14px;padding:0 2px}
+  .eyebrow .fold:hover{color:var(--teal)}
+  .eyebrow .gcount{font-size:11.5px;color:var(--muted);font-family:"Space Mono"}
+  .cardtools{opacity:0;transition:opacity .15s}
+  .card:hover .cardtools,.card:focus-within .cardtools{opacity:1}
+  @media (hover:none){.cardtools{opacity:1}}
   .card{background:var(--panel);border:1px solid var(--hair);border-radius:12px;padding:18px;position:relative}
   .card.wide{grid-column:1/-1} .card.hiddenc{opacity:.5} .card.warnc{border-color:var(--alert)}
   .card .warn{background:var(--alert-soft);color:var(--alert);border-radius:7px;padding:6px 9px;font-size:11.5px;font-weight:600;margin-bottom:10px;line-height:1.4}
@@ -135,6 +183,75 @@
   .gchildren{padding-left:10px;border-left:2px solid var(--teal-soft)}
   .gadd{margin-top:8px;display:flex;gap:8px}
   .segblock{border:1px solid var(--hair);border-radius:9px;padding:12px;margin-bottom:10px;background:#fff}
+  .srcrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--hair)}
+  .srcrow .srcname{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px}
+  .srcrow .srcper{flex:0 0 88px;font-size:12px;padding:5px 7px}
+  .srcrow .hbtn{flex:0 0 auto;font-size:11px;padding:4px 8px}
+  .srcrow .del{flex:0 0 auto;width:26px;height:26px;font-size:14px}
+  .trend{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .spark{width:72px;height:20px;flex:0 0 auto}
+  .spark polyline{fill:none;stroke-width:1.6;vector-effect:non-scaling-stroke}
+  .spark.spark-up polyline{stroke:var(--teal)} .spark.spark-down polyline{stroke:var(--alert)} .spark.spark-flat polyline{stroke:var(--muted)}
+  .chip{font-size:11.5px;font-weight:600;padding:2px 7px;border-radius:20px;background:var(--paper);color:var(--muted)}
+  .chip.good{background:var(--teal-soft);color:var(--teal)} .chip.bad{background:var(--alert-soft);color:var(--alert)}
+  .ctxsel select{font-size:12px;padding:3px 6px}
+  .linewrap{margin-top:10px}
+  .linechart{width:100%;height:120px}
+  .linechart .ln{fill:none;stroke:var(--teal);stroke-width:2;vector-effect:non-scaling-stroke}
+  .linechart circle{fill:var(--teal)}
+  .linechart .ax{stroke:var(--hair);stroke-width:1;vector-effect:non-scaling-stroke}
+  .linechart text{font-size:9px;fill:var(--muted)}
+  .linefoot{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;color:var(--muted);margin-top:6px;flex-wrap:wrap}
+  .drawer.big{width:960px}
+  .gfilter{display:inline-flex;align-items:center;gap:4px}
+  .gfilter button{background:var(--paper);border:1px solid var(--hair);color:var(--muted);border-radius:20px;padding:3px 10px;font-size:11.5px;cursor:pointer;max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .gfilter.on button{background:var(--teal-soft);color:var(--teal);border-color:transparent;font-weight:600}
+  .drillable{cursor:pointer} .drillable:hover{filter:brightness(1.06);outline:1px solid var(--hair)}
+  .drillhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:10px;font-size:13px}
+  .drillcols{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;align-items:center}
+  .colchip{display:inline-flex;align-items:center;gap:4px;background:var(--paper);border:1px solid var(--hair);border-radius:20px;padding:3px 6px 3px 10px;font-size:11.5px;color:var(--muted)}
+  .colchip button{background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px;line-height:1;padding:0 2px}
+  .colchip.add{padding:0;border:0;background:none} .colchip.add .combo{width:190px}
+  .dtwrap{overflow:auto;max-height:60vh;border:1px solid var(--hair);border-radius:9px}
+  .dtable{border-collapse:collapse;width:100%;font-size:12.5px}
+  .dtable th{position:sticky;top:0;background:var(--paper);text-align:left;padding:8px 10px;border-bottom:1px solid var(--hair);cursor:pointer;white-space:nowrap;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+  .dtable td{padding:7px 10px;border-bottom:1px solid var(--hair);white-space:nowrap;max-width:260px;overflow:hidden;text-overflow:ellipsis}
+  .dtable tbody tr:hover{background:var(--paper)}
+  .dtable td.per{color:var(--muted);font-size:11.5px}
+  .cohortwrap{overflow:auto;margin-top:10px}
+  .cohort{border-collapse:separate;border-spacing:3px;font-size:12px;width:100%}
+  .cohort th{font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);font-weight:600;padding:2px 4px;text-align:center}
+  .cohort th:first-child,.cohort td.lb{text-align:left}
+  .cohort td{padding:6px 4px;text-align:center;border-radius:5px}
+  .cohort td.lb{color:var(--muted);white-space:nowrap;padding-right:8px}
+  .cohort td.n,.cohort th.n{color:var(--muted);font-size:11px}
+  .cohort td.hc{cursor:pointer;font-variant-numeric:tabular-nums}
+  .cohort td.hc.cens{cursor:default;font-size:11px}
+  .histwrap{margin-top:10px}
+  .hist{display:grid;gap:2px;align-items:end;height:130px}
+  .hcol{display:flex;align-items:flex-end;height:100%;cursor:pointer}
+  .hbar{width:100%;background:var(--teal);border-radius:3px 3px 0 0;min-height:1px}
+  .hcol:hover .hbar{filter:brightness(1.15)}
+  .histax{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px}
+  .alerts .alertlist{display:flex;flex-direction:column;gap:6px}
+  .alertrow{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;background:var(--card);border:1px solid var(--hair);cursor:pointer}
+  .alertrow:hover{border-color:var(--muted)}
+  .alertrow .an{flex:1 1 auto;font-size:13.5px;font-weight:600}
+  .alertrow .av{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .stockchart{width:100%;height:150px}
+  .stockchart .sb-in{fill:var(--teal);cursor:pointer} .stockchart .sb-out{fill:var(--alert);cursor:pointer}
+  .stockchart .sb-in:hover,.stockchart .sb-out:hover{filter:brightness(1.2)}
+  .stockchart .ln{fill:none;stroke:var(--ink);stroke-width:2;vector-effect:non-scaling-stroke}
+  .stockchart .ax{stroke:var(--hair);stroke-width:1;vector-effect:non-scaling-stroke}
+  .stockchart text{font-size:9px;fill:var(--muted)}
+  .sw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:3px;vertical-align:-1px}
+  .sw-in{background:var(--teal)} .sw-out{background:var(--alert)}
+  .linechart .ci{fill:var(--teal);opacity:.13;stroke:none}
+  .linechart .ln.raw{opacity:.35;stroke-width:1.4}
+  .linechart .ln.smooth{stroke-width:2.2}
+  .linechart circle.fraco{fill:none;stroke:var(--teal);stroke-width:1.2}
+  .badge{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:2px 6px;border-radius:20px;margin-left:8px;vertical-align:2px}
+  .badge.time{background:var(--teal-soft);color:var(--teal)} .badge.cohort{background:var(--paper);color:var(--muted)}
   .segblock .seghead{display:flex;gap:8px;align-items:center;margin-bottom:8px}
   .segblock .seghead input{flex:1}
   .segblock .delseg{background:var(--alert-soft);color:var(--alert);border:0;border-radius:6px;width:30px;height:32px;cursor:pointer;font-size:16px}
@@ -204,6 +321,7 @@
       <label class="toggle"><input type="checkbox" id="showHidden"> mostrar ocultas</label>
       <button class="hbtn" id="bParam">Parâmetros</button>
       <button class="hbtn" id="bCols">Colunas calc.</button>
+      <button class="hbtn" id="bSources">Fontes</button>
       <button class="hbtn" id="bNew">Nova métrica</button>
       <button class="hbtn" id="bGroup">＋ Grupo</button>
       <button class="hbtn" id="bExport">Exportar</button>
@@ -212,7 +330,7 @@
       <button class="hbtn primary" id="bLoad">Trocar planilha</button>
     </div>
     <button class="hbtn primary" id="bLoad0">Carregar planilha</button>
-    <input type="file" id="file" accept=".xlsx,.xls" class="hidden">
+    <input type="file" id="file" accept=".xlsx,.xls" class="hidden" multiple>
     <input type="file" id="cfg" accept=".json" class="hidden">
   </div>
 </header>
@@ -233,6 +351,30 @@
   <div class="drawer-h"><h3>Parâmetros compartilhados</h3><button class="x" data-close>×</button></div>
   <div class="drawer-b" id="paramBody"></div>
   <div class="applybar"><button class="go" id="paramApply">Aplicar</button><button class="ghost" id="paramReset">Restaurar padrão</button></div>
+</aside>
+
+<aside class="drawer big" id="dChart">
+  <div class="drawer-h"><h3 id="chartTitle">Gráfico</h3><button class="x" data-close>×</button></div>
+  <div class="drawer-b" id="chartBody"></div>
+  <div class="applybar"><button class="go" id="chartCsv">Exportar série (CSV)</button><button class="ghost" data-close>Fechar</button></div>
+</aside>
+
+<aside class="drawer" id="dFilter">
+  <div class="drawer-h"><h3>Filtro global</h3><button class="x" data-close>×</button></div>
+  <div class="drawer-b"><p class="hint" style="margin-top:0">Vale para todos os cartões, somando-se ao filtro de cada métrica. Aparece marcado na barra do topo enquanto estiver ativo.</p><div id="filterBody"></div></div>
+  <div class="applybar"><button class="go" id="filterApply">Aplicar</button><button class="ghost" id="filterClear">Limpar</button></div>
+</aside>
+
+<aside class="drawer big" id="dDrill">
+  <div class="drawer-h"><h3 id="drillTitle">Empresas</h3><button class="x" data-close>×</button></div>
+  <div class="drawer-b" id="drillBody"></div>
+  <div class="applybar"><button class="go" id="drillCsv">Exportar CSV</button><button class="ghost" data-close>Fechar</button></div>
+</aside>
+
+<aside class="drawer" id="dSources">
+  <div class="drawer-h"><h3>Fontes de dados</h3><button class="x" data-close>×</button></div>
+  <div class="drawer-b" id="srcBody"></div>
+  <div class="applybar"><button class="go" id="srcAdd">＋ adicionar planilhas</button><button class="ghost" data-close>Fechar</button></div>
 </aside>
 
 <aside class="drawer" id="dCols">
@@ -355,11 +497,11 @@ function fmtDate(d){const x=(d instanceof Date)?d:new Date(d);const y=x.getUTCFu
   const dp=`${P2(x.getUTCDate())}/${P2(x.getUTCMonth()+1)}/${y}`;return (hh||mm||ss)?`${dp} ${P2(hh)}:${P2(mm)}`:dp;}
 function valStr(v){return v instanceof Date?fmtDate(v):(v===null||v===undefined?"":String(v));}
 
-let RAW=[], COLS=[], FILENAME="", DEFS=[], REF=new Date(), REFT=Date.now(), SHOWHIDDEN=false, GEN=0;
+let RAW=[], COLS=[], FILENAME="", DEFS=[], REF=new Date(), REFT=Date.now(), SHOWHIDDEN=false, GEN=0, SHOWTREND=true, SHOWALERTS=true;
 const CK=Symbol("cache");
 function bumpGen(){GEN++;}
 const PDEFAULT={emitCte:true,emitMdfe:true,emitThreshold:0,planBands:[50,150,300],semChurn:"Sem churn",
-  derived:[],dateOrder:"dmy",refMode:"maxdata",refDate:""};
+  derived:[],dateOrder:"dmy",refMode:"maxdata",refDate:"",seriesMode:"acumulada",sourceMap:{},keyCol:"",globalFilter:{logic:"and",children:[]},alertPct:20,trendAxis:{mode:"snapshot",col:"",gran:"month",window:"periodo"},aliases:{},minN:5,showCI:true,collapsed:[]};
 let PARAMS=clone(PDEFAULT);
 const DEFAULT_GROUPS=["Visão geral","Velocidade de ativação","Funil de ativação","Treinamento","Engajamento e risco","Churn","Financeiro","CES","Valor de plano","Personalizadas"];
 let GROUPS=DEFAULT_GROUPS.slice();
@@ -427,7 +569,7 @@ function cmpLabel(d){
   return (a,b)=>String(a).localeCompare(String(b));}
 function derivedValues(d){
   if(d.kind==="bucket")return bucketLabels(d);
-  if(d.kind==="datepart"){const s=new Set();for(const r of RAW){const v=getVal(r,d.id);if(!isEmptyVal(v)){s.add(String(v));if(s.size>300)break;}}
+  if(d.kind==="datepart"){const s=new Set();for(const r of DATA){const v=getVal(r,d.id);if(!isEmptyVal(v)){s.add(String(v));if(s.size>300)break;}}
     return [...s].sort(cmpLabel(d));}
   return [];}
 function isDateish(name){if(name==="__hoje")return true;const m=colMeta?colMeta(name):null;return m?m.type==="date":false;}
@@ -488,7 +630,7 @@ function getVal(r,col,depth){
   if(!col)return undefined;
   if(col==="__hoje")return new Date(REFT);
   if(col.indexOf("__")===0){
-    let c=r[CK];if(!c||c.g!==GEN)c=r[CK]={g:GEN,v:{}};
+    let c=r[CK];if(!c||c.g!==GEN||c.ctx!==CTX)c=r[CK]={g:GEN,ctx:CTX,v:{}};
     if(col in c.v)return c.v[col];
     const d=derivedDef(col);
     const out=d?derivedVal(r,d,depth||0):virtualVal(r,col);
@@ -527,7 +669,162 @@ function evalNode(r,n){
     if(n.logic==="or")return res.some(Boolean);if(n.logic==="xor")return res.filter(Boolean).length===1;return res.every(Boolean);}
   return matchCond(r,n);
 }
-function filterRows(node){let n=node;if(Array.isArray(n))n={logic:"and",children:n};if(!n)n={logic:"and",children:[]};return RAW.filter(r=>evalNode(r,n));}
+function filterRows(node){let n=node;if(Array.isArray(n))n={logic:"and",children:n};if(!n)n={logic:"and",children:[]};return DATA.filter(r=>evalNode(r,n));}
+
+/* ================= FONTES, PERÍODOS E BASE =================
+   Um arquivo importado é uma FONTE. Toda fonte pertence a um PERÍODO (rótulo + data).
+   - vários arquivos no mesmo período  -> pedaços complementares, somam-se
+   - um arquivo por período            -> retratos periódicos, viram pontos na série
+   Dedup: dentro do período o arquivo mais novo vence; entre períodos vence o mais recente. */
+let SOURCES=[], PERIODS=[], KEYCOL="", NEXTSRC=1;
+let PERIOD_ROWS=new Map(), PERIOD_COLS=new Map(), PERIOD_STATS=new Map(), ASOF=new Map();
+let DATA=[];            // conjunto de linhas em avaliação (padrão: a base atual)
+let CTX="base";         // contexto de cache (muda ao avaliar um período específico)
+let VIEW=null;          // período visualizado nos cartões (null = mais recente)
+let IMPORTLOG=[];
+const PK=Symbol("periodo");
+function withRows(rows,fn,ctx,reft){const pr=DATA,pc=CTX,pt=REFT;
+  DATA=rows;if(ctx!==undefined)CTX=ctx;if(reft)REFT=reft;
+  try{return fn();}finally{DATA=pr;CTX=pc;REFT=pt;}}
+
+const KEY_HINT=/^(codigo_emp|cod_emp|codigo_empresa|emp_codigo|emp_id|id_empresa|empresa_id|cnpj|documento)$/i;
+function guessKey(rows,cols){
+  const hinted=cols.find(c=>KEY_HINT.test(c.name));if(hinted)return hinted.name;
+  let best=null,bestScore=0;
+  cols.forEach(c=>{const s=new Set();let filled=0;
+    for(const r of rows){const v=r[c.name];if(isEmptyVal(v))continue;filled++;s.add(valStr(v));}
+    if(!filled)return;const uniq=s.size/filled;
+    if(uniq>0.95&&filled/rows.length>0.9&&uniq>bestScore){bestScore=uniq;best=c.name;}});
+  return best||(cols[0]&&cols[0].name)||"";}
+function keyOf(r){return KEYCOL?valStr(r[KEYCOL]).trim():"";}
+function periodLabelFor(t){const d=new Date(t);const M=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+  return `${M[d.getUTCMonth()]}/${d.getUTCFullYear()}`;}
+function maxDateOf(rows,cols){let mx=0;const dc=cols.filter(c=>c.type==="date").map(c=>c.name);
+  const now=new Date();const today=Date.UTC(now.getFullYear(),now.getMonth(),now.getDate());
+  for(const r of rows)for(const k of dc){const d=asDate(r[k],{serial:true});if(d&&d.t>mx&&d.t<=today)mx=d.t;}
+  return mx||today;}
+
+/* reconstrói base atual, períodos e estatísticas a partir das fontes ativas */
+function rebuild(){
+  const act=SOURCES.filter(s=>s.active);
+  act.forEach(applyAliases);
+  const byLabel=new Map();
+  act.forEach(s=>{const L=s.periodLabel;
+    if(!byLabel.has(L))byLabel.set(L,{label:L,t:s.periodT,srcs:[]});
+    const p=byLabel.get(L);p.t=Math.max(p.t,s.periodT);p.srcs.push(s);});
+  PERIODS=[...byLabel.values()].sort((a,b)=>a.t-b.t);
+  PERIOD_ROWS=new Map();PERIOD_COLS=new Map();PERIOD_STATS=new Map();ASOF=new Map();
+  PERIODS.forEach(p=>{
+    const map=new Map();let dup=0,semChave=0,total=0;const cols=new Set();
+    p.srcs.sort((a,b)=>a.added-b.added).forEach(s=>{
+      s.colNames.forEach(c=>cols.add(c));
+      s.rows.forEach(r=>{total++;const k=keyOf(r);
+        if(!k){semChave++;map.set("__semchave_"+total,r);return;}
+        if(map.has(k))dup++;
+        r[PK]=p.label;map.set(k,r);});});
+    PERIOD_ROWS.set(p.label,[...map.values()]);
+    PERIOD_COLS.set(p.label,cols);
+    PERIOD_STATS.set(p.label,{linhas:total,unicas:map.size,dup,semChave});});
+  RAW=baseAsOf(null);
+  COLS=RAW.length?detectCols(RAW):[];
+  bumpGen();DATA=applyGlobal(RAW);
+  if(RAW.length)computeRef();
+  markCoverage();}
+/* base acumulada: para cada empresa, a linha do período mais recente até `label` */
+function baseAsOf(label){
+  const ck=label||"__all";if(ASOF.has(ck))return ASOF.get(ck);
+  const lim=label?(PERIODS.find(p=>p.label===label)||{}).t:Infinity;
+  const map=new Map();let i=0;
+  PERIODS.forEach(p=>{if(p.t>lim)return;
+    (PERIOD_ROWS.get(p.label)||[]).forEach(r=>{const k=keyOf(r)||("__x"+(i++));map.set(k,r);});});
+  const out=[...map.values()];ASOF.set(ck,out);return out;}
+function periodRows(label){return applyGlobal(PARAMS.seriesMode==="periodo"?(PERIOD_ROWS.get(label)||[]):baseAsOf(label));}
+function markCoverage(){
+  const u=PERIODS.map(p=>(PERIOD_STATS.get(p.label)||{}).unicas||0);
+  const med=median(u.filter(x=>x))||0;
+  PERIODS.forEach((p,i)=>{const st=PERIOD_STATS.get(p.label);if(!st)return;
+    st.baixa=med>0&&st.unicas<med*0.6;});}
+
+/* ---- séries: a mesma métrica avaliada em cada período ---- */
+/* colunas de base de que cada coluna derivada depende — usado para detectar
+   períodos em que a métrica não pode ser calculada (lacuna, nunca zero) */
+const VIRT_DEPS={__emitiu:{any:["qtd_cte","qtd_mdfe"]},__treinou:{all:["treinamento_realizado"]},
+  __certificado:{all:["certificado_configurado"]},__ativo:{all:["emp_situacao"]},__churn:{all:["motivo_churn"]},
+  __faixa_plano:{all:["epl_valor"]},__dias_desde_login:{all:["ultimo_login"]},
+  __dias_ate_1a_emissao:{all:["emp_data_contratacao","data_primeira_emissao_ces"]},
+  __dias_ate_churn:{all:["emp_data_contratacao","data_churn"]}};
+function periodGap(def,cols){
+  for(const c of refCols(def)){
+    const nome=String(c);
+    if(nome.indexOf("__")!==0){if(!cols.has(nome))return true;continue;}
+    const vd=VIRT_DEPS[nome];if(!vd)continue;
+    if(vd.all&&vd.all.some(x=>!cols.has(x)))return true;
+    if(vd.any){let list=vd.any;
+      if(nome==="__emitiu"){list=[];if(PARAMS.emitCte)list.push("qtd_cte");if(PARAMS.emitMdfe)list.push("qtd_mdfe");if(!list.length)list=vd.any;}
+      if(!list.some(x=>cols.has(x)))return true;}}
+  return false;}
+/* ---- eixo do tempo por coluna de data (funciona com uma planilha só) ---- */
+function trendCfg(def){const c=(def&&def.axis&&def.axis.mode)?def.axis:(PARAMS.trendAxis||{mode:"snapshot"});return c;}
+function axisOK(cfg){if(!cfg||cfg.mode!=="col")return PERIODS.length>1;return !!(cfg.col&&COLS.some(c=>c.name===cfg.col));}
+function hasAxis(){return PERIODS.length>1||axisOK(PARAMS.trendAxis);}
+function stepBucket(t,gran){return addUnits(t,gran==="year"?12:gran==="quarter"?3:1,"months");}
+function axisBuckets(col,gran){
+  let mn=null,mx=null;
+  for(const r of DATA){const d=asDate(getVal(r,col),{serial:true});if(!d)continue;
+    const t=cohortStart(d.t,gran);if(mn===null||t<mn)mn=t;if(mx===null||t>mx)mx=t;}
+  if(mn===null)return [];
+  const out=[];let t=mn,guard=0;
+  while(t<=mx&&guard++<600){out.push({label:cohortKey(t,gran),t});t=stepBucket(t,gran);}
+  return out;}
+function axisRows(col,gran,b,janela){
+  const ini=b.t,fim=cohortEnd(b.t,gran);
+  return DATA.filter(r=>{const d=asDate(getVal(r,col),{serial:true});if(!d)return false;
+    return janela==="acumulado"?d.t<=fim:(d.t>=ini&&d.t<=fim);});}
+function colSeries(def,cfg){
+  const gran=cfg.gran||"month",ref0=REFT;
+  const bs=axisBuckets(cfg.col,gran);
+  if(bs.length<2)return [];
+  return bs.map(b=>{
+    const fim=cohortEnd(b.t,gran);
+    const rows=axisRows(cfg.col,gran,b,cfg.window);
+    const res=withRows(rows,()=>evalSingle(def),"ax:"+cfg.col+":"+b.label,Math.min(fim,ref0));
+    const nv=res&&res.n;
+    return {label:b.label,t:b.t,val:(res&&typeof res.val==="number")?res.val:null,kind:res&&res.kind,n:nv,fraco:(nv!==undefined&&nv<minN()),parcial:fim>ref0};});}
+function metricSeries(def){
+  const cfg=trendCfg(def);
+  if(cfg.mode==="col")return axisOK(cfg)?colSeries(def,cfg):[];
+  if(PERIODS.length<2)return [];
+  return PERIODS.map(p=>{
+    const cols=PERIOD_COLS.get(p.label)||new Set();
+    if(periodGap(def,cols))return {label:p.label,t:p.t,val:null,gap:true};
+    const res=withRows(periodRows(p.label),()=>evalSingle(def),p.label,p.t);
+    const nv=res&&res.n;
+    return {label:p.label,t:p.t,val:(res&&typeof res.val==="number")?res.val:null,kind:res&&res.kind,n:nv,fraco:(nv!==undefined&&nv<minN())};});}
+function seriesDelta(s){let ok=s.filter(x=>x.val!==null&&!x.parcial&&!x.fraco);
+  if(ok.length<2)ok=s.filter(x=>x.val!==null&&!x.parcial);
+  if(ok.length<2)return null;
+  const cur=ok[ok.length-1],prev=ok[ok.length-2];
+  return {cur:cur.val,prev:prev.val,diff:cur.val-prev.val,de:prev.label,para:cur.label};}
+function sparkSVG(s,def){
+  const vals=s.map(x=>x.val);const ok=vals.filter(v=>v!==null);
+  if(ok.length<2)return "";
+  const mn=Math.min(...ok),mx=Math.max(...ok),rg=(mx-mn)||1;
+  const n=s.length-1;
+  const pts=s.map((x,i)=>x.val===null?null:`${(i/n)*100},${18-((x.val-mn)/rg)*16}`);
+  const segs=[];let cur=[];
+  pts.forEach(p=>{if(p===null){if(cur.length>1)segs.push(cur.join(" "));cur=[];}else cur.push(p);});
+  if(cur.length>1)segs.push(cur.join(" "));
+  const d=seriesDelta(s);const inv=!!(def&&def.lowerIsBetter);
+  const cls=(!d||d.diff===0)?"spark-flat":(((d.diff>0)!==inv)?"spark-up":"spark-down");
+  return `<svg class="spark ${cls}" viewBox="0 0 100 20" preserveAspectRatio="none">${segs.map(p=>`<polyline points="${p}"/>`).join("")}</svg>`;}
+function deltaChip(d,def,res){
+  if(!d)return "";
+  const inv=!!def.lowerIsBetter;
+  const dir=d.diff===0?"flat":((d.diff>0)!==inv?"good":"bad");
+  const kind=res&&res.kind;
+  const v=kind==="pct"?(d.diff*100).toLocaleString("pt-BR",{maximumFractionDigits:1})+" p.p.":fmt(d.diff,Math.abs(d.diff)<10?1:0);
+  const sinal=d.diff>0?"+":"";
+  return `<span class="chip ${dir}" title="${esc(d.de)} → ${esc(d.para)}">${sinal}${v}</span>`;}
 
 /* ---- eval ---- */
 function colIsDate(col){if(!col)return false;if(derivedDef(col))return false;if(col==="__hoje")return true;if(col.indexOf("__")===0)return false;return isDateish(col);}
@@ -541,24 +838,25 @@ function seriesOf(base,col){const isD=colIsDate(col);const vals=[];let missing=0
 function covTxt(s,total){return `n=${s.vals.length}`+(s.missing?` · ${fmt(s.missing)} sem valor (${pct(total?s.missing/total:0)})`:"");}
 function rateOf(g){const base=filterRows(g.filters);if(!base.length)return null;return base.filter(r=>matchCond(r,g.num)).length/base.length;}
 function evalSingle(d){const base=filterRows(d.filters);
-  if(d.calc==="count")return {val:base.length,kind:"int"};
-  if(d.calc==="pct_base")return {val:RAW.length?base.length/RAW.length:null,kind:"pct",extra:`${base.length} de ${RAW.length}`};
-  if(d.calc==="rate"){const s=base.filter(r=>matchCond(r,d.num));return {val:base.length?s.length/base.length:null,kind:"pct",extra:`${s.length} de ${base.length}`};}
+  if(d.calc==="count")return {val:base.length,kind:"int",n:base.length};
+  if(d.calc==="pct_base")return {val:DATA.length?base.length/DATA.length:null,kind:"pct",extra:`${base.length} de ${DATA.length}`,n:DATA.length};
+  if(d.calc==="rate"){const s=base.filter(r=>matchCond(r,d.num));return {val:base.length?s.length/base.length:null,kind:"pct",extra:`${s.length} de ${base.length}`,n:base.length};}
   if(d.calc==="compare"){const ra=rateOf(d.a),rb=rateOf(d.b);return {val:(ra===null||rb===null)?null:(ra-rb)*100,kind:"pp"};}
   if(d.calc==="moda"){const tally=new Map();let counted=0;for(const r of base){let v=getVal(r,d.col);if(isEmptyVal(v))continue;v=valStr(v);tally.set(v,(tally.get(v)||0)+1);counted++;}let best=null,bn=-1;for(const [k,c] of tally){if(c>bn){bn=c;best=k;}}const rare=best!==null&&(bn<=1||tally.size>counted*0.9);return {val:best,kind:"text",extra:best===null?"sem dados":`${fmt(bn)} ocorrências · ${pct(counted?bn/counted:0)} dos preenchidos${rare?" · ⚠ valores quase todos únicos, moda pouco significativa":""}`};}
   if(d.calc==="distinct"){const s=new Set();let counted=0;for(const r of base){const v=getVal(r,d.col);if(isEmptyVal(v))continue;s.add(valStr(v));counted++;}
     return {val:s.size,kind:"int",extra:`entre ${fmt(counted)} preenchidos de ${fmt(base.length)}`};}
   const s=seriesOf(base,d.col);const kind=s.isDate?"date":"num";const extra=covTxt(s,base.length);
-  if(d.calc==="median")return {val:median(s.vals),kind,extra};
-  if(d.calc==="mean")return {val:mean(s.vals),kind,extra};
+  const nn=s.vals.length;
+  if(d.calc==="median")return {val:median(s.vals),kind,extra,n:nn};
+  if(d.calc==="mean")return {val:mean(s.vals),kind,extra,n:nn};
   if(d.calc==="min")return {val:s.vals.length?Math.min(...s.vals):null,kind,extra};
   if(d.calc==="max")return {val:s.vals.length?Math.max(...s.vals):null,kind,extra};
-  if(d.calc==="p90")return {val:percentile(s.vals,0.9),kind,extra};
+  if(d.calc==="p90")return {val:percentile(s.vals,0.9),kind,extra,n:nn};
   if(d.calc==="sum")return {val:s.isDate?null:s.vals.reduce((a,x)=>a+x,0),kind:"num",extra:s.isDate?"soma não se aplica a datas":extra};
   return {val:null,kind:"num"};}
 function segmentsOf(d){
   if(d.auto){const seen=new Set(),set=[];
-    for(const r of RAW){const v=getVal(r,d.autoCol);if(isEmptyVal(v))continue;const k=valStr(v);
+    for(const r of DATA){const v=getVal(r,d.autoCol);if(isEmptyVal(v))continue;const k=valStr(v);
       if((d.exclude||[]).map(String).includes(k))continue;if(!seen.has(k)){seen.add(k);set.push(k);}}
     let labels=set;const dd=derivedDef(d.autoCol);
     if(dd&&derivedOrdered(dd))labels.sort(cmpLabel(dd));                       // coortes em ordem cronológica
@@ -592,7 +890,7 @@ function nodeTxt(n){if(Array.isArray(n))n={logic:"and",children:n};
   return condTxt(n);}
 function filtTxt(n){let t=nodeTxt(n);if(!t)return "<i>toda a base</i>";if(t.startsWith("(")&&t.endsWith(")"))t=t.slice(1,-1);return t;}
 function defText(d){
-  if(d.type==="single"){
+  if(d.type==="single"||d.type==="series"){
     if(d.calc==="count")return `Conta clientes onde ${filtTxt(d.filters)}.`;
     if(d.calc==="pct_base")return `Clientes onde ${filtTxt(d.filters)} ÷ total da base.`;
     if(d.calc==="rate")return `Entre clientes onde ${filtTxt(d.filters)}, a fração que também atende ${condTxt(d.num)}.`;
@@ -602,6 +900,9 @@ function defText(d){
     const w={median:"Mediana",mean:"Média",sum:"Soma",min:"Menor valor",max:"Maior valor",p90:"Percentil 90"}[d.calc]||"Valor";
     return `${w} de <code>${esc(colLabel(d.col))}</code> entre clientes onde ${filtTxt(d.filters)}. Linhas sem valor na coluna ficam fora da conta (o rodapé do cartão mostra quantas).`;}
   if(d.type==="funnel")return `Etapas (contagem de clientes): ${(d.steps||[]).map(s=>esc(s.label)).join(" → ")}.`;
+  if(d.type==="cohort")return `Agrupa clientes por ${({month:"mês",quarter:"trimestre",year:"ano"})[d.gran||"month"]} de <code>${esc(colLabel(d.cohortCol))}</code> e mede, em cada janela, a fração da coorte com <code>${esc(colLabel(d.eventCol))}</code> dentro daquele prazo${d.eventCond&&d.eventCond.col?` e que atende ${condTxt(d.eventCond)}`:""}. Janelas que a coorte ainda não completou ficam vazias, para não subestimar quem entrou há pouco.`;
+  if(d.type==="histogram")return `Distribuição de <code>${esc(colLabel(d.col))}</code> em ${d.bins||12} faixas, entre clientes onde ${filtTxt(d.filters)}.`;
+  if(d.type==="stock")return `Em cada ${({month:"mês",quarter:"trimestre",year:"ano"})[d.gran||"month"]}, conta as entradas por <code>${esc(colLabel(d.inCol))}</code>${d.outCol?` e as saídas por <code>${esc(colLabel(d.outCol))}</code>`:""}${d.valueCol?`, somando <code>${esc(colLabel(d.valueCol))}</code>`:""}. O estoque é o acumulado de entradas menos saídas — reconstruído das próprias datas, sem precisar de várias planilhas. A taxa de saída divide as saídas do período pelo estoque no início dele.`;
   if(d.type==="bars"){const seg=d.auto?`cada valor de <code>${esc(colLabel(d.autoCol))}</code>`:`os segmentos definidos`;const mk=d.measure?d.measure.kind:"count";
     const m={count:"a contagem de clientes",rate:`a fração que atende ${condTxt(d.measure.num)}`,mean:`a média de <code>${esc(colLabel(d.measure.col))}</code>`,median:`a mediana de <code>${esc(colLabel(d.measure.col))}</code>`,p90:`o percentil 90 de <code>${esc(colLabel(d.measure.col))}</code>`,sum:`a soma de <code>${esc(colLabel(d.measure.col))}</code>`}[mk];
     return `Para ${seg}, mede ${m}.`;}
@@ -660,7 +961,7 @@ function SEED(){
   {id:"pl_med",group:"Valor de plano",type:"single",name:"Mediana do plano",calc:"median",col:"epl_valor",filters:A(F("epl_valor",">","0")),money:true},
   {id:"pl_avg",group:"Valor de plano",type:"single",name:"Média do plano",calc:"mean",col:"epl_valor",filters:A(F("epl_valor",">","0")),money:true},
   {id:"pl_n",group:"Valor de plano",type:"single",name:"Clientes pagantes",calc:"count",filters:A(F("epl_valor",">","0"))},
-  ];
+  ].map(d=>(d.style==="alert"||["ve_med","ch_early"].includes(d.id))?Object.assign(d,{lowerIsBetter:true}):d);
 }
 
 /* ---- migration (older flat-array filters → groups) ---- */
@@ -696,7 +997,7 @@ function setStatus(s){const el=$("#syncStatus");if(!el)return;el.className="sync
   el.textContent=s==="saving"?"salvando…":s==="saved"?"● salvo":s==="error"?"⚠ erro ao salvar":"";}
 function currentConfig(){return {params:PARAMS,defs:DEFS,groups:GROUPS};}
 function applyConfig(cfg){PARAMS=Object.assign(clone(PDEFAULT),(cfg&&cfg.params)||{});DEFS=((cfg&&cfg.defs)||[]).map(migrateDef);GROUPS=(cfg&&cfg.groups&&cfg.groups.length)?cfg.groups.slice():deriveGroups(DEFS);ensureGroup();
-  DATE_ORDER=PARAMS.dateOrder||"dmy";bumpGen();if(RAW.length){COLS=detectCols(RAW);computeRef();}}
+  DATE_ORDER=PARAMS.dateOrder||"dmy";if(PARAMS.keyCol&&!KEYCOL)KEYCOL=PARAMS.keyCol;bumpGen();if(SOURCES.length)rebuild();else if(RAW.length){COLS=detectCols(RAW);computeRef();}}
 function scheduleSave(){if(!sbOn()||!CURRENT)return;setStatus("saving");clearTimeout(saveTimer);
   saveTimer=setTimeout(async()=>{try{await sbSave(CURRENT,currentConfig());setStatus("saved");}catch(e){setStatus("error");console.error(e);}},800);}
 function populateDashSel(){const sel=$("#dashSel");if(!sel)return;sel.innerHTML=DASHBOARDS.map(d=>`<option value="${esc(d.id)}" ${d.id===CURRENT?"selected":""}>${esc(d.name)}</option>`).join("");}
@@ -729,26 +1030,106 @@ bindDash();
 /* ---- load ---- */
 $("#bLoad0").addEventListener("click",()=>$("#file").click());
 $("#bLoad").addEventListener("click",()=>$("#file").click());
-$("#file").onchange=e=>{if(e.target.files[0])read(e.target.files[0]);};
+$("#file").onchange=e=>{if(e.target.files.length)readFiles(e.target.files);e.target.value="";};
 const drop=$("#drop");
 ["dragenter","dragover"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add("hot");}));
 ["dragleave","drop"].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove("hot");}));
-drop.addEventListener("drop",e=>{const f=e.dataTransfer.files[0];if(f)read(f);});
-function read(file){$("#err").classList.add("hidden");const r=new FileReader();
-  r.onload=ev=>{try{
-    const wb=XLSX.read(new Uint8Array(ev.target.result),{type:"array",cellDates:true});
-    const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:""});
-    if(!rows.length)throw new Error("A planilha está vazia ou sem linhas de dados.");
-    if(!Object.keys(rows[0]).length)throw new Error("Não encontrei colunas com cabeçalho na primeira aba.");
-    RAW=rows;FILENAME=file.name;
-    DATE_CONV=detectDateConv(rows);            // meia-noite local x UTC, decidido pelos dados
-    DATE_ORDER=PARAMS.dateOrder||"dmy";
-    COLS=detectCols(rows);
-    bumpGen();computeRef();
-    $("#empty").classList.add("hidden");$("#report").classList.remove("hidden");
-    $("#bLoad0").hidden=true;$("#actions").hidden=false;afterDataLoaded();
-  }catch(err){showErr(err.message||String(err));}};
-  r.onerror=()=>showErr("Não consegui ler o arquivo.");r.readAsArrayBuffer(file);}
+drop.addEventListener("drop",e=>{if(e.dataTransfer.files.length)readFiles(e.dataTransfer.files);});
+/* ---- importação (vários arquivos) ---- */
+function readFiles(list){
+  $("#err").classList.add("hidden");IMPORTLOG=[];
+  const files=[...list];if(!files.length)return;
+  const repl=REPLACING;REPLACING=null;
+  let pend=files.length;
+  files.forEach(file=>{
+    const r=new FileReader();
+    r.onload=ev=>{
+      try{
+        const wb=XLSX.read(new Uint8Array(ev.target.result),{type:"array",cellDates:true});
+        const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:""});
+        if(!rows.length)throw new Error("planilha vazia");
+        if(!Object.keys(rows[0]).length)throw new Error("sem cabeçalho na primeira aba");
+        if(!SOURCES.length&&!DATE_CONV_SET){DATE_CONV=detectDateConv(rows);DATE_CONV_SET=true;}
+        DATE_ORDER=PARAMS.dateOrder||"dmy";
+        const cols=detectCols(rows);
+        if(!KEYCOL)KEYCOL=(PARAMS.keyCol&&Object.keys(rows[0]).includes(PARAMS.keyCol))?PARAMS.keyCol:guessKey(rows,cols);
+        const t=maxDateOf(rows,cols);
+        const alvo=repl?SOURCES.find(x=>x.id===repl):null;
+        if(alvo){alvo.rows=rows;alvo.colNames=Object.keys(rows[0]);alvo.name=file.name;alvo.added=Date.now();
+          IMPORTLOG.push({name:file.name,ok:true,linhas:rows.length,label:alvo.periodLabel});}
+        else{const saved=(PARAMS.sourceMap||{})[file.name];
+          const label=saved?saved.label:periodLabelFor(t);
+          SOURCES.push({id:"s"+(NEXTSRC++),name:file.name,rows,colNames:Object.keys(rows[0]),
+            periodLabel:label,periodT:saved&&saved.t?saved.t:t,active:true,added:Date.now()+NEXTSRC});
+          IMPORTLOG.push({name:file.name,ok:true,linhas:rows.length,label});}
+      }catch(e){IMPORTLOG.push({name:file.name,ok:false,erro:e.message||String(e)});}
+      if(--pend===0)finishImport();};
+    r.onerror=()=>{IMPORTLOG.push({name:file.name,ok:false,erro:"não consegui ler o arquivo"});if(--pend===0)finishImport();};
+    r.readAsArrayBuffer(file);});}
+function finishImport(){
+  const falhas=IMPORTLOG.filter(l=>!l.ok);
+  if(falhas.length)showErr(falhas.map(f=>`${f.name}: ${f.erro}`).join(" · "));
+  if(!SOURCES.length)return;
+  rebuild();rememberSources();
+  $("#empty").classList.add("hidden");$("#report").classList.remove("hidden");
+  $("#bLoad0").hidden=true;$("#actions").hidden=false;
+  if(!DEFS.length&&!CURRENT)afterDataLoaded();else{buildSourcesForm();render();scheduleSave();}}
+function rememberSources(){
+  const map={};SOURCES.forEach(s=>{map[s.name]={label:s.periodLabel,t:s.periodT};});
+  PARAMS.sourceMap=map;PARAMS.keyCol=KEYCOL;}
+
+/* ---- gerenciador de fontes ---- */
+function buildSourcesForm(){
+  const body=$("#srcBody");if(!body)return;
+  if(!SOURCES.length){body.innerHTML=`<p class="hint">Nenhuma planilha carregada.</p>`;return;}
+  const keyOpts=(COLS.length?COLS:[]).map(c=>`<option value="${esc(c.name)}" ${KEYCOL===c.name?"selected":""}>${esc(c.name)}</option>`).join("");
+  let h=`<div class="fld"><label>Coluna-chave (identifica a empresa)</label><select id="src_key">${keyOpts}</select>
+    <div class="hint">Linhas com a mesma chave são deduplicadas: dentro do período vence o arquivo importado depois; entre períodos vence o mais recente.</div></div>`;
+  h+=`<div class="fld"><label>Modo da série temporal</label><select id="src_smode">
+      <option value="acumulada" ${PARAMS.seriesMode!=="periodo"?"selected":""}>base acumulada até cada período</option>
+      <option value="periodo" ${PARAMS.seriesMode==="periodo"?"selected":""}>só as linhas que vieram no período</option></select>
+    <div class="hint">Acumulada não inventa quedas quando uma empresa deixa de ser exportada. Use "só o período" se cada arquivo é um retrato completo da base.</div></div>`;
+  const parc=colsParciais();
+  if(parc.length){
+    h+=`<div class="fld"><label>Colunas que não estão em todos os períodos</label>
+      <div class="hint" style="margin-top:0">Se for a mesma informação com outro nome (epl_valor / valor_plano), aponte para a coluna principal — senão a série vai mostrar lacuna.</div>`;
+    parc.forEach(x=>{h+=`<div class="srcrow"><span class="srcname">${esc(x.col)}</span><span class="hint" style="margin:0">${x.em} de ${x.de} períodos</span>
+      <select data-alias="${esc(x.col)}" style="flex:0 0 190px"><option value="">manter separada</option>${COLS.filter(c=>c.name!==x.col).map(c=>`<option value="${esc(c.name)}" ${aliasMap()[x.col]===c.name?"selected":""}>tratar como ${esc(c.name)}</option>`).join("")}</select></div>`;});
+    h+=`</div>`;}
+  PERIODS.forEach(p=>{
+    const st=PERIOD_STATS.get(p.label)||{};
+    h+=`<div class="segblock">
+      <div class="seghead" style="gap:8px">
+        <b style="font-size:14px">${esc(p.label)}</b>
+        <span class="hint" style="margin:0;font-style:normal">${fmt(st.unicas||0)} empresas · ${fmt(st.linhas||0)} linhas${st.dup?` · ${fmt(st.dup)} duplicadas`:""}${st.semChave?` · ${fmt(st.semChave)} sem chave`:""}</span>
+      </div>
+      ${st.baixa?`<div class="warn" style="margin:6px 0">⚠ este período tem bem menos empresas que os outros — a importação pode estar incompleta</div>`:""}
+      ${p.srcs.map(s=>`<div class="srcrow">
+        <label class="toggle"><input type="checkbox" data-act-src="toggle" data-id="${s.id}" ${s.active?"checked":""}></label>
+        <span class="srcname" title="${esc(s.name)}">${esc(s.name)}</span>
+        <span class="hint" style="margin:0">${fmt(s.rows.length)} linhas</span>
+        <input class="srcper" data-act-src="label" data-id="${s.id}" value="${esc(s.periodLabel)}" title="período">
+        <button class="hbtn" data-act-src="replace" data-id="${s.id}" title="substituir arquivo">trocar</button>
+        <button class="del" data-act-src="del" data-id="${s.id}" title="remover">×</button>
+      </div>`).join("")}
+    </div>`;});
+  const off=SOURCES.filter(s=>!s.active);
+  if(off.length)h+=`<p class="hint">${off.length} fonte(s) desligada(s) continuam na lista e podem ser reativadas.</p>`;
+  body.innerHTML=h;
+  const k=$("#src_key");if(k)k.onchange=()=>{KEYCOL=k.value;rebuild();rememberSources();buildSourcesForm();render();scheduleSave();};
+  const sm=$("#src_smode");if(sm)sm.onchange=()=>{PARAMS.seriesMode=sm.value;render();scheduleSave();};
+  body.querySelectorAll("[data-alias]").forEach(sel=>sel.onchange=()=>{
+    const m=Object.assign({},aliasMap());
+    if(sel.value)m[sel.dataset.alias]=sel.value;else delete m[sel.dataset.alias];
+    PARAMS.aliases=m;rebuild();buildSourcesForm();render();scheduleSave();});
+  body.querySelectorAll("[data-act-src]").forEach(elm=>{
+    const act=elm.dataset.actSrc,id=elm.dataset.id,s=SOURCES.find(x=>x.id===id);if(!s)return;
+    if(act==="toggle")elm.onchange=()=>{s.active=elm.checked;rebuild();buildSourcesForm();render();scheduleSave();};
+    if(act==="label")elm.onchange=()=>{s.periodLabel=elm.value.trim()||s.periodLabel;rebuild();rememberSources();buildSourcesForm();render();scheduleSave();};
+    if(act==="del")elm.onclick=()=>{if(!confirm(`Remover "${s.name}"?`))return;SOURCES=SOURCES.filter(x=>x.id!==id);rebuild();rememberSources();buildSourcesForm();render();scheduleSave();};
+    if(act==="replace")elm.onclick=()=>{REPLACING=id;$("#file").click();};});}
+let REPLACING=null,DATE_CONV_SET=false;
+function openSources(){buildSourcesForm();openDrawer("#dSources");}
 function showErr(m){const e=$("#err");e.textContent="Erro: "+m;e.classList.remove("hidden");}
 /* nomes que sugerem data — só nessas colunas um número é interpretado como serial do Excel */
 const DATE_HINT=/(data|date|dt_|_dt|dia|prazo|vencim|nascim|login|churn|emiss|cadastr|contrat|inicio|início|fim|criad|atualiz|expir)/i;
@@ -766,7 +1147,7 @@ function dateCols(){return COLS.filter(c=>c.type==="date").map(c=>c.name);}
 function numLikeCols(){return COLS.filter(c=>c.numeric).map(c=>c.name)
   .concat(VIRT_NUM.map(v=>v[0]))
   .concat(derivedList().filter(d=>derivedType(d)==="number").map(d=>d.id));}
-function distinctVals(col){const set=new Set();for(const r of RAW){const v=getVal(r,col);if(!isEmptyVal(v)){set.add(valStr(v));if(set.size>40)break;}}return [...set];}
+function distinctVals(col){const set=new Set();for(const r of DATA){const v=getVal(r,col);if(!isEmptyVal(v)){set.add(valStr(v));if(set.size>40)break;}}return [...set];}
 
 /* ---- render ---- */
 function fmtSingle(d,res){if(res.val===null||res.val===undefined)return "—";
@@ -776,18 +1157,25 @@ function fmtSingle(d,res){if(res.val===null||res.val===undefined)return "—";
   if(res.kind==="pp")return (res.val>=0?"+":"")+res.val.toLocaleString("pt-BR",{maximumFractionDigits:1});
   if(res.kind==="int")return fmt(res.val);
   if(d.money)return brl(res.val);return fmt(res.val,d.dec??2);}
-function subSingle(d,res){if(d.calc==="count"&&d.filters&&(d.filters.children||[]).length)return pct(res.val/RAW.length)+" do total";
+function subSingle(d,res){if(d.calc==="count"&&d.filters&&(d.filters.children||[]).length)return pct(res.val/DATA.length)+" do total";
+  if(d.calc==="rate"&&PARAMS.showCI!==false&&res.n){const ci=wilson(res.val,res.n);
+    if(ci)return (res.extra||"")+` · entre ${pct(ci.lo)} e ${pct(ci.hi)}`;}
   if(["rate","pct_base","median","mean","sum","moda","min","max","p90","distinct"].includes(d.calc))return res.extra||"";return "";}
 function tools(d){const seeded=SEED().some(s=>s.id===d.id);
   return `<div class="cardtools">
+    <button data-act="drill" data-id="${d.id}">empresas</button>
+    <button data-act="size" data-id="${d.id}" title="tamanho: ${tamanho(d)}">tamanho</button>
     <button data-act="edit" data-id="${d.id}">editar</button>
     <button data-act="hide" data-id="${d.id}">${d.hidden?"reexibir":"ocultar"}</button>
     <button data-act="up" data-id="${d.id}">↑</button><button data-act="down" data-id="${d.id}">↓</button>
     ${seeded?`<button data-act="reset" data-id="${d.id}">padrão</button>`:`<button class="danger" data-act="del" data-id="${d.id}">excluir</button>`}</div>`;}
+function axisNote(d){const cfg=trendCfg(d);
+  if(cfg.mode!=="col"||!cfg.col)return "";
+  return `<div class="hint" style="margin-top:6px">Eixo do tempo: ${({month:"mês",quarter:"trimestre",year:"ano"})[cfg.gran||"month"]} de <code>${esc(colLabel(cfg.col))}</code>, cada ponto ${cfg.window==="acumulado"?"acumulando tudo até o fim do período":"usando só as linhas daquele período"}.</div>`;}
 function derivedNote(d){const used=[...refCols(d)].map(derivedDef).filter(Boolean);
   if(!used.length)return "";
   return `<div class="hint" style="margin-top:8px">Colunas calculadas usadas — ${used.map(x=>`<b>${esc(derivedLabel(x))}</b>: ${esc(derivedFormula(x))}`).join(" · ")}</div>`;}
-function calcDetails(d){return `<details class="calc"><summary>como é calculada</summary><div class="calcbody">${defText(d)}${derivedNote(d)}</div></details>`;}
+function calcDetails(d){return `<details class="calc"><summary>como é calculada</summary><div class="calcbody">${defText(d)}${(d.type==="single"||d.type==="series")?axisNote(d):""}${derivedNote(d)}</div></details>`;}
 function colsInNode(n,acc){if(!n)return;if(Array.isArray(n)){n.forEach(x=>colsInNode(x,acc));return;}if(n.children!==undefined){(n.children||[]).forEach(x=>colsInNode(x,acc));return;}if(n.col)acc.add(n.col);if(n.valType==="col"&&n.rcol)acc.add(n.rcol);}
 function colsInCond(c,acc){if(!c)return;if(c.col)acc.add(c.col);if(c.valType==="col"&&c.rcol)acc.add(c.rcol);}
 function expandDeps(acc){let again=true,guard=0;
@@ -795,38 +1183,513 @@ function expandDeps(acc){let again=true,guard=0;
     [...acc].forEach(c=>{const d=derivedDef(c);if(!d)return;
       depsOf(d).forEach(x=>{if(x&&x!=="__hoje"&&!acc.has(x)){acc.add(x);again=true;}});});}
   return acc;}
-function refCols(d){const acc=new Set();if(d.type==="single"){colsInNode(d.filters,acc);if(d.num)colsInCond(d.num,acc);if(d.col)acc.add(d.col);if(d.a&&d.a.filters!==undefined){colsInNode(d.a.filters,acc);colsInCond(d.a.num,acc);}if(d.b&&d.b.filters!==undefined){colsInNode(d.b.filters,acc);colsInCond(d.b.num,acc);}}if(d.type==="bars"){if(d.measure){if(d.measure.num)colsInCond(d.measure.num,acc);if(d.measure.col)acc.add(d.measure.col);}(d.segments||[]).forEach(s=>colsInNode(s.filters,acc));if(d.autoCol)acc.add(d.autoCol);}if(d.type==="funnel")(d.steps||[]).forEach(s=>colsInNode(s.filters,acc));return expandDeps(acc);}
+function refCols(d){const acc=new Set();if(d.type==="single"||d.type==="series"){colsInNode(d.filters,acc);if(d.num)colsInCond(d.num,acc);if(d.col)acc.add(d.col);if(d.a&&d.a.filters!==undefined){colsInNode(d.a.filters,acc);colsInCond(d.a.num,acc);}if(d.b&&d.b.filters!==undefined){colsInNode(d.b.filters,acc);colsInCond(d.b.num,acc);}}if(d.type==="bars"){if(d.measure){if(d.measure.num)colsInCond(d.measure.num,acc);if(d.measure.col)acc.add(d.measure.col);}(d.segments||[]).forEach(s=>colsInNode(s.filters,acc));if(d.autoCol)acc.add(d.autoCol);}if(d.type==="funnel")(d.steps||[]).forEach(s=>colsInNode(s.filters,acc));
+  if(d.type==="cohort"){colsInNode(d.filters,acc);if(d.cohortCol)acc.add(d.cohortCol);if(d.eventCol)acc.add(d.eventCol);if(d.eventCond)colsInCond(d.eventCond,acc);}
+  if(d.type==="histogram"){colsInNode(d.filters,acc);if(d.col)acc.add(d.col);}
+  if(d.type==="stock"){colsInNode(d.filters,acc);if(d.inCol)acc.add(d.inCol);if(d.outCol)acc.add(d.outCol);if(d.valueCol)acc.add(d.valueCol);}
+  if((d.type==="single"||d.type==="series")&&d.axis&&d.axis.mode==="col"&&d.axis.col)acc.add(d.axis.col);
+  return expandDeps(acc);}
 function missingCols(d){const present=new Set(COLS.map(c=>c.name));const miss=[];refCols(d).forEach(c=>{if(c&&String(c).indexOf("__")!==0&&!present.has(c)&&miss.indexOf(c)<0)miss.push(c);});return miss;}
+/* ================= CAMADA DE GRÁFICOS =================
+   Um só motor de desenho para linha, estoque e histograma:
+   eixo Y com marcas, rótulos de X espaçados, área, hover com tooltip
+   e clique em qualquer ponto para abrir as empresas por trás dele. */
+let CHARTS={};
+const VB={w:680,h:300,l:52,r:16,t:20,b:34};
+const PLOT={x0:VB.l,x1:VB.w-VB.r,y0:VB.t,y1:VB.h-VB.b};
+function axisTicks(mn,mx,alvo){
+  if(!(mx>mn))mx=mn+1;
+  const bruto=(mx-mn)/(alvo||4);
+  const mag=Math.pow(10,Math.floor(Math.log10(bruto)||0));
+  const n=bruto/mag;
+  const passo=(n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*mag;
+  const ini=Math.floor(mn/passo+1e-9)*passo,out=[];
+  for(let v=ini;;v+=passo){out.push(+v.toPrecision(12));if(v>=mx-passo*1e-9)break;if(out.length>40)break;}
+  return out.length?out:[mn,mx];}
+function tamanho(d){
+  if(d.size)return d.size;
+  if(d.wide)return "full";
+  return {series:"lg",stock:"lg",cohort:"full",histogram:"md",bars:"md",funnel:"md"}[d.type]||"sm";}
+function ehGrafico(d){return ["series","stock","histogram"].includes(d.type);}
+function chartWrap(id,svg,extra){
+  return `<div class="chartwrap" data-cid="${esc(id)}">${svg}<div class="chtip" hidden></div></div>${extra||""}`;}
+function chead(d,valor,chip,sub){
+  return `<div class="chead"><div class="chead-l"><div class="lab">${esc(d.name)}${axisBadge(d)}</div>${sub?`<div class="csub">${sub}</div>`:""}</div>
+    <div class="chead-r">${valor?`<span class="cval">${valor}</span>`:""}${chip||""}${ehGrafico(d)?`<button class="expand" data-act="zoom" data-id="${d.id}" title="ampliar">⤢</button>`:""}</div></div>`;}
+
+/* eixos + grade, comum a todos os gráficos */
+function eixos(ticks,fmtv,mn,mx,rotulosX,n){
+  const Y=v=>PLOT.y1-((v-mn)/((mx-mn)||1))*(PLOT.y1-PLOT.y0);
+  let g="";
+  ticks.forEach(t=>{const y=Y(t);
+    g+=`<line class="gline" x1="${PLOT.x0}" y1="${y.toFixed(1)}" x2="${PLOT.x1}" y2="${y.toFixed(1)}"/>`+
+       `<text class="tickY" x="${PLOT.x0-8}" y="${(y+3.5).toFixed(1)}">${esc(fmtv(t))}</text>`;});
+  const cada=Math.max(1,Math.ceil(n/8));
+  rotulosX.forEach((r,i)=>{if(i%cada!==0&&i!==n-1)return;
+    const rx=(r.x!==undefined?r.x:r.px);if(rx===undefined||r.label===undefined)return;
+    g+=`<text class="tickX" x="${rx.toFixed(1)}" y="${VB.h-12}" text-anchor="${i===0?"start":i===n-1?"end":"middle"}">${esc(r.label)}</text>`;});
+  return g;}
+function zonas(pts){
+  const w=pts.length>1?(PLOT.x1-PLOT.x0)/(pts.length-1):(PLOT.x1-PLOT.x0);
+  return pts.map((p,i)=>`<rect class="hz" data-hz="${i}" x="${(p.px-w/2).toFixed(1)}" y="${PLOT.y0}" width="${w.toFixed(1)}" height="${(PLOT.y1-PLOT.y0).toFixed(1)}"/>`).join("");}
+
+/* ---- gráfico de evolução ---- */
+function lineChart(d){
+  const s=seriesFor(d);const ok=s.filter(x=>x.val!==null);
+  if(ok.length<2){const cfg=trendCfg(d);
+    if(cfg.mode==="col"&&!axisOK(cfg))return `<div class="empty-note">Escolha a coluna de data que define o eixo do tempo (botão editar).</div>`;
+    if(cfg.mode!=="col"&&PERIODS.length<2)return `<div class="empty-note">Só há um período importado. Escolha o eixo <b>coluna de data</b> no editor para usar as datas que já existem na planilha, ou importe mais planilhas.</div>`;
+    return `<div class="empty-note">Sem dados suficientes: ${s.filter(x=>x.gap).length} ponto(s) sem as colunas necessárias.</div>`;}
+  const isPct=(evalSingle(d)||{}).kind==="pct";
+  const fmtv=v=>isPct?pct(v):fmt(v,Math.abs(v)<10?1:0);
+  const vals=ok.map(x=>x.val);
+  let mn=Math.min(...vals),mx=Math.max(...vals);
+  if(d.zeroBase!==false)mn=Math.min(0,mn);
+  if(isPct&&PARAMS.showCI!==false)s.forEach(x=>{if(x.val!==null&&x.n){const c=wilson(x.val,x.n);if(c){mn=Math.min(mn,c.lo);mx=Math.max(mx,c.hi);}}});
+  if(mn===mx)mx=mn+(mn===0?1:Math.abs(mn)*0.25);
+  const ticks=axisTicks(mn,mx,4);
+  mn=Math.min(mn,ticks[0]);mx=Math.max(mx,ticks[ticks.length-1]);
+  const n=s.length;
+  const X=i=>PLOT.x0+(n>1?(i/(n-1))*(PLOT.x1-PLOT.x0):(PLOT.x1-PLOT.x0)/2);
+  const Y=v=>PLOT.y1-((v-mn)/((mx-mn)||1))*(PLOT.y1-PLOT.y0);
+  const pts=s.map((x,i)=>({px:X(i),py:x.val===null?null:Y(x.val),label:x.label,val:x.val,
+    txt:x.val===null?"sem dado":fmtv(x.val),n:x.n,fraco:x.fraco,parcial:x.parcial,gap:x.gap}));
+  let banda="";
+  if(isPct&&PARAMS.showCI!==false&&s.some(x=>x.n)){
+    const cima=[],baixo=[];
+    s.forEach((x,i)=>{if(x.val===null||!x.n)return;const c=wilson(x.val,x.n);if(!c)return;
+      cima.push(`${X(i).toFixed(1)},${Y(c.hi).toFixed(1)}`);baixo.unshift(`${X(i).toFixed(1)},${Y(c.lo).toFixed(1)}`);});
+    if(cima.length>1)banda=`<polygon class="ci" points="${cima.concat(baixo).join(" ")}"/>`;}
+  const segs=[];let cur=[];
+  pts.forEach(p=>{if(p.py===null){if(cur.length>1)segs.push(cur.slice());cur=[];}else cur.push(p);});
+  if(cur.length>1)segs.push(cur);
+  const linha=segs.map(sg=>`<polyline class="ln${d.smooth>1?" raw":""}" points="${sg.map(p=>`${p.px.toFixed(1)},${p.py.toFixed(1)}`).join(" ")}"/>`).join("");
+  const area=segs.map(sg=>`<polygon class="area" points="${sg.map(p=>`${p.px.toFixed(1)},${p.py.toFixed(1)}`).join(" ")} ${sg[sg.length-1].px.toFixed(1)},${Y(Math.max(mn,0)).toFixed(1)} ${sg[0].px.toFixed(1)},${Y(Math.max(mn,0)).toFixed(1)}"/>`).join("");
+  let media="";
+  if(d.smooth>1){const sm=suavizar(s,d.smooth);const ps=[];let c2=[];
+    sm.forEach((v,i)=>{if(v===null){if(c2.length>1)ps.push(c2.join(" "));c2=[];}else c2.push(`${X(i).toFixed(1)},${Y(v).toFixed(1)}`);});
+    if(c2.length>1)ps.push(c2.join(" "));
+    media=ps.map(p=>`<polyline class="ln smooth" points="${p}"/>`).join("");}
+  const dots=pts.map((p,i)=>p.py===null?"":`<circle class="dot${p.fraco?" fraco":""}${p.parcial?" parcial":""}" data-dot="${i}" cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="3.2"/>`).join("");
+  const ultimo=[...pts].reverse().find(p=>p.py!==null);
+  const rot=ultimo?`<text class="vlast" x="${Math.min(ultimo.px+8,PLOT.x1-4).toFixed(1)}" y="${(ultimo.py-8).toFixed(1)}" text-anchor="${ultimo.px>PLOT.x1-60?"end":"start"}">${esc(ultimo.txt)}</text>`:"";
+  const svg=`<svg class="chart linechart" viewBox="0 0 ${VB.w} ${VB.h}" role="img">
+      ${eixos(ticks,fmtv,mn,mx,pts,n)}
+      <line class="ax" x1="${PLOT.x0}" y1="${PLOT.y1}" x2="${PLOT.x1}" y2="${PLOT.y1}"/>
+      ${banda}${area}${linha}${media}${dots}${rot}
+      <line class="cross" x1="0" y1="${PLOT.y0}" x2="0" y2="${PLOT.y1}" hidden/>
+      ${zonas(pts)}</svg>`;
+  CHARTS[d.id]={tipo:"line",pts,fmtv,titulo:d.name,clique:i=>drillPoint(d.id,i)};
+  const dl=seriesDelta(s);const avisos=[];
+  if(s.some(x=>x.parcial&&x.val!==null))avisos.push("último ponto em andamento — fora da comparação");
+  if(s.some(x=>x.fraco))avisos.push(`pontos vazados = amostra abaixo de ${fmt(minN())}`);
+  if(d.smooth>1)avisos.push(`linha cheia = média de ${d.smooth} períodos`);
+  if(s.some(x=>x.gap))avisos.push(`${s.filter(x=>x.gap).length} período(s) sem as colunas necessárias`);
+  const rodape=avisos.length?`<div class="linefoot"><span>${avisos.map(esc).join(" · ")}</span></div>`:"";
+  return chartWrap(d.id,svg,rodape)+(dl?"":"");}
+
+/* ---- clique num ponto: as linhas que formam aquele valor ---- */
+function defById(id){return DEFS.find(x=>x.id===id)||DEFS.find(x=>x.id===String(id).replace(/__zoom$/,""))||null;}
+function drillPoint(id,i){
+  const d=defById(id);if(!d)return;
+  const c=CHARTS[id];const p=c&&c.pts[i];if(!p)return;
+  const cfg=trendCfg(d);let rows=[];
+  if(cfg.mode==="col"){const gran=cfg.gran||"month";const b=axisBuckets(cfg.col,gran)[i];if(!b)return;
+    rows=axisRows(cfg.col,gran,b,cfg.window);}
+  else{const per=PERIODS[i];if(!per)return;rows=periodRows(per.label);}
+  const sel=withRows(rows,()=>filterRows(d.filters));
+  const extra=(d.calc==="rate"&&d.num)?withRows(rows,()=>filterRows(d.filters).filter(r=>matchCond(r,d.num))):null;
+  openDrill(`${d.name} · ${p.label}`,extra||sel,d,
+    `${p.txt}${extra?` · ${fmt(extra.length)} de ${fmt(sel.length)}`:""}`);}
+
+/* ---- ligações de hover/clique, refeitas a cada render ---- */
+function bindCharts(){
+  Object.keys(CHARTS).forEach(id=>{
+    const wrap=document.querySelector(`.chartwrap[data-cid="${id}"]`);if(!wrap)return;
+    const c=CHARTS[id],tip=wrap.querySelector(".chtip"),svg=wrap.querySelector("svg");
+    const cross=svg?svg.querySelector(".cross"):null;
+    wrap.querySelectorAll("[data-hz]").forEach(hz=>{
+      const i=+hz.dataset.hz,p=c.pts[i];if(!p)return;
+      const entra=()=>{
+        tip.innerHTML=`<b>${esc(p.label)}</b>${p.linhas?p.linhas.map(l=>`<span>${l}</span>`).join(""):`<span>${esc(p.txt)}</span>`}`+
+          (p.n!==undefined&&p.n!==null?`<span class="tn">n=${fmt(p.n)}${p.fraco?" · amostra pequena":""}</span>`:"")+
+          (p.parcial?`<span class="tn">período em andamento</span>`:"");
+        tip.hidden=false;
+        const fx=(p.px/VB.w)*100,fy=((p.py===null?PLOT.y0:p.py)/VB.h)*100;
+        tip.style.left=Math.min(88,Math.max(2,fx))+"%";
+        tip.style.top=Math.max(0,fy)+"%";
+        tip.style.transform=fx>60?"translate(-104%,-108%)":"translate(4%,-108%)";
+        if(cross){cross.setAttribute("x1",p.px);cross.setAttribute("x2",p.px);cross.removeAttribute("hidden");}
+        const dot=svg&&svg.querySelector(`[data-dot="${i}"]`);if(dot)dot.classList.add("on");};
+      const sai=()=>{tip.hidden=true;if(cross)cross.setAttribute("hidden","");
+        const dot=svg&&svg.querySelector(`[data-dot="${i}"]`);if(dot)dot.classList.remove("on");};
+      hz.onmouseenter=entra;hz.onmouseleave=sai;hz.onclick=()=>{sai();if(c.clique)c.clique(i);};});});}
+
+function stockChart(d){
+  if(!d.inCol)return `<div class="empty-note">Escolha a coluna de data de entrada (contratação).</div>`;
+  const r=evalStock(d);const b=r.buckets;
+  if(b.length<2)return `<div class="empty-note">Poucos períodos com entradas para montar a série.</div>`;
+  const money=!!d.valueCol&&!!d.money;
+  const fv=v=>v===null?"—":(money?brl(v):fmt(v,d.valueCol?1:0));
+  const churn=d.show==="churn";
+  const linha=b.map(x=>churn?x.churn:x.fim);
+  const okv=linha.filter(v=>v!==null&&!isNaN(v));
+  const fmtv=v=>churn?pct(v):fv(v);
+  let mn=Math.min(0,...okv),mx=Math.max(...okv,0);
+  if(mn===mx)mx=mn+(churn?0.1:1);
+  const ticks=axisTicks(mn,mx,4);
+  mn=Math.min(mn,ticks[0]);mx=Math.max(mx,ticks[ticks.length-1]);
+  const n=b.length;
+  const X=i=>PLOT.x0+(n>1?(i/(n-1))*(PLOT.x1-PLOT.x0):(PLOT.x1-PLOT.x0)/2);
+  const Y=v=>PLOT.y1-((v-mn)/((mx-mn)||1))*(PLOT.y1-PLOT.y0);
+  /* fluxos ocupam a faixa de baixo, em escala própria */
+  const fmax=Math.max(...b.map(x=>Math.max(x.ent,x.sai)),1);
+  const fh=(PLOT.y1-PLOT.y0)*0.34, base=PLOT.y1;
+  const passo=(PLOT.x1-PLOT.x0)/Math.max(1,n-1);
+  const bw=Math.max(2,Math.min(16,passo*0.34));
+  let barras="";
+  b.forEach((x,i)=>{
+    const he=(x.ent/fmax)*fh,hs=(x.sai/fmax)*fh;
+    if(x.ent)barras+=`<rect class="sb-in" data-bar="e:${i}" data-id="${d.id}" x="${(X(i)-bw-1).toFixed(1)}" y="${(base-he).toFixed(1)}" width="${bw.toFixed(1)}" height="${he.toFixed(1)}" rx="1.5"/>`;
+    if(x.sai)barras+=`<rect class="sb-out" data-bar="s:${i}" data-id="${d.id}" x="${(X(i)+1).toFixed(1)}" y="${(base-hs).toFixed(1)}" width="${bw.toFixed(1)}" height="${hs.toFixed(1)}" rx="1.5"/>`;});
+  const pts=b.map((x,i)=>{const v=churn?x.churn:x.fim;
+    return {px:X(i),py:(v===null||isNaN(v))?null:Y(v),label:x.label,val:v,txt:v===null?"—":fmtv(v),parcial:x.parcial,
+      linhas:[`entradas <b>${fv(x.ent)}</b> · saídas <b>${fv(x.sai)}</b>`,
+              `estoque no fim <b>${fv(x.fim)}</b>`,
+              x.churn===null?"":`taxa de saída <b>${pct(x.churn)}</b>`].filter(Boolean)};});
+  const segs=[];let cur=[];
+  pts.forEach(p=>{if(p.py===null){if(cur.length>1)segs.push(cur.slice());cur=[];}else cur.push(p);});
+  if(cur.length>1)segs.push(cur);
+  const ln=segs.map(sg=>`<polyline class="ln" points="${sg.map(p=>`${p.px.toFixed(1)},${p.py.toFixed(1)}`).join(" ")}"/>`).join("");
+  const dots=pts.map((p,i)=>p.py===null?"":`<circle class="dot${p.parcial?" parcial":""}" data-dot="${i}" cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="3"/>`).join("");
+  const svg=`<svg class="chart stockchart" viewBox="0 0 ${VB.w} ${VB.h}" role="img">
+      ${eixos(ticks,fmtv,mn,mx,pts,n)}
+      <line class="ax" x1="${PLOT.x0}" y1="${PLOT.y1}" x2="${PLOT.x1}" y2="${PLOT.y1}"/>
+      ${barras}${ln}${dots}
+      <line class="cross" x1="0" y1="${PLOT.y0}" x2="0" y2="${PLOT.y1}" hidden/>
+      ${zonas(pts)}</svg>`;
+  CHARTS[d.id]={tipo:"stock",pts,fmtv,titulo:d.name,
+    clique:i=>drillStock(d.id,"e:"+i),buckets:b};
+  const ult=[...b].reverse().find(x=>!x.parcial)||b[b.length-1];
+  const legenda=`<div class="chleg"><span><i class="sw sw-in"></i>entradas</span><span><i class="sw sw-out"></i>saídas</span><span><i class="sw sw-ln"></i>${churn?"taxa de saída":"estoque no fim do período"}</span></div>`;
+  const rod=`<div class="linefoot"><span>${esc(ult.label)}: +${fv(ult.ent)} / −${fv(ult.sai)} · estoque <b>${fv(ult.fim)}</b>${ult.churn!==null?` · saída ${pct(ult.churn)}`:""}</span>${b[b.length-1].parcial?`<span>${esc(b[b.length-1].label)} em andamento — fora do resumo</span>`:""}</div>`;
+  return chartWrap(d.id,svg,legenda+rod);}
+
+function histChart(d){
+  if(!d.col)return `<div class="empty-note">Escolha a coluna numérica.</div>`;
+  const r=evalHist(d);
+  if(!r.bins.length)return `<div class="empty-note">Sem valores suficientes nessa coluna.</div>`;
+  const lab=v=>r.s.isDate?fmtDate(v):fmt(v,Math.abs(r.w)<2?1:0);
+  const mxc=Math.max(...r.bins.map(b=>b.c),1);
+  const ticks=axisTicks(0,mxc,4);
+  const top=ticks[ticks.length-1];
+  const n=r.bins.length;
+  const larg=(PLOT.x1-PLOT.x0)/n;
+  const Y=v=>PLOT.y1-(v/(top||1))*(PLOT.y1-PLOT.y0);
+  const pts=r.bins.map((b,i)=>({px:PLOT.x0+larg*(i+0.5),py:Y(b.c),label:`${lab(b.lo)} a ${lab(b.hi)}`,
+    val:b.c,txt:`${fmt(b.c)} cliente(s)`,linhas:[`<b>${fmt(b.c)}</b> de ${fmt(r.s.vals.length)} · ${pct(b.c/r.s.vals.length)}`]}));
+  const barras=r.bins.map((b,i)=>{const h=PLOT.y1-Y(b.c);
+    return `<rect class="hbar" data-bar="h:${i}" data-id="${d.id}" x="${(PLOT.x0+larg*i+1).toFixed(1)}" y="${Y(b.c).toFixed(1)}" width="${(larg-2).toFixed(1)}" height="${Math.max(0,h).toFixed(1)}" rx="2"/>`;}).join("");
+  const rotX=r.bins.map((b,i)=>({x:PLOT.x0+larg*i,label:lab(b.lo)}));
+  const med=median(r.s.vals),p9=percentile(r.s.vals,0.9);
+  const marca=(v,cls,txt)=>{if(v===null||v===undefined)return "";
+    const f=(v-r.mn)/((r.mx-r.mn)||1);if(f<0||f>1)return "";
+    const x=PLOT.x0+f*(PLOT.x1-PLOT.x0);
+    return `<line class="mk ${cls}" x1="${x.toFixed(1)}" y1="${PLOT.y0}" x2="${x.toFixed(1)}" y2="${PLOT.y1}"/><text class="mkt" x="${x.toFixed(1)}" y="${PLOT.y0-6}" text-anchor="middle">${txt}</text>`;};
+  const svg=`<svg class="chart histchart" viewBox="0 0 ${VB.w} ${VB.h}" role="img">
+      ${eixos(ticks,v=>fmt(v,0),0,top,rotX.map((x,i)=>({x:x.x,label:x.label})),n)}
+      <line class="ax" x1="${PLOT.x0}" y1="${PLOT.y1}" x2="${PLOT.x1}" y2="${PLOT.y1}"/>
+      ${barras}${marca(med,"med","mediana")}${marca(p9,"p90","p90")}
+      ${pts.map((p,i)=>`<rect class="hz" data-hz="${i}" x="${(PLOT.x0+larg*i).toFixed(1)}" y="${PLOT.y0}" width="${larg.toFixed(1)}" height="${(PLOT.y1-PLOT.y0).toFixed(1)}"/>`).join("")}</svg>`;
+  CHARTS[d.id]={tipo:"hist",pts,fmtv:v=>fmt(v,0),titulo:d.name,clique:i=>drillHist(d.id,i)};
+  const rod=`<div class="linefoot"><span>n=${fmt(r.s.vals.length)}${r.s.missing?` · ${fmt(r.s.missing)} sem valor`:""}</span>
+    <span>mediana <b>${r.s.isDate?fmtDate(med):fmt(med,1)}</b> · p90 <b>${r.s.isDate?fmtDate(p9):fmt(p9,1)}</b></span></div>`;
+  return chartWrap(d.id,svg,rod);}
+
 function renderCard(d){
   const miss=missingCols(d);
-  const cls=`card${d.wide?" wide":""}${d.hidden?" hiddenc":""}${miss.length?" warnc":""}`;
+  const cls=`card size-${tamanho(d)}${ehGrafico(d)||d.type==="cohort"?" chartcard":""}${d.hidden?" hiddenc":""}${miss.length?" warnc":""}`;
   const warn=miss.length?`<div class="warn">⚠ coluna(s) ausente(s) nesta planilha: ${miss.map(esc).join(", ")}</div>`:"";let inner="";
   if(d.type==="single"){const res=evalSingle(d);
-    inner=`<div class="lab">${esc(d.name)}</div><div class="readout ${d.style||""} ${res.kind==="text"?"txt":""}">${fmtSingle(d,res)}${d.unit?`<span class="u">${esc(d.unit)}</span>`:""}</div><div class="sub">${subSingle(d,res)}</div>`;
+    let trend="";
+    if(SHOWTREND&&hasAxis()&&["count","pct_base","rate","median","mean","sum","min","max","p90","distinct","compare"].includes(d.calc)){
+      const s=seriesFor(d);const dl=seriesDelta(s);
+      if(dl)trend=`<div class="trend">${sparkSVG(s,d)}${deltaChip(dl,d,res)}</div>`;}
+    inner=`<div class="lab">${esc(d.name)}</div><div class="readout ${d.style||""} ${res.kind==="text"?"txt":""}">${fmtSingle(d,res)}${d.unit?`<span class="u">${esc(d.unit)}</span>`:""}</div><div class="sub">${subSingle(d,res)}</div>${trend}`;
+  } else if(d.type==="series"){
+    const s=seriesFor(d),dl=seriesDelta(s);
+    const ult=[...s].reverse().find(x=>x.val!==null&&!x.parcial)||[...s].reverse().find(x=>x.val!==null);
+    const isPct=(evalSingle(d)||{}).kind==="pct";
+    const val=ult?(isPct?pct(ult.val):fmt(ult.val,Math.abs(ult.val)<10?1:0)):"—";
+    const cfg=trendCfg(d);
+    const sub=cfg.mode==="col"&&cfg.col?`${({month:"por mês",quarter:"por trimestre",year:"por ano"})[cfg.gran||"month"]} de ${esc(colLabel(cfg.col))}${cfg.window==="acumulado"?" · acumulado":""}`:`por período importado${PARAMS.seriesMode==="periodo"?"":" · acumulado"}`;
+    inner=chead(d,val+(ult?`<small> ${esc(ult.label)}</small>`:""),dl?deltaChip(dl,d,{kind:isPct?"pct":"num"}):"",sub)+lineChart(d);
+  } else if(d.type==="cohort"){
+    inner=chead(d,"","",`${({month:"coortes mensais",quarter:"coortes trimestrais",year:"coortes anuais"})[d.gran||"month"]} de ${esc(colLabel(d.cohortCol))}`)+cohortTable(d);
+  } else if(d.type==="histogram"){
+    inner=chead(d,"","",`distribuição de ${esc(colLabel(d.col))}`)+histChart(d);
+  } else if(d.type==="stock"){
+    inner=chead(d,"","",`${({month:"mês a mês",quarter:"trimestre a trimestre",year:"ano a ano"})[d.gran||"month"]} · entradas por ${esc(colLabel(d.inCol))}${d.outCol?` / saídas por ${esc(colLabel(d.outCol))}`:""}`)+stockChart(d);
   } else if(d.type==="funnel"){const r=evalFunnel(d);const w=v=>40+60*(r.top?v/r.top:0);const grad=["#7C3AED","#6D5AE0","#4F86D6","#2FA8C7","#12B5A8"];
-    inner=`<div class="lab">${esc(d.name)}</div><div style="margin-top:12px">`+r.steps.map((s,i)=>`<div class="fstep" style="width:${w(s.v)}%;background:${grad[i%grad.length]}">${esc(s.label)} <span class="fv">${fmt(s.v)}${i>0&&r.top?`<small>${pct(s.v/r.top)} do topo</small>`:""}</span></div>`).join("")+`</div>`;
+    inner=`<div class="lab">${esc(d.name)}</div><div style="margin-top:12px">`+r.steps.map((s,i)=>`<div class="fstep drillable" data-drillstep="${i}" data-id="${d.id}" title="ver empresas" style="width:${w(s.v)}%;background:${grad[i%grad.length]}">${esc(s.label)} <span class="fv">${fmt(s.v)}${i>0&&r.top?`<small>${pct(s.v/r.top)} do topo</small>`:""}</span></div>`).join("")+`</div>`;
   } else if(d.type==="bars"){const r=evalBars(d);
     if(r.orient==="v"){const mx=Math.max(...r.segs.map(s=>s.v||0),1);
-      inner=`<div class="lab">${esc(d.name)}</div><div class="coldist" style="grid-template-columns:repeat(${r.segs.length},1fr);margin-top:14px">`+r.segs.map(s=>`<div class="col"><div class="colbar bar-${r.measureKind}" style="height:${((s.v||0)/mx)*100}%"></div><div class="clab">${esc(s.label)}<br>${fmt(s.v)}</div></div>`).join("")+`</div>`;
+      inner=`<div class="lab">${esc(d.name)}</div><div class="coldist" style="grid-template-columns:repeat(${r.segs.length},1fr);margin-top:14px">`+r.segs.map((s,i)=>`<div class="col drillable" data-drillseg="${i}" data-id="${d.id}" title="ver empresas"><div class="colbar bar-${r.measureKind}" style="height:${((s.v||0)/mx)*100}%"></div><div class="clab">${esc(s.label)}<br>${fmt(s.v)}</div></div>`).join("")+`</div>`;
     } else {const isRate=r.measureKind==="rate";const mx=isRate?1:Math.max(...r.segs.map(s=>s.v||0),1);
-      inner=`<div class="lab">${esc(d.name)}</div><div style="margin-top:12px">`+r.segs.map(s=>`<div class="barrow"><span class="k">${esc(s.label)}</span><span class="track"><span class="fill bar-${r.measureKind}" style="width:${s.v===null?0:Math.max(2,(s.v/mx)*100)}%"></span></span><span class="v">${s.disp}</span></div>`).join("")+`</div>`;}
+      inner=`<div class="lab">${esc(d.name)}</div><div style="margin-top:12px">`+r.segs.map((s,i)=>`<div class="barrow drillable" data-drillseg="${i}" data-id="${d.id}" title="ver empresas"><span class="k">${esc(s.label)}</span><span class="track"><span class="fill bar-${r.measureKind}" style="width:${s.v===null?0:Math.max(2,(s.v/mx)*100)}%"></span></span><span class="v">${s.disp}</span></div>`).join("")+`</div>`;}
   }
   return `<div class="${cls}">${warn}${inner}${calcDetails(d)}${tools(d)}</div>`;}
+
+/* ================= COORTE × IDADE ================= */
+function cohortStart(t,gran){const d=new Date(t),y=d.getUTCFullYear(),m=d.getUTCMonth();
+  if(gran==="year")return Date.UTC(y,0,1);
+  if(gran==="quarter")return Date.UTC(y,Math.floor(m/3)*3,1);
+  return Date.UTC(y,m,1);}
+function cohortEnd(t,gran){const d=new Date(cohortStart(t,gran)),y=d.getUTCFullYear(),m=d.getUTCMonth();
+  if(gran==="year")return Date.UTC(y+1,0,1)-1;
+  if(gran==="quarter")return Date.UTC(y,m+3,1)-1;
+  return Date.UTC(y,m+1,1)-1;}
+function cohortKey(t,gran){const d=new Date(cohortStart(t,gran)),y=d.getUTCFullYear(),m=d.getUTCMonth();
+  if(gran==="year")return String(y);
+  if(gran==="quarter")return `${y}-T${Math.floor(m/3)+1}`;
+  return `${y}-${P2(m+1)}`;}
+function evalCohort(d){
+  const base=filterRows(d.filters);
+  const gran=d.gran||"month";
+  const wins=((d.windows&&d.windows.length)?d.windows:[7,30,60,90]).slice().sort((a,b)=>a-b);
+  const groups=new Map();
+  base.forEach(r=>{const c=asDate(getVal(r,d.cohortCol),{serial:true});if(!c)return;
+    const k=cohortKey(c.t,gran);
+    if(!groups.has(k))groups.set(k,{label:k,t:cohortStart(c.t,gran),rows:[]});
+    groups.get(k).rows.push(r);});
+  const linhas=[...groups.values()].sort((a,b)=>a.t-b.t).map(g=>{
+    let fim=g.t;g.rows.forEach(r=>{const c=asDate(getVal(r,d.cohortCol),{serial:true});if(c&&c.t>fim)fim=c.t;});
+    const cells=wins.map(wd=>{
+      /* só mostra a janela quando TODA a coorte já teve tempo de completá-la */
+      if(fim+wd*DAY>REFT)return {v:null,cens:true};
+      let hits=0;
+      g.rows.forEach(r=>{
+        const c=asDate(getVal(r,d.cohortCol),{serial:true});
+        const ev=asDate(getVal(r,d.eventCol),{serial:true});
+        if(!c||!ev)return;
+        if(d.eventCond&&d.eventCond.col&&!matchCond(r,d.eventCond))return;
+        const dias=(midnight(ev.t)-midnight(c.t))/DAY;
+        if(dias>=0&&dias<=wd)hits++;});
+      return {v:g.rows.length?hits/g.rows.length:null,hits};});
+    return {label:g.label,n:g.rows.length,cells};});
+  return {wins,linhas};}
+function heatStyle(v,mx){
+  if(v===null||v===undefined)return "background:var(--paper);color:var(--muted)";
+  const a=mx>0?Math.max(.07,v/mx):.07;
+  return `background:rgba(29,158,117,${a.toFixed(2)});color:${a>.55?"#fff":"var(--ink)"}`;}
+function cohortTable(d){
+  if(!d.cohortCol||!d.eventCol)return `<div class="empty-note">Escolha a coluna de coorte e a coluna de data do evento.</div>`;
+  const r=evalCohort(d);
+  if(!r.linhas.length)return `<div class="empty-note">Nenhuma linha com data de coorte válida.</div>`;
+  const vals=[];r.linhas.forEach(l=>l.cells.forEach(c=>{if(c.v!==null)vals.push(c.v);}));
+  const mx=vals.length?Math.max(...vals):1;
+  let h=`<div class="cohortwrap"><table class="cohort"><thead><tr><th>coorte</th><th class="n">n</th>`+
+    r.wins.map(w=>`<th>${w}d</th>`).join("")+`</tr></thead><tbody>`;
+  r.linhas.forEach((l,i)=>{
+    h+=`<tr><td class="lb">${esc(l.label)}</td><td class="n">${fmt(l.n)}</td>`+
+      l.cells.map((c,j)=>`<td class="hc${c.cens?" cens":""}" style="${heatStyle(c.v,mx)}" ${c.cens?'title="coorte ainda jovem para essa janela"':`data-cohort="${i}:${j}" data-id="${d.id}" title="ver empresas"`}>${c.cens?"—":pct(c.v)}</td>`).join("")+`</tr>`;});
+  h+=`</tbody></table></div><div class="linefoot"><span>células vazias = a coorte ainda não completou a janela</span></div>`;
+  return h;}
+
+/* ================= HISTOGRAMA ================= */
+function evalHist(d){
+  const base=filterRows(d.filters);
+  const s=seriesOf(base,d.col);
+  if(s.vals.length<2)return {bins:[],s};
+  let mn=Math.min(...s.vals),mx=Math.max(...s.vals);
+  if(d.clip&&s.vals.length>4){mn=percentile(s.vals,0.01);mx=percentile(s.vals,0.99);}
+  if(mn===mx){mn-=.5;mx+=.5;}
+  const nb=Math.max(2,Math.min(40,d.bins||12));
+  const w=(mx-mn)/nb;
+  const bins=Array.from({length:nb},(_,i)=>({lo:mn+i*w,hi:mn+(i+1)*w,c:0}));
+  s.vals.forEach(v=>{let i=Math.floor((v-mn)/w);if(i<0)i=0;if(i>=nb)i=nb-1;bins[i].c++;});
+  return {bins,s,mn,mx,w};}
+/* ================= ALERTAS ================= */
+let SERCACHE=new Map();
+function seriesFor(def){const k=def.id||JSON.stringify(def);
+  if(SERCACHE.has(k))return SERCACHE.get(k);
+  const s=metricSeries(def);SERCACHE.set(k,s);return s;}
+const SERIABLE=["count","pct_base","rate","median","mean","sum","min","max","p90","distinct","compare"];
+function alertList(){
+  if(!hasAxis())return [];
+  const lim=Math.max(1,(PARAMS.alertPct===undefined?20:PARAMS.alertPct))/100;
+  const out=[];
+  DEFS.forEach(d=>{
+    if(d.hidden||!(d.type==="single"||d.type==="series")||!SERIABLE.includes(d.calc))return;
+    if(missingCols(d).length)return;
+    const s=seriesFor(d),dl=seriesDelta(s);if(!dl)return;
+    const rel=Math.abs(dl.prev)>1e-9?Math.abs(dl.diff/dl.prev):(dl.diff?1:0);
+    if(rel<lim)return;
+    const bom=(dl.diff>0)!==!!d.lowerIsBetter;
+    out.push({d,dl,rel,bom,kind:(evalSingle(d)||{}).kind});});
+  return out.sort((a,b)=>b.rel-a.rel);}
+function alertsPanel(){
+  if(!SHOWALERTS)return "";
+  const items=alertList();if(!items.length)return "";
+  return `<section class="panel alerts"><div class="eyebrow"><span class="n">!</span><h2>Mudanças relevantes</h2>
+      <span class="gtools"><span class="hint" style="margin:0">variação acima de ${fmt(PARAMS.alertPct===undefined?20:PARAMS.alertPct)}% entre ${esc(items[0].dl.de)} e ${esc(items[0].dl.para)}</span></span></div>
+    <div class="alertlist">`+
+    items.map(a=>{
+      const v=x=>a.kind==="pct"?pct(x):fmt(x,Math.abs(x)<10?1:0);
+      return `<div class="alertrow ${a.bom?"good":"bad"}" data-act="drill" data-id="${a.d.id}" title="ver empresas">
+        <span class="an">${esc(a.d.name)}</span>
+        <span class="av">${v(a.dl.prev)} → <b>${v(a.dl.cur)}</b></span>
+        <span class="chip ${a.bom?"good":"bad"}">${a.dl.diff>0?"+":""}${(a.rel*100).toLocaleString("pt-BR",{maximumFractionDigits:0})}%</span></div>`;}).join("")+
+    `</div></section>`;}
+
+/* ================= APELIDOS DE COLUNA =================
+   Mesma informação com nomes diferentes entre bancos (epl_valor / valor_plano).
+   Sem isso, o período que usa o outro nome vira lacuna na série. */
+function aliasMap(){return (PARAMS.aliases&&typeof PARAMS.aliases==="object")?PARAMS.aliases:{};}
+function applyAliases(src){
+  const m=aliasMap();const alts=Object.keys(m);if(!alts.length)return;
+  let mudou=false;
+  src.rows.forEach(r=>{alts.forEach(alt=>{const canon=m[alt];if(!canon||alt===canon)return;
+    if(r[alt]!==undefined&&(r[canon]===undefined||isEmptyVal(r[canon]))){r[canon]=r[alt];mudou=true;}});});
+  if(mudou){const set=new Set(src.colNames);alts.forEach(alt=>{if(set.has(alt)&&m[alt])set.add(m[alt]);});src.colNames=[...set];}}
+function colsParciais(){
+  if(PERIODS.length<2)return [];
+  const tot=PERIODS.length,cont=new Map();
+  PERIODS.forEach(p=>(PERIOD_COLS.get(p.label)||new Set()).forEach(c=>cont.set(c,(cont.get(c)||0)+1)));
+  return [...cont.entries()].filter(([c,n])=>n<tot).map(([c,n])=>({col:c,em:n,de:tot}));}
+
+/* ================= ESTOQUE: ENTRADAS E SAÍDAS =================
+   Reconstrói a base ativa mês a mês a partir das datas de entrada e saída.
+   É evolução de verdade — não depende de ter várias planilhas. */
+function stockMeasure(d,r){return d.valueCol?(toNumOrNull(getVal(r,d.valueCol))||0):1;}
+function evalStock(d){
+  const gran=d.gran||"month",ref0=REFT;
+  const base=filterRows(d.filters);
+  const ent=[],sai=[];
+  base.forEach(r=>{
+    const a=asDate(getVal(r,d.inCol),{serial:true});if(!a)return;
+    const v=stockMeasure(d,r);
+    ent.push({t:a.t,v,r});
+    if(d.outCol){const b=asDate(getVal(r,d.outCol),{serial:true});
+      if(b&&b.t>=a.t)sai.push({t:b.t,v,r});}});
+  if(!ent.length)return {buckets:[]};
+  let mn=Math.min(...ent.map(x=>x.t));
+  let mx=Math.max(...ent.map(x=>x.t),...(sai.length?sai.map(x=>x.t):[mn]));
+  mx=Math.min(mx,ref0);
+  let t=cohortStart(mn,gran);const buckets=[];let guard=0,acc=0;
+  while(t<=mx&&guard++<600){
+    const fim=cohortEnd(t,gran);
+    const e=ent.filter(x=>x.t>=t&&x.t<=fim),s=sai.filter(x=>x.t>=t&&x.t<=fim);
+    const ev=e.reduce((a,x)=>a+x.v,0),sv=s.reduce((a,x)=>a+x.v,0);
+    const ini=acc;acc=acc+ev-sv;
+    buckets.push({label:cohortKey(t,gran),t,ent:ev,sai:sv,entN:e.length,saiN:s.length,
+      ini,fim:acc,churn:ini>0?sv/ini:null,parcial:fim>ref0,
+      rowsEnt:e.map(x=>x.r),rowsSai:s.map(x=>x.r)});
+    t=addUnits(t,gran==="year"?12:gran==="quarter"?3:1,"months");}
+  return {buckets};}
+/* ================= HONESTIDADE ESTATÍSTICA ================= */
+function wilson(p,n,z){z=z||1.96;if(!n||p===null||p===undefined)return null;
+  const d=1+z*z/n,c=(p+z*z/(2*n))/d,h=z*Math.sqrt(p*(1-p)/n+z*z/(4*n*n))/d;
+  return {lo:Math.max(0,c-h),hi:Math.min(1,c+h)};}
+function minN(){return PARAMS.minN===undefined?5:PARAMS.minN;}
+function suavizar(s,k){
+  if(!k||k<2)return s.map(x=>x.val);
+  return s.map((x,i)=>{const ini=Math.max(0,i-k+1);const jan=s.slice(ini,i+1).map(y=>y.val).filter(v=>v!==null);
+    return jan.length?jan.reduce((a,v)=>a+v,0)/jan.length:null;});}
+/* a série mede evolução no tempo ou compara coortes? */
+function axisKind(d){
+  const cfg=trendCfg(d);
+  if(d.type==="stock")return "tempo";
+  if(cfg.mode!=="col"||!cfg.col)return cfg.mode==="col"?"":"tempo";
+  const estado=[...refCols(d)].filter(c=>{
+    const nome=String(c);if(nome===cfg.col)return false;
+    if(nome.indexOf("__")===0)return !VIRT_NUM.some(v=>v[0]===nome);
+    const m=colMeta(nome);return m?m.type!=="date":false;});
+  return estado.length?"coorte":"tempo";}
+function axisBadge(d){
+  const k=axisKind(d);if(!k)return "";
+  if(k==="coorte")return `<span class="badge cohort" title="Usa colunas de estado atual (a foto é sempre a de hoje). Isso compara coortes de entrada, não a evolução no tempo.">coorte</span>`;
+  return `<span class="badge time" title="Baseada em datas de evento — mede o que aconteceu em cada período.">no tempo</span>`;}
+
+/* ---- barra de contexto ---- */
+function renderContext(){
+  const nSrc=SOURCES.filter(s=>s.active).length;
+  const empresas=RAW.length;
+  const opts=[`<option value="">mais recente (${PERIODS.length?esc(PERIODS[PERIODS.length-1].label):"—"})</option>`]
+    .concat(PERIODS.slice().reverse().map(p=>`<option value="${esc(p.label)}" ${VIEW===p.label?"selected":""}>${esc(p.label)}</option>`)).join("");
+  $("#meta").innerHTML=`<span>fontes <b>${fmt(nSrc)}</b></span><span>períodos <b>${fmt(PERIODS.length)}</b></span>`+
+    `<span>empresas <b>${fmt(empresas)}</b></span><span>ref. <b>${fmtDate(REFT)}</b></span>`+
+    (PERIODS.length>1?`<span class="ctxsel">ver: <select id="viewSel">${opts}</select></span>`:"")+
+    (hasAxis()?
+      `<label class="toggle"><input type="checkbox" id="trendChk" ${SHOWTREND?"checked":""}> evolução nos cartões</label>`+`<label class="toggle"><input type="checkbox" id="alertChk" ${SHOWALERTS?"checked":""}> alertas</label>`:"")+
+    `<span class="gfilter ${globalActive()?"on":""}"><button id="gfBtn">${globalActive()?"filtro global: "+filtTxt(globalNode()).replace(/<[^>]+>/g,""):"＋ filtro global"}</button>${globalActive()?`<button id="gfClear" title="limpar filtro global">×</button>`:""}</span>`;
+  const vs=$("#viewSel");if(vs)vs.onchange=()=>setView(vs.value);
+  const tc=$("#trendChk");if(tc)tc.onchange=()=>{SHOWTREND=tc.checked;render();};
+  const ac=$("#alertChk");if(ac)ac.onchange=()=>{SHOWALERTS=ac.checked;render();};
+  const gb=$("#gfBtn");if(gb)gb.onclick=()=>openFilter();
+  const gc=$("#gfClear");if(gc)gc.onclick=()=>{PARAMS.globalFilter={logic:"and",children:[]};refreshActive();render();scheduleSave();};}
+function setView(label){VIEW=label||null;RAW=baseAsOf(VIEW);bumpGen();refreshActive();render();}
 function render(){
-  $("#meta").innerHTML=`<span>arquivo <b>${esc(FILENAME)}</b></span><span>registros <b>${fmt(RAW.length)}</b></span><span>ref. <b>${fmtDate(REFT)}</b></span><span>colunas de data <b>${fmt(dateCols().length)}</b></span>`;
-  let html="";
+  SERCACHE=new Map();CHARTS={};
+  renderContext();
+  let html=alertsPanel();
   DEFS.forEach(d=>{if(d.group&&!GROUPS.includes(d.group))GROUPS.push(d.group);});
   if(!DEFS.length)html+=`<section class="panel"><div class="empty-note" style="font-size:15px;line-height:1.5">Painel em branco. Use <b>＋ Grupo</b> para criar seções e <b>Nova métrica</b> para montar métricas com as colunas desta planilha (${fmt(COLS.length)} colunas detectadas).</div></section>`;
+  const fechados=PARAMS.collapsed||[];
   GROUPS.forEach((g,gi)=>{const defs=DEFS.filter(d=>d.group===g&&(SHOWHIDDEN||!d.hidden));
+    const fold=fechados.includes(g);
     const gt=`<span class="gtools"><button data-gact="rename" data-gi="${gi}" title="renomear grupo">✎</button><button data-gact="up" data-gi="${gi}" title="subir">↑</button><button data-gact="down" data-gi="${gi}" title="descer">↓</button><button class="danger" data-gact="del" data-gi="${gi}" title="excluir grupo">🗑</button></span>`;
-    const head=`<div class="eyebrow"><span class="n">${String(gi).padStart(2,"0")}</span><h2>${esc(g)}</h2>${gt}</div>`;
-    const inner=defs.length?`<div class="grid">${defs.map(renderCard).join("")}</div>`:`<div class="empty-note">— sem métricas neste grupo —</div>`;
-    html+=`<section class="panel">${head}${inner}</section>`;});
+    const head=`<div class="eyebrow"><button class="fold" data-gact="fold" data-gi="${gi}" title="${fold?"abrir":"recolher"} seção">${fold?"▸":"▾"}</button><span class="n">${String(gi).padStart(2,"0")}</span><h2>${esc(g)}</h2><span class="gcount">${fmt(defs.length)}</span>${gt}</div>`;
+    const inner=fold?"":(defs.length?`<div class="grid">${defs.map(renderCard).join("")}</div>`:`<div class="empty-note">— sem métricas neste grupo —</div>`);
+    html+=`<section class="panel${fold?" folded":""}">${head}${inner}</section>`;});
   $("#report").innerHTML=html;
   $$('[data-act]').forEach(b=>b.onclick=()=>cardAction(b.dataset.act,b.dataset.id));
-  $$('[data-gact]').forEach(b=>b.onclick=()=>groupAction(b.dataset.gact,+b.dataset.gi));}
+  $$('[data-gact]').forEach(b=>b.onclick=()=>groupAction(b.dataset.gact,+b.dataset.gi));
+  $$('[data-drillseg]').forEach(b=>b.onclick=()=>drillSegment(b.dataset.id,+b.dataset.drillseg));
+  $$('[data-drillstep]').forEach(b=>b.onclick=()=>drillStep(b.dataset.id,+b.dataset.drillstep));
+  $$('[data-cohort]').forEach(b=>b.onclick=()=>drillCohort(b.dataset.id,b.dataset.cohort));
+  bindChartUI();}
+function bindChartUI(){
+  bindCharts();
+  $$('[data-bar]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const [t,i]=b.dataset.bar.split(":");
+    if(t==="h")drillHist(b.dataset.id,+i);else drillStock(b.dataset.id,t+":"+i);});}
+function drillStock(id,ij){const d=defById(id);if(!d)return;
+  const [tipo,i]=ij.split(":");const b=evalStock(d).buckets[+i];if(!b)return;
+  const ent=tipo==="e";
+  openDrill(`${d.name} · ${b.label} · ${ent?"entradas":"saídas"}`,ent?b.rowsEnt:b.rowsSai,d,
+    `${fmt(ent?b.entN:b.saiN)} empresa(s)`);}
+function drillCohort(id,ij){const d=defById(id);if(!d)return;
+  const [i,j]=ij.split(":").map(Number);const r=evalCohort(d);const l=r.linhas[i];const wd=r.wins[j];
+  if(!l||wd===undefined)return;
+  const base=filterRows(d.filters).filter(x=>{const c=asDate(getVal(x,d.cohortCol),{serial:true});
+    return c&&cohortKey(c.t,d.gran||"month")===l.label;});
+  const hit=base.filter(x=>{const c=asDate(getVal(x,d.cohortCol),{serial:true}),ev=asDate(getVal(x,d.eventCol),{serial:true});
+    if(!c||!ev)return false;if(d.eventCond&&d.eventCond.col&&!matchCond(x,d.eventCond))return false;
+    const dias=(midnight(ev.t)-midnight(c.t))/DAY;return dias>=0&&dias<=wd;});
+  openDrill(`${d.name} · ${l.label} · até ${wd}d`,hit,d,`${fmt(hit.length)} de ${fmt(base.length)} da coorte`);}
+function drillHist(id,i){const d=defById(id);if(!d)return;
+  const r=evalHist(d);const b=r.bins[i];if(!b)return;
+  const isD=r.s.isDate;
+  const rows=filterRows(d.filters).filter(x=>{const raw=getVal(x,d.col);
+    const v=isD?((asDate(raw,{serial:true})||{}).t??null):toNumOrNull(raw);
+    if(v===null)return false;return v>=b.lo&&(i===r.bins.length-1?v<=b.hi:v<b.hi);});
+  const lab=v=>isD?fmtDate(v):fmt(v,1);
+  openDrill(`${d.name} · ${lab(b.lo)} a ${lab(b.hi)}`,rows,d,`${fmt(rows.length)} na faixa`);}
+function drillSegment(id,i){const d=DEFS.find(x=>x.id===id);if(!d)return;
+  const seg=segmentsOf(d)[i];if(!seg)return;
+  const base=filterRows(seg.filters);
+  if(d.measure&&d.measure.kind==="rate"&&d.measure.num){const s=base.filter(r=>matchCond(r,d.measure.num));
+    return openDrill(`${d.name} · ${seg.label}`,s,d,`${fmt(s.length)} de ${fmt(base.length)} no segmento`);}
+  openDrill(`${d.name} · ${seg.label}`,base,d,"");}
+function drillStep(id,i){const d=DEFS.find(x=>x.id===id);if(!d)return;
+  const st=(d.steps||[])[i];if(!st)return;
+  openDrill(`${d.name} · ${st.label}`,filterRows(st.filters),d,"");}
 function cardAction(act,id){const i=DEFS.findIndex(d=>d.id===id);if(i<0)return;const d=DEFS[i];
   if(act==="edit"){openEdit(id);return;}
+  if(act==="drill"){const {rows,nota}=drillFromDef(d);openDrill(d.name,rows,d,nota);return;}
+  if(act==="zoom"){openChart(id);return;}
+  if(act==="size"){const ord=["sm","md","lg","full"];const at=ord.indexOf(tamanho(d));
+    d.size=ord[(at+1)%ord.length];delete d.wide;}
   if(act==="hide")d.hidden=!d.hidden;
   if(act==="del")DEFS.splice(i,1);
   if(act==="reset"){const s=SEED().find(s=>s.id===id);if(s)DEFS[i]=clone(s);}
@@ -836,6 +1699,8 @@ function cardAction(act,id){const i=DEFS.findIndex(d=>d.id===id);if(i<0)return;c
 function groupAction(act,gi){const name=GROUPS[gi];if(name===undefined)return;
   if(act==="rename"){const nn=prompt("Renomear grupo:",name);if(!nn||nn===name)return;if(GROUPS.includes(nn)){alert("Já existe um grupo com esse nome.");return;}GROUPS[gi]=nn;DEFS.forEach(d=>{if(d.group===name)d.group=nn;});render();scheduleSave();return;}
   if(act==="up"||act==="down"){const t=act==="up"?gi-1:gi+1;if(t<0||t>=GROUPS.length)return;const tmp=GROUPS[gi];GROUPS[gi]=GROUPS[t];GROUPS[t]=tmp;render();scheduleSave();return;}
+  if(act==="fold"){const c=(PARAMS.collapsed||[]).slice();const i=c.indexOf(name);
+    if(i>=0)c.splice(i,1);else c.push(name);PARAMS.collapsed=c;render();scheduleSave();return;}
   if(act==="del")askGroupDelete(gi);}
 function askGroupDelete(gi){const name=GROUPS[gi];const members=DEFS.filter(d=>d.group===name);
   if(!members.length){if(confirm(`Excluir o grupo vazio "${name}"?`)){GROUPS.splice(gi,1);ensureGroup();render();scheduleSave();}return;}
@@ -982,8 +1847,8 @@ function buildEditor(){
     +`<optgroup label="derivadas">`+VIRTS.map(v=>`<option value="${v[0]}" ${sel===v[0]?"selected":""}>${esc(v[1])}</option>`).join("")+`</optgroup>`;
   let h=`<div class="fld"><label>Nome</label><input type="text" id="e_name" value="${esc(d.name)}"></div>
     <div class="fld"><label>Grupo</label><select id="e_group">${GROUPS.map(g=>`<option value="${esc(g)}" ${d.group===g?"selected":""}>${esc(g)}</option>`).join("")}<option value="__new__">＋ novo grupo…</option></select></div>
-    <div class="fld"><label>Tipo de visual</label><select id="e_type"><option value="single" ${d.type==="single"?"selected":""}>Número único</option><option value="bars" ${d.type==="bars"?"selected":""}>Barras por segmento</option><option value="funnel" ${d.type==="funnel"?"selected":""}>Funil</option></select></div>`;
-  if(d.type==="single"){
+    <div class="fld"><label>Tipo de visual</label><select id="e_type"><option value="single" ${d.type==="single"?"selected":""}>Número único</option><option value="bars" ${d.type==="bars"?"selected":""}>Barras por segmento</option><option value="series" ${d.type==="series"?"selected":""}>Evolução (linha)</option><option value="cohort" ${d.type==="cohort"?"selected":""}>Coorte × idade</option><option value="histogram" ${d.type==="histogram"?"selected":""}>Histograma</option><option value="stock" ${d.type==="stock"?"selected":""}>Estoque (entradas e saídas)</option><option value="funnel" ${d.type==="funnel"?"selected":""}>Funil</option></select></div>`;
+  if(d.type==="single"||d.type==="series"){
     h+=`<div class="fld"><label>Cálculo</label><select id="e_calc">
         <option value="count" ${d.calc==="count"?"selected":""}>Contagem de clientes</option>
         <option value="pct_base" ${d.calc==="pct_base"?"selected":""}>% da base</option>
@@ -1006,7 +1871,18 @@ function buildEditor(){
       h+=`<div class="fld"><label>Grupo A — filtros</label><div id="e_aF"></div></div><div class="fld"><label>Grupo A — condição medida</label><div id="e_aN"></div></div><div class="fld"><label>Grupo B — filtros</label><div id="e_bF"></div></div><div class="fld"><label>Grupo B — condição medida</label><div id="e_bN"></div></div>`;
     }
     h+=`<div class="fld"><label>Destaque</label><select id="e_style"><option value="" ${!d.style?"selected":""}>Normal</option><option value="good" ${d.style==="good"?"selected":""}>Positivo (verde)</option><option value="alert" ${d.style==="alert"?"selected":""}>Alerta (vermelho)</option></select></div>
-      <div class="fld"><label>Unidade (opcional)</label><input type="text" id="e_unit" value="${esc(d.unit||"")}" placeholder="ex.: dias, /5"></div>`;
+      <div class="fld"><label>Unidade (opcional)</label><input type="text" id="e_unit" value="${esc(d.unit||"")}" placeholder="ex.: dias, /5"></div>
+      <div class="fld"><div class="chk"><input type="checkbox" id="e_lower" ${d.lowerIsBetter?"checked":""}><label for="e_lower" style="text-transform:none">menor é melhor (inverte a cor da variação)</label></div></div>`;
+    if(d.type==="series"){const ax=d.axis||{};const dOpts=sel=>dateCols().map(n=>`<option value="${esc(n)}" ${sel===n?"selected":""}>${esc(n)}</option>`).join("");
+      h+=`<div class="fld"><label>Eixo do tempo</label><select id="e_axMode">
+          <option value="" ${!ax.mode?"selected":""}>usar o padrão do painel</option>
+          <option value="snapshot" ${ax.mode==="snapshot"?"selected":""}>períodos importados (uma planilha por data)</option>
+          <option value="col" ${ax.mode==="col"?"selected":""}>coluna de data da própria planilha</option></select></div>
+        <div class="fld" id="e_axWrap" style="display:${ax.mode==="col"?"block":"none"}"><label>Coluna de data</label><select id="e_axCol">${dOpts(ax.col)}</select>
+          <label style="margin-top:8px">Agrupar por</label><select id="e_axGran"><option value="month" ${ax.gran!=="quarter"&&ax.gran!=="year"?"selected":""}>mês</option><option value="quarter" ${ax.gran==="quarter"?"selected":""}>trimestre</option><option value="year" ${ax.gran==="year"?"selected":""}>ano</option></select>
+          <label style="margin-top:8px">Cada ponto usa</label><select id="e_axWin"><option value="periodo" ${ax.window!=="acumulado"?"selected":""}>só as linhas daquele período</option><option value="acumulado" ${ax.window==="acumulado"?"selected":""}>tudo até o fim daquele período</option></select>
+          <div class="hint">"Só as linhas do período" responde <i>quantos entraram/cancelaram no mês</i>. "Tudo até" responde <i>como estava a base naquele momento</i>.</div></div>
+        <div class="fld"><label>Suavizar (média móvel)</label><select id="e_smooth"><option value="0" ${!d.smooth?"selected":""}>sem suavização</option><option value="3" ${d.smooth==3?"selected":""}>3 períodos</option><option value="6" ${d.smooth==6?"selected":""}>6 períodos</option></select></div>`;}
   } else if(d.type==="bars"){
     const mk=d.measure?d.measure.kind:"count";
     h+=`<div class="fld"><label>Orientação</label><select id="e_orient"><option value="h" ${d.orient!=="v"?"selected":""}>Horizontal</option><option value="v" ${d.orient==="v"?"selected":""}>Vertical (colunas)</option></select></div>
@@ -1021,14 +1897,41 @@ function buildEditor(){
       <div class="fld" id="e_segWrap"><label>Segmentos manuais</label><div id="e_segs"></div><button type="button" class="addbtn" id="e_addSeg">+ segmento</button></div>`;
   } else if(d.type==="funnel"){
     h+=`<div class="fld"><label>Etapas (cada uma é uma contagem)</label><div id="e_steps"></div><button type="button" class="addbtn" id="e_addStep">+ etapa</button></div>`;
+  } else if(d.type==="cohort"){
+    const dOpts=sel=>dateCols().map(n=>`<option value="${esc(n)}" ${sel===n?"selected":""}>${esc(n)}</option>`).join("");
+    h+=`<div class="fld"><label>Data que define a coorte</label><select id="e_cohortCol">${dOpts(d.cohortCol)}</select>
+        <div class="hint">Normalmente a contratação: cada linha da matriz agrupa quem entrou no mesmo mês.</div></div>
+      <div class="fld"><label>Agrupar por</label><select id="e_gran"><option value="month" ${d.gran!=="quarter"&&d.gran!=="year"?"selected":""}>mês</option><option value="quarter" ${d.gran==="quarter"?"selected":""}>trimestre</option><option value="year" ${d.gran==="year"?"selected":""}>ano</option></select></div>
+      <div class="fld"><label>Data do evento medido</label><select id="e_eventCol">${dOpts(d.eventCol)}</select>
+        <div class="hint">Ex.: data de churn (matriz de cancelamento) ou data da 1ª emissão (matriz de ativação).</div></div>
+      <div class="fld"><label>Condição extra do evento (opcional)</label><div id="e_evCond"></div></div>
+      <div class="fld"><label>Janelas em dias (vírgula)</label><input type="text" id="e_windows" value="${esc(((d.windows&&d.windows.length)?d.windows:[7,30,60,90]).join(", "))}"></div>
+      <div class="fld"><label>Filtros (quem entra na matriz)</label><div id="e_conds"></div></div>`;
+  } else if(d.type==="stock"){
+    const dOpts=(sel,vazio)=>(vazio?`<option value="" ${!sel?"selected":""}>— nenhuma —</option>`:"")+dateCols().map(n=>`<option value="${esc(n)}" ${sel===n?"selected":""}>${esc(n)}</option>`).join("");
+    h+=`<div class="fld"><label>Data de entrada</label><select id="e_inCol">${dOpts(d.inCol,false)}</select>
+        <div class="hint">Normalmente a contratação. O estoque é o acumulado de entradas menos saídas.</div></div>
+      <div class="fld"><label>Data de saída</label><select id="e_outCol">${dOpts(d.outCol,true)}</select></div>
+      <div class="fld"><label>Agrupar por</label><select id="e_gran"><option value="month" ${d.gran!=="quarter"&&d.gran!=="year"?"selected":""}>mês</option><option value="quarter" ${d.gran==="quarter"?"selected":""}>trimestre</option><option value="year" ${d.gran==="year"?"selected":""}>ano</option></select></div>
+      <div class="fld"><label>Medir</label><select id="e_valueCol"><option value="" ${!d.valueCol?"selected":""}>contagem de clientes</option>${numLikeCols().map(n=>`<option value="${esc(n)}" ${d.valueCol===n?"selected":""}>soma de ${esc(colLabel(n))}</option>`).join("")}</select>
+        <div class="chk" style="margin-top:8px"><input type="checkbox" id="e_money" ${d.money?"checked":""}><label for="e_money" style="text-transform:none">mostrar em R$</label></div>
+        <div class="hint">Somando o valor do plano, a linha vira o valor da base ativa em cada período — leia como receita recorrente só se esse valor for mensal.</div></div>
+      <div class="fld"><label>A linha mostra</label><select id="e_show"><option value="estoque" ${d.show!=="churn"?"selected":""}>estoque no fim do período</option><option value="churn" ${d.show==="churn"?"selected":""}>taxa de saída do período</option></select></div>
+      <div class="fld"><label>Filtros</label><div id="e_conds"></div></div>`;
+  } else if(d.type==="histogram"){
+    h+=`<div class="fld"><label>Coluna numérica ou de data</label><select id="e_col">${colOptions(d.col)}</select></div>
+      <div class="fld"><label>Número de faixas</label><input type="number" id="e_bins" min="2" max="40" value="${d.bins||12}">
+        <div class="chk" style="margin-top:8px"><input type="checkbox" id="e_clip" ${d.clip?"checked":""}><label for="e_clip" style="text-transform:none">cortar os 1% extremos (evita esticar por causa de outliers)</label></div></div>
+      <div class="fld"><label>Filtros</label><div id="e_conds"></div></div>`;
   }
   $("#editBody").innerHTML=h;
   const tsel=$("#e_type");if(tsel)tsel.onchange=()=>{EDIT=readEditor();EDIT.type=tsel.value;normalizeType(EDIT);buildEditor();};
   const gsel=$("#e_group");if(gsel)gsel.onchange=()=>{if(gsel.value==="__new__"){const nn=prompt("Nome do novo grupo:");if(nn&&!GROUPS.includes(nn))GROUPS.push(nn);const sel=(nn&&GROUPS.includes(nn))?nn:(EDIT.group||GROUPS[0]);gsel.innerHTML=GROUPS.map(g=>`<option value="${esc(g)}" ${g===sel?"selected":""}>${esc(g)}</option>`).join("")+`<option value="__new__">＋ novo grupo…</option>`;}};
-  if(d.type==="single"){
+  if(d.type==="single"||d.type==="series"){
     const calc=$("#e_calc");
     const sync=()=>{const c=calc.value;$("#e_colWrap").style.display=["median","mean","sum","moda","min","max","p90","distinct"].includes(c)?"block":"none";const nw=$("#e_numWrap");if(nw)nw.style.display=c==="rate"?"block":"none";};
     if(calc)calc.onchange=()=>{EDIT=readEditor();EDIT.calc=calc.value;normalizeType(EDIT);buildEditor();};
+    const axm=$("#e_axMode");if(axm)axm.onchange=()=>{$("#e_axWrap").style.display=axm.value==="col"?"block":"none";};
     if(d.calc!=="compare"){mountGroup("#e_conds",d.filters,true);mountSingleCond("#e_num",d.num||{col:"__emitiu",op:"=",val:"Sim"});sync();}
     else{mountGroup("#e_aF",d.a&&d.a.filters,true);mountSingleCond("#e_aN",d.a&&d.a.num||{col:"__emitiu",op:"=",val:"Sim"});mountGroup("#e_bF",d.b&&d.b.filters,true);mountSingleCond("#e_bN",d.b&&d.b.num||{col:"__emitiu",op:"=",val:"Sim"});}
   } else if(d.type==="bars"){
@@ -1041,20 +1944,38 @@ function buildEditor(){
   } else if(d.type==="funnel"){
     const steps=$("#e_steps");(d.steps||[]).forEach(s=>steps.appendChild(segBlock(s)));
     $("#e_addStep").onclick=()=>steps.appendChild(segBlock());
+  } else if(d.type==="cohort"){
+    mountGroup("#e_conds",d.filters,true);
+    mountSingleCond("#e_evCond",d.eventCond||{col:"",op:"preenchido",val:""});
+  } else if(d.type==="histogram"||d.type==="stock"){
+    mountGroup("#e_conds",d.filters,true);
   }
 }
 function normalizeType(d){
-  if(d.type==="single"){d.calc=["count","pct_base","rate","median","mean","sum","moda","compare","min","max","p90","distinct"].includes(d.calc)?d.calc:"count";
+  if(d.type==="single"||d.type==="series"){d.calc=["count","pct_base","rate","median","mean","sum","moda","compare","min","max","p90","distinct"].includes(d.calc)?d.calc:"count";
     if(d.calc==="compare"){d.a=d.a||{filters:{logic:"and",children:[]},num:{col:"__emitiu",op:"=",val:"Sim"}};d.b=d.b||{filters:{logic:"and",children:[]},num:{col:"__emitiu",op:"=",val:"Sim"}};}
     else{d.filters=d.filters&&d.filters.children!==undefined?d.filters:{logic:"and",children:[]};}}
   if(d.type==="bars"){d.orient=d.orient||"h";d.measure=d.measure||{kind:"count"};d.segments=d.segments||[];}
-  if(d.type==="funnel"){d.steps=d.steps&&d.steps.length?d.steps:[{label:"Etapa 1",filters:{logic:"and",children:[]}}];}}
+  if(d.type==="funnel"){d.steps=d.steps&&d.steps.length?d.steps:[{label:"Etapa 1",filters:{logic:"and",children:[]}}];}
+  if(d.type==="cohort"){d.filters=d.filters&&d.filters.children!==undefined?d.filters:{logic:"and",children:[]};
+    d.gran=d.gran||"month";d.windows=(d.windows&&d.windows.length)?d.windows:[7,30,60,90];
+    if(!d.cohortCol)d.cohortCol=dateCols()[0]||"";if(!d.eventCol)d.eventCol=dateCols()[1]||dateCols()[0]||"";d.wide=true;}
+  if(d.type==="histogram"){d.filters=d.filters&&d.filters.children!==undefined?d.filters:{logic:"and",children:[]};
+    d.bins=d.bins||12;if(!d.col)d.col=(numLikeCols()[0]||"");}
+  if(d.type==="stock"){d.filters=d.filters&&d.filters.children!==undefined?d.filters:{logic:"and",children:[]};
+    d.gran=d.gran||"month";d.wide=true;
+    if(!d.inCol)d.inCol=dateCols().find(c=>/contrat|cadastr|inicio/i.test(c))||dateCols()[0]||"";
+    if(d.outCol===undefined)d.outCol=dateCols().find(c=>/churn|cancel|fim|encerr/i.test(c))||"";}}
 function readEditor(){const d=clone(EDIT);
   d.name=$("#e_name")?$("#e_name").value:d.name;d.type=$("#e_type")?$("#e_type").value:d.type;
   d.group=$("#e_group")?$("#e_group").value:d.group;if(d.group==="__new__")d.group=EDIT.group||GROUPS[0]||"Minhas métricas";
-  if(d.type==="single"){
+  if(d.type==="single"||d.type==="series"){
     if($("#e_calc"))d.calc=$("#e_calc").value;
     d.style=$("#e_style")?$("#e_style").value:d.style;d.unit=$("#e_unit")?$("#e_unit").value:d.unit;
+    if($("#e_lower"))d.lowerIsBetter=$("#e_lower").checked;
+    if($("#e_smooth"))d.smooth=+$("#e_smooth").value||0;
+    if($("#e_axMode")){const m=$("#e_axMode").value;
+      d.axis=m?{mode:m,col:$("#e_axCol")?$("#e_axCol").value:"",gran:$("#e_axGran")?$("#e_axGran").value:"month",window:$("#e_axWin")?$("#e_axWin").value:"periodo"}:null;}
     if($("#e_col")){d.col=$("#e_col").value;d.money=$("#e_money")?$("#e_money").checked:false;if($("#e_dec"))d.dec=Math.max(0,+$("#e_dec").value||0);}
     if(d.calc==="compare"){if($("#e_aF"))d.a={filters:readGroup($("#e_aF .fgroup")),num:readSingleCond("#e_aN")||{col:"__emitiu",op:"=",val:"Sim"}};if($("#e_bF"))d.b={filters:readGroup($("#e_bF .fgroup")),num:readSingleCond("#e_bN")||{col:"__emitiu",op:"=",val:"Sim"}};delete d.filters;delete d.num;}
     else{if($("#e_conds .fgroup"))d.filters=readGroup($("#e_conds .fgroup"));if(d.calc==="rate")d.num=readSingleCond("#e_num");delete d.a;delete d.b;}
@@ -1067,6 +1988,26 @@ function readEditor(){const d=clone(EDIT);
     if(d.auto){d.autoCol=$("#e_autoCol").value;d.exclude=$("#e_excl").value.split(",").map(s=>s.trim()).filter(Boolean);d.topN=Math.max(0,+($("#e_topN")?$("#e_topN").value:0)||0);delete d.segments;}
     else{if($("#e_segs"))d.segments=[...$("#e_segs").children].map(readSeg);delete d.autoCol;delete d.exclude;delete d.topN;}
   } else if(d.type==="funnel"){if($("#e_steps"))d.steps=[...$("#e_steps").children].map(readSeg);}
+  else if(d.type==="cohort"){
+    if($("#e_cohortCol"))d.cohortCol=$("#e_cohortCol").value;
+    if($("#e_eventCol"))d.eventCol=$("#e_eventCol").value;
+    if($("#e_gran"))d.gran=$("#e_gran").value;
+    if($("#e_windows"))d.windows=$("#e_windows").value.split(",").map(x=>toNumOrNull(x.trim())).filter(x=>x!==null&&x>0);
+    if($("#e_conds .fgroup"))d.filters=readGroup($("#e_conds .fgroup"));
+    const ec=readSingleCond("#e_evCond");d.eventCond=(ec&&ec.col)?ec:null;}
+  else if(d.type==="stock"){
+    if($("#e_inCol"))d.inCol=$("#e_inCol").value;
+    if($("#e_outCol"))d.outCol=$("#e_outCol").value;
+    if($("#e_gran"))d.gran=$("#e_gran").value;
+    if($("#e_valueCol"))d.valueCol=$("#e_valueCol").value;
+    if($("#e_show"))d.show=$("#e_show").value;
+    if($("#e_money"))d.money=$("#e_money").checked;
+    if($("#e_conds .fgroup"))d.filters=readGroup($("#e_conds .fgroup"));}
+  else if(d.type==="histogram"){
+    if($("#e_col"))d.col=$("#e_col").value;
+    if($("#e_bins"))d.bins=Math.max(2,Math.min(40,+$("#e_bins").value||12));
+    if($("#e_clip"))d.clip=$("#e_clip").checked;
+    if($("#e_conds .fgroup"))d.filters=readGroup($("#e_conds .fgroup"));}
   return d;}
 $("#editSave").onclick=()=>{const d=readEditor();normalizeType(d);if(d.group&&!GROUPS.includes(d.group))GROUPS.push(d.group);const i=DEFS.findIndex(x=>x.id===d.id);if(i>=0)DEFS[i]=d;else DEFS.push(d);render();scheduleSave();closeAll();};
 
@@ -1085,13 +2026,28 @@ function buildParamForm(){const b=PARAMS;$("#paramBody").innerHTML=`
     <div class="hint">Atual: <b>${fmtDate(REFT)}</b>. Usada em "dias desde o último login" e em toda coluna calculada com <code>data de referência</code>.</div></div>
   <div class="fld"><label>O que conta como "emitiu"</label><div class="chk"><input type="checkbox" id="p_cte" ${b.emitCte?"checked":""}><label for="p_cte" style="text-transform:none">somar qtd_cte</label></div><div class="chk"><input type="checkbox" id="p_mdfe" ${b.emitMdfe?"checked":""}><label for="p_mdfe" style="text-transform:none">somar qtd_mdfe</label></div><div style="margin-top:6px"><label style="font-size:11px">soma maior que</label><input type="number" id="p_thr" value="${b.emitThreshold}"></div></div>
   <div class="fld"><label>Faixas de plano (limites superiores)</label><div class="row2"><input type="number" id="p_b0" value="${b.planBands[0]}"><input type="number" id="p_b1" value="${b.planBands[1]}"><input type="number" id="p_b2" value="${b.planBands[2]}"></div></div>
-  <div class="fld"><label>Valor que significa "sem churn"</label><input type="text" id="p_sc" value="${esc(b.semChurn)}"></div>`;
-  const rm=$("#p_refmode");if(rm)rm.onchange=()=>{$("#p_refdate").style.display=rm.value==="fixa"?"block":"none";};}
+  <div class="fld"><label>Valor que significa "sem churn"</label><input type="text" id="p_sc" value="${esc(b.semChurn)}"></div>
+  <div class="fld"><label>Eixo padrão da evolução (sparklines e alertas)</label><select id="p_axmode">
+      <option value="snapshot" ${(b.trendAxis&&b.trendAxis.mode)==="col"?"":"selected"}>períodos importados</option>
+      <option value="col" ${(b.trendAxis&&b.trendAxis.mode)==="col"?"selected":""}>coluna de data da planilha</option></select>
+    <div class="row2" id="p_axwrap" style="margin-top:8px;display:${(b.trendAxis&&b.trendAxis.mode)==="col"?"flex":"none"}">
+      <select id="p_axcol">${dateCols().map(n=>`<option value="${esc(n)}" ${(b.trendAxis&&b.trendAxis.col)===n?"selected":""}>${esc(n)}</option>`).join("")}</select>
+      <select id="p_axgran"><option value="month" ${(b.trendAxis&&b.trendAxis.gran)!=="quarter"&&(b.trendAxis&&b.trendAxis.gran)!=="year"?"selected":""}>mês</option><option value="quarter" ${(b.trendAxis&&b.trendAxis.gran)==="quarter"?"selected":""}>trimestre</option><option value="year" ${(b.trendAxis&&b.trendAxis.gran)==="year"?"selected":""}>ano</option></select>
+      <select id="p_axwin"><option value="periodo" ${(b.trendAxis&&b.trendAxis.window)!=="acumulado"?"selected":""}>só o período</option><option value="acumulado" ${(b.trendAxis&&b.trendAxis.window)==="acumulado"?"selected":""}>acumulado</option></select></div>
+    <div class="hint">Com uma planilha só, use a coluna de data. Cuidado: colunas de estado atual (situação, nº de logins) agrupadas por mês de contratação comparam <i>coortes</i>, não a evolução no tempo.</div></div>
+  <div class="fld"><label>Amostra mínima por ponto</label><input type="number" id="p_minn" min="0" max="1000" value="${b.minN===undefined?5:b.minN}">
+    <div class="chk" style="margin-top:8px"><input type="checkbox" id="p_ci" ${b.showCI!==false?"checked":""}><label for="p_ci" style="text-transform:none">mostrar faixa de incerteza nas taxas</label></div>
+    <div class="hint">Pontos com menos que isso viram marcadores menores e ficam fora da comparação e dos alertas. Uma taxa de 60% com 5 clientes não é informação.</div></div>
+  <div class="fld"><label>Alertar quando a variação passar de</label><input type="number" id="p_alert" min="1" max="500" value="${b.alertPct===undefined?20:b.alertPct}"><div class="hint">Em % sobre o período anterior. O painel lista no topo as métricas que se moveram mais que isso.</div></div>`;
+  const rm=$("#p_refmode");if(rm)rm.onchange=()=>{$("#p_refdate").style.display=rm.value==="fixa"?"block":"none";};
+  const am=$("#p_axmode");if(am)am.onchange=()=>{$("#p_axwrap").style.display=am.value==="col"?"flex":"none";};}
 $("#paramApply").onclick=()=>{PARAMS.emitCte=$("#p_cte").checked;PARAMS.emitMdfe=$("#p_mdfe").checked;PARAMS.emitThreshold=+$("#p_thr").value||0;
   PARAMS.planBands=[+$("#p_b0").value,+$("#p_b1").value,+$("#p_b2").value];PARAMS.semChurn=$("#p_sc").value.trim()||"Sem churn";
   PARAMS.dateOrder=$("#p_order").value;DATE_ORDER=PARAMS.dateOrder;
-  PARAMS.refMode=$("#p_refmode").value;PARAMS.refDate=$("#p_refdate").value;
-  bumpGen();if(RAW.length){COLS=detectCols(RAW);computeRef();}
+  PARAMS.refMode=$("#p_refmode").value;PARAMS.refDate=$("#p_refdate").value;PARAMS.alertPct=Math.max(1,+$("#p_alert").value||20);
+  PARAMS.minN=Math.max(0,+$("#p_minn").value||0);PARAMS.showCI=$("#p_ci").checked;
+  PARAMS.trendAxis={mode:$("#p_axmode").value,col:$("#p_axcol")?$("#p_axcol").value:"",gran:$("#p_axgran")?$("#p_axgran").value:"month",window:$("#p_axwin")?$("#p_axwin").value:"periodo"};
+  bumpGen();if(SOURCES.length)rebuild();else if(RAW.length){COLS=detectCols(RAW);computeRef();}
   render();scheduleSave();closeAll();};
 $("#paramReset").onclick=()=>{PARAMS=clone(PDEFAULT);DATE_ORDER="dmy";bumpGen();if(RAW.length){COLS=detectCols(RAW);computeRef();}buildParamForm();render();scheduleSave();};
 
@@ -1173,6 +2129,120 @@ $("#colsAddPart").onclick=()=>addDerived("datepart");
 $("#colsAddBucket").onclick=()=>addDerived("bucket");
 $("#colsAddArith").onclick=()=>addDerived("arith");
 $("#bCols").onclick=()=>openCols();
+$("#bSources").onclick=()=>openSources();
+$("#srcAdd").onclick=()=>{REPLACING=null;$("#file").click();};
+
+/* ================= FILTROS GLOBAIS ================= */
+function globalNode(){const g=PARAMS.globalFilter;return (g&&g.children!==undefined)?g:{logic:"and",children:[]};}
+function globalActive(){return (globalNode().children||[]).length>0;}
+function applyGlobal(rows){const g=globalNode();
+  if(!(g.children||[]).length)return rows;
+  const prev=DATA;DATA=rows;try{return rows.filter(r=>evalNode(r,g));}finally{DATA=prev;}}
+function refreshActive(){DATA=applyGlobal(RAW);}
+function openFilter(){mountGroup("#filterBody",clone(globalNode()),true);openDrawer("#dFilter");}
+$("#filterApply").onclick=()=>{const el=$("#filterBody .fgroup");
+  PARAMS.globalFilter=el?readGroup(el):{logic:"and",children:[]};
+  refreshActive();render();scheduleSave();closeAll();};
+$("#filterClear").onclick=()=>{PARAMS.globalFilter={logic:"and",children:[]};refreshActive();render();scheduleSave();closeAll();};
+
+/* ================= DRILL-DOWN ================= */
+let DRILL=null, DRILLCOLS=[], DRILLSORT={col:null,dir:1}, DRILLCUSTOM=false;
+const DRILLMAX=200;
+function defaultDrillCols(def){
+  const out=[];const has=n=>COLS.some(c=>c.name===n);
+  if(KEYCOL&&has(KEYCOL))out.push(KEYCOL);
+  ["emp_nome","razao_social","nome","emp_situacao"].forEach(n=>{if(has(n)&&!out.includes(n))out.push(n);});
+  if(def)[...refCols(def)].forEach(c=>{if(!out.includes(c)&&(String(c).indexOf("__")===0||has(c)))out.push(c);});
+  COLS.forEach(c=>{if(out.length<7&&!out.includes(c.name))out.push(c.name);});
+  return out.slice(0,8);}
+function openDrill(titulo,rows,def,nota){
+  DRILL={titulo,rows,def,nota};
+  if(!DRILLCOLS.length||!DRILLCUSTOM)DRILLCOLS=defaultDrillCols(def);
+  DRILLSORT={col:null,dir:1};
+  buildDrill();openDrawer("#dDrill");}
+function drillSorted(){
+  const rows=DRILL.rows.slice();const c=DRILLSORT.col;if(!c)return rows;
+  return rows.sort((a,b)=>{const va=getVal(a,c),vb=getVal(b,c);
+    const na=toNumOrNull(va),nb=toNumOrNull(vb);
+    if(na!==null&&nb!==null)return (na-nb)*DRILLSORT.dir;
+    const da=asDate(va,{serial:true}),db=asDate(vb,{serial:true});
+    if(da&&db)return (da.t-db.t)*DRILLSORT.dir;
+    return valStr(va).localeCompare(valStr(vb))*DRILLSORT.dir;});}
+function cellTxt(r,c){const v=getVal(r,c);
+  if(v===null||v===undefined||v==="")return "—";
+  if(v instanceof Date)return fmtDate(v);
+  if(typeof v==="number")return fmt(v,Number.isInteger(v)?0:2);
+  return String(v);}
+function buildDrill(){
+  const body=$("#drillBody");if(!body||!DRILL)return;
+  const rows=drillSorted();const shown=rows.slice(0,DRILLMAX);
+  const multiPer=PERIODS.length>1;
+  let h=`<div class="drillhead">
+      <div><b>${fmt(DRILL.rows.length)}</b> empresa(s)${DRILL.nota?` · ${esc(DRILL.nota)}`:""}</div>
+      ${globalActive()?`<div class="hint" style="margin:0">com o filtro global aplicado</div>`:""}
+    </div>
+    <div class="drillcols">${DRILLCOLS.map(c=>`<span class="colchip">${esc(colLabel(c))}<button data-rmcol="${esc(c)}" title="remover coluna">×</button></span>`).join("")}
+      <span class="colchip add" id="drillAddWrap"></span></div>`;
+  if(!DRILL.rows.length)h+=`<p class="hint">Nenhuma linha atende a essa combinação de filtros.</p>`;
+  else{
+    h+=`<div class="dtwrap"><table class="dtable"><thead><tr>${multiPer?`<th>período</th>`:""}${DRILLCOLS.map(c=>`<th data-sort="${esc(c)}">${esc(colLabel(c))}${DRILLSORT.col===c?(DRILLSORT.dir>0?" ↑":" ↓"):""}</th>`).join("")}</tr></thead><tbody>`;
+    shown.forEach(r=>{h+=`<tr>${multiPer?`<td class="per">${esc(r[PK]||"—")}</td>`:""}${DRILLCOLS.map(c=>`<td>${esc(cellTxt(r,c))}</td>`).join("")}</tr>`;});
+    h+=`</tbody></table></div>`;
+    if(rows.length>DRILLMAX)h+=`<p class="hint">Mostrando ${DRILLMAX} de ${fmt(rows.length)} — o CSV traz todas.</p>`;}
+  body.innerHTML=h;
+  const wrap=$("#drillAddWrap");
+  if(wrap){const combo=makeCombo("");combo._onChange=v=>{if(v&&!DRILLCOLS.includes(v)){DRILLCOLS.push(v);DRILLCUSTOM=true;buildDrill();}};
+    wrap.appendChild(combo);}
+  body.querySelectorAll("[data-rmcol]").forEach(b=>b.onclick=()=>{DRILLCOLS=DRILLCOLS.filter(c=>c!==b.dataset.rmcol);DRILLCUSTOM=true;buildDrill();});
+  body.querySelectorAll("[data-sort]").forEach(th=>th.onclick=()=>{const c=th.dataset.sort;
+    DRILLSORT=DRILLSORT.col===c?{col:c,dir:-DRILLSORT.dir}:{col:c,dir:1};buildDrill();});
+  $("#drillTitle").textContent=DRILL.titulo;}
+function csvCell(v){const s=String(v==null?"":v);return /[";\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s;}
+$("#drillCsv").onclick=()=>{
+  if(!DRILL)return;const multiPer=PERIODS.length>1;
+  const head=(multiPer?["periodo"]:[]).concat(DRILLCOLS.map(colLabel));
+  const linhas=[head.map(csvCell).join(";")];
+  drillSorted().forEach(r=>{
+    const vals=(multiPer?[r[PK]||""]:[]).concat(DRILLCOLS.map(c=>{const v=getVal(r,c);
+      return v instanceof Date?fmtDate(v):(v===null||v===undefined?"":String(v));}));
+    linhas.push(vals.map(csvCell).join(";"));});
+  const blob=new Blob(["\ufeff"+linhas.join("\r\n")],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download=(DRILL.titulo||"empresas").replace(/[^\wÀ-ú -]/g,"").slice(0,60)+".csv";a.click();URL.revokeObjectURL(a.href);};
+
+/* de onde vêm as linhas de cada tipo de cartão */
+function drillFromDef(d){
+  if(d.type==="single"||d.type==="series"){
+    if(d.calc==="compare"){const rows=filterRows(d.a&&d.a.filters);return {rows,nota:"grupo A"};}
+    const base=filterRows(d.filters);
+    if(d.calc==="rate"&&d.num){const s=base.filter(r=>matchCond(r,d.num));
+      return {rows:s,nota:`atendem ${condTxt(d.num).replace(/<[^>]+>/g,"")} · ${fmt(s.length)} de ${fmt(base.length)}`};}
+    return {rows:base,nota:""};}
+  return {rows:filterRows(d.filters),nota:""};}
+
+/* ---- visão ampliada do gráfico ---- */
+function pontosTabela(zd){
+  const c=CHARTS[zd.id];if(!c||!c.pts.length)return "";
+  const temN=c.pts.some(p=>p.n!==undefined&&p.n!==null);
+  return `<div class="dtwrap" style="max-height:none;margin-top:16px"><table class="dtable"><thead><tr><th>período</th><th>valor</th>${temN?"<th>n</th>":""}<th></th></tr></thead><tbody>`+
+    c.pts.map((p,i)=>`<tr class="ptrow" data-pt="${i}"><td>${esc(p.label)}</td><td><b>${esc(p.txt)}</b>${p.parcial?' <span class="hint" style="margin:0">em andamento</span>':""}${p.fraco?' <span class="hint" style="margin:0">amostra pequena</span>':""}</td>${temN?`<td>${p.n===undefined||p.n===null?"—":fmt(p.n)}</td>`:""}<td class="verlink">ver empresas</td></tr>`).join("")+
+    `</tbody></table></div>`;}
+let ZOOM=null;
+function openChart(id){
+  const d=DEFS.find(x=>x.id===id);if(!d)return;
+  const zd=Object.assign(clone(d),{id:d.id+"__zoom"});
+  ZOOM=zd;
+  const g=d.type==="stock"?stockChart(zd):d.type==="histogram"?histChart(zd):d.type==="cohort"?cohortTable(zd):lineChart(zd);
+  $("#chartTitle").textContent=d.name;
+  $("#chartBody").innerHTML=`<div class="bigchart">${g}</div>${pontosTabela(zd)}<div class="calcbody" style="margin-top:14px">${defText(d)}${axisNote(d)}</div>`;
+  openDrawer("#dChart");bindChartUI();
+  $$("#chartBody .ptrow").forEach(tr=>tr.onclick=()=>{const c=CHARTS[zd.id];if(c&&c.clique)c.clique(+tr.dataset.pt);});}
+$("#chartCsv").onclick=()=>{
+  const c=ZOOM&&CHARTS[ZOOM.id];if(!c)return;
+  const linhas=[["periodo","valor","n"].join(";")].concat(c.pts.map(p=>[p.label,p.val===null||p.val===undefined?"":String(p.val).replace(".",","),p.n===undefined||p.n===null?"":p.n].map(csvCell).join(";")));
+  const blob=new Blob(["\ufeff"+linhas.join("\r\n")],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download=(c.titulo||"serie").replace(/[^\wÀ-ú -]/g,"").slice(0,60)+".csv";a.click();URL.revokeObjectURL(a.href);};
 
 /* ---- drawers ---- */
 function openDrawer(id){closeAll();$(id).classList.add("open");$("#backdrop").classList.add("on");}
@@ -1193,3 +2263,4 @@ $("#cfg").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileRe
   r.onload=ev=>{try{const j=JSON.parse(ev.target.result);if(j.params)PARAMS=Object.assign(clone(PDEFAULT),j.params);if(Array.isArray(j.defs))DEFS=j.defs.map(migrateDef);GROUPS=(Array.isArray(j.groups)&&j.groups.length)?j.groups.slice():deriveGroups(DEFS);ensureGroup();render();scheduleSave();}catch(err){alert("JSON inválido: "+err.message);}};
   r.readAsText(f);e.target.value="";};
 </script>
+</html>
