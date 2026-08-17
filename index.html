@@ -570,7 +570,6 @@ function render(){
     const head=`<div class="eyebrow"><span class="n">${String(gi).padStart(2,"0")}</span><h2>${esc(g)}</h2>${gt}</div>`;
     const inner=defs.length?`<div class="grid">${defs.map(renderCard).join("")}</div>`:`<div class="empty-note">— sem métricas neste grupo —</div>`;
     html+=`<section class="panel">${head}${inner}</section>`;});
-  html+=`<div class="footnote">Toda métrica é uma definição editável — abra “como é calculada” ou clique em “editar”. Os filtros agora aceitam grupos aninhados com E / OU / OU-exclusivo. "Emitiu", faixas de plano e "sem churn" vêm dos Parâmetros. Ref. = data mais recente da planilha (${REF.toLocaleDateString("pt-BR")}).</div>`;
   $("#report").innerHTML=html;
   $$('[data-act]').forEach(b=>b.onclick=()=>cardAction(b.dataset.act,b.dataset.id));
   $$('[data-gact]').forEach(b=>b.onclick=()=>groupAction(b.dataset.gact,+b.dataset.gi));}
