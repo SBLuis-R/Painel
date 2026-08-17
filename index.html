@@ -76,7 +76,8 @@
   .drawer-h .x{cursor:pointer;background:none;border:0;color:#EAF1F1;font-size:22px;line-height:1}
   .drawer-b{padding:18px 20px}
   .fld{margin-bottom:16px} .fld>label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;margin-bottom:6px}
-  .fld .hint{font-size:11.5px;color:var(--muted);margin-top:4px;font-style:italic}
+  .fld .hint,.calcbody .hint,.drawer-b>.hint,#colsBody .hint{font-size:11.5px;color:var(--muted);margin-top:4px;font-style:italic}
+  .calcbody .hint b{font-style:normal}
   input[type=text],input[type=number],select{width:100%;padding:8px 10px;border:1px solid var(--hair);border-radius:7px;font-family:"Inter";font-size:14px;background:#fff;color:var(--ink)}
   input:focus,select:focus{outline:2px solid var(--teal);border-color:var(--teal)}
   .row2{display:flex;gap:8px}.row2>*{flex:1}
@@ -100,6 +101,8 @@
   .cond .c-valwrap .c-val>input:not(.c-manual),.cond .c-valwrap .c-val>select{flex:1;min-width:0}
   .cond .c-colwrap{flex:1 1 100%;display:flex;gap:6px;align-items:center}
   .cond .c-colwrap .combo{flex:1} .cond .c-colwrap .c-aop{flex:0 0 56px} .cond .c-colwrap .c-aval{flex:0 0 74px}
+  .cond .c-colwrap .c-aunit{flex:0 0 96px}
+  #colsBody .segblock .fld{margin-bottom:10px} #colsBody .seglabel{flex:1}
   .cond .c-timechk{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);flex:0 0 auto}
   .cond .c-timechk input{width:auto}
   .cond .c-manual{flex:0 0 auto;background:var(--paper);color:var(--muted);border:1px solid var(--hair);border-radius:6px;height:32px;padding:0 8px;cursor:pointer;font-size:11px;font-weight:600}
@@ -200,6 +203,7 @@
       </span>
       <label class="toggle"><input type="checkbox" id="showHidden"> mostrar ocultas</label>
       <button class="hbtn" id="bParam">Parâmetros</button>
+      <button class="hbtn" id="bCols">Colunas calc.</button>
       <button class="hbtn" id="bNew">Nova métrica</button>
       <button class="hbtn" id="bGroup">＋ Grupo</button>
       <button class="hbtn" id="bExport">Exportar</button>
@@ -231,6 +235,18 @@
   <div class="applybar"><button class="go" id="paramApply">Aplicar</button><button class="ghost" id="paramReset">Restaurar padrão</button></div>
 </aside>
 
+<aside class="drawer" id="dCols">
+  <div class="drawer-h"><h3>Colunas calculadas</h3><button class="x" data-close>×</button></div>
+  <div class="drawer-b" id="colsBody"></div>
+  <div class="applybar" style="flex-wrap:wrap;gap:6px">
+    <button class="go" id="colsApply">Aplicar</button>
+    <button class="ghost" id="colsAddDiff">＋ diferença entre datas</button>
+    <button class="ghost" id="colsAddPart">＋ coorte de data</button>
+    <button class="ghost" id="colsAddBucket">＋ faixas</button>
+    <button class="ghost" id="colsAddArith">＋ conta</button>
+  </div>
+</aside>
+
 <aside class="drawer" id="dEdit">
   <div class="drawer-h"><h3 id="editTitle">Editar métrica</h3><button class="x" data-close>×</button></div>
   <div class="drawer-b" id="editBody"></div>
@@ -245,37 +261,105 @@
 
 <script>
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-function num(v){if(v===null||v===undefined||v==="")return 0;if(typeof v==="number")return v;const n=parseFloat(String(v).replace(/\./g,"").replace(",",".") );return isNaN(n)?0:n;}
-function toNumOrNull(v){if(v===null||v===undefined||v==="")return null;if(typeof v==="number")return v;const n=parseFloat(String(v).replace(",","."));return isNaN(n)?null:n;}
-function isFlag(v){if(v===null||v===undefined||v==="")return false;return v===1||v==="1"||v===true||(typeof v==="string"&&v.trim()!==""&&v.trim()!=="0"&&!/^(false|nao|não)$/i.test(v.trim()));}
-function parseDate(v){if(v===null||v===undefined||v==="")return null;if(v instanceof Date)return isNaN(v)?null:v;if(typeof v==="number"){const d=new Date(Math.round((v-25569)*86400*1000));return isNaN(d)?null:d;}const s=String(v).trim();const m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?/);if(m)return new Date(+m[3],+m[2]-1,+m[1],+(m[4]||0),+(m[5]||0),+(m[6]||0));const d=new Date(s);return isNaN(d)?null:d;}
-function parseDateStrict(v){
-  if(v instanceof Date)return isNaN(v)?null:{t:v.getTime(),hasTime:true};
-  if(v===null||v===undefined||typeof v==="number")return null;
-  const s=String(v).trim();
-  let m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})\s*([AaPp])[Mm]/);
-  if(m){let hh=(+m[4])%12;if(/p/i.test(m[7]))hh+=12;return {t:Date.UTC(+m[3],+m[1]-1,+m[2],hh,+m[5],+m[6]),hasTime:true};}
-  m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
-  if(m){return {t:Date.UTC(+m[3],+m[2]-1,+m[1],+(m[4]||0),+(m[5]||0),+(m[6]||0)),hasTime:m[4]!==undefined};}
-  m=s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
-  if(m){return {t:Date.UTC(+m[1],+m[2]-1,+m[3],+(m[4]||0),+(m[5]||0),+(m[6]||0)),hasTime:m[4]!==undefined};}
+/* ============ helpers numéricos / texto ============ */
+function num(v){if(v===null||v===undefined||v==="")return 0;if(typeof v==="number")return v;const n=parseFloat(String(v).replace(/\./g,"").replace(",","."));return isNaN(n)?0:n;}
+/* só aceita texto que é MESMO um número inteiro/decimal (antes "2026-01" virava 2026 e
+   "10 dias" virava 10, o que fazia comparações de igualdade casarem por acidente) */
+function toNumOrNull(v){if(v===null||v===undefined||v==="")return null;if(typeof v==="number")return isFinite(v)?v:null;if(v instanceof Date)return null;
+  const s=String(v).trim().replace(/\s|R\$|%/g,"");if(!s)return null;
+  if(/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(s))return parseFloat(s.replace(/\./g,"").replace(",","."));   // 1.234,56
+  if(/^-?\d+(,\d+)?$/.test(s))return parseFloat(s.replace(",","."));                                    // 1234,56
+  if(/^-?\d+(\.\d+)?$/.test(s))return parseFloat(s);                                                    // 1234.56
   return null;}
-const asDate=parseDateStrict;
-const DAY=86400000;
+function isFlag(v){if(v===null||v===undefined||v==="")return false;return v===1||v==="1"||v===true||(typeof v==="string"&&v.trim()!==""&&v.trim()!=="0"&&!/^(false|nao|não)$/i.test(v.trim()));}
+
+/* ============ MOTOR DE DATAS (único, sempre em referencial UTC) ============
+   asDate() é a ÚNICA porta de entrada para datas. Devolve {t,hasTime} ou null.
+   - t = epoch ms no relógio de parede da planilha (sem fuso, sem horário de verão)
+   - números só viram data com {serial:true} (protege colunas numéricas comuns) */
+const DAY=86400000, HOUR=3600000, MIN=60000;
+const P2=n=>String(n).padStart(2,"0");
+let DATE_CONV="utc";     // como a planilha materializou células de data ("utc" | "local")
+let DATE_ORDER="dmy";    // "dmy" (01/03 = 1º de março) ou "mdy"
+const midnight=t=>Math.floor(t/DAY)*DAY;
+
+function detectDateConv(rows){let u=0,l=0;
+  for(const r of rows.slice(0,400))for(const k in r){const v=r[k];
+    if(v instanceof Date&&!isNaN(v)){
+      if(!v.getUTCHours()&&!v.getUTCMinutes()&&!v.getUTCSeconds())u++;
+      if(!v.getHours()&&!v.getMinutes()&&!v.getSeconds())l++;}}
+  return l>u?"local":"utc";}
+function serialToT(n){if(!isFinite(n)||n<=0||n>2958465)return null;return Math.round((n-25569)*DAY);}
+function parseDateStr(s,order){
+  s=s.trim();if(!s)return null;
+  let m;
+  m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?)?\s*(Z|[+-]\d{2}:?\d{2})?$/i);
+  if(m){let t=Date.UTC(+m[1],+m[2]-1,+m[3],+(m[4]||0),+(m[5]||0),+(m[6]||0));
+    if(m[7]&&m[7].toUpperCase()!=="Z"){const sg=m[7][0]==="-"?1:-1,hh=+m[7].slice(1,3),mm=+m[7].slice(-2);t+=sg*(hh*60+mm)*MIN;}
+    return {t,hasTime:m[4]!==undefined};}
+  m=s.match(/^(\d{1,4})[\/\-.](\d{1,2})[\/\-.](\d{1,4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?)?\s*([AaPp])\.?[Mm]?\.?$|^(\d{1,4})[\/\-.](\d{1,2})[\/\-.](\d{1,4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?)?$/);
+  if(m){
+    const g=m[1]!==undefined?[m[1],m[2],m[3],m[4],m[5],m[6],m[7]]:[m[8],m[9],m[10],m[11],m[12],m[13],null];
+    let a=+g[0],b=+g[1],c=+g[2],d,mo,y;
+    if(a>31){y=a;mo=b;d=c;}
+    else{y=c;
+      if(a>12&&b<=12){d=a;mo=b;}
+      else if(b>12&&a<=12){mo=a;d=b;}
+      else if(order==="mdy"){mo=a;d=b;}
+      else{d=a;mo=b;}}
+    if(y<100)y+=y<70?2000:1900;
+    let hh=+(g[3]||0);
+    if(g[6]){hh=hh%12;if(/p/i.test(g[6]))hh+=12;}
+    if(mo<1||mo>12||d<1||d>31||hh>23)return null;
+    const t=Date.UTC(y,mo-1,d,hh,+(g[4]||0),+(g[5]||0));
+    if(new Date(t).getUTCMonth()!==mo-1)return null;
+    return {t,hasTime:g[3]!==undefined};}
+  if(/[a-zç]/i.test(s)){const t=Date.parse(s);if(!isNaN(t)){const d=new Date(t);
+    return {t:Date.UTC(d.getFullYear(),d.getMonth(),d.getDate(),d.getHours(),d.getMinutes(),d.getSeconds()),hasTime:!!(d.getHours()||d.getMinutes())};}}
+  return null;}
+function asDate(v,opt){
+  const o=opt||{};
+  if(v===null||v===undefined||v===""||typeof v==="boolean")return null;
+  if(v instanceof Date){if(isNaN(v))return null;const U=DATE_CONV==="utc";
+    const Y=U?v.getUTCFullYear():v.getFullYear(),M=U?v.getUTCMonth():v.getMonth(),D=U?v.getUTCDate():v.getDate();
+    const h=U?v.getUTCHours():v.getHours(),mi=U?v.getUTCMinutes():v.getMinutes(),sc=U?v.getUTCSeconds():v.getSeconds();
+    return {t:Date.UTC(Y,M,D,h,mi,sc),hasTime:!!(h||mi||sc)};}
+  if(typeof v==="number"){if(!o.serial)return null;const t=serialToT(v);return t===null?null:{t,hasTime:Math.abs(v%1)>1e-9};}
+  return parseDateStr(String(v),o.order||DATE_ORDER);}
+function monthsBetween(t1,t2){const a=new Date(t1),b=new Date(t2);
+  let m=(b.getUTCFullYear()-a.getUTCFullYear())*12+(b.getUTCMonth()-a.getUTCMonth());
+  if(b.getUTCDate()<a.getUTCDate())m-=1;return m;}
+function addUnits(t,n,unit){
+  if(unit==="months"||unit==="years"){const d=new Date(t),k=unit==="years"?n*12:n,day=d.getUTCDate();
+    const y=d.getUTCFullYear(),mo=d.getUTCMonth()+k;
+    const last=new Date(Date.UTC(y,mo+1,0)).getUTCDate();
+    return Date.UTC(y,mo,Math.min(day,last),d.getUTCHours(),d.getUTCMinutes(),d.getUTCSeconds());}
+  const mult={days:DAY,weeks:7*DAY,hours:HOUR,minutes:MIN}[unit]||DAY;
+  return t+n*mult;}
+
+/* ============ estatística / formatação ============ */
 function median(a){if(!a.length)return null;const b=[...a].sort((x,y)=>x-y);const m=Math.floor(b.length/2);return b.length%2?b[m]:(b[m-1]+b[m])/2;}
 function mean(a){return a.length?a.reduce((s,x)=>s+x,0)/a.length:null;}
+function percentile(a,p){if(!a.length)return null;const b=[...a].sort((x,y)=>x-y);
+  const i=(b.length-1)*p,lo=Math.floor(i),hi=Math.ceil(i);
+  return lo===hi?b[lo]:b[lo]+(b[hi]-b[lo])*(i-lo);}
 function fmt(n,d=0){return n===null||n===undefined?"—":n.toLocaleString("pt-BR",{minimumFractionDigits:d,maximumFractionDigits:d});}
 function pct(n){return n===null||n===undefined?"—":(n*100).toLocaleString("pt-BR",{maximumFractionDigits:1})+"%";}
 function brl(n){return n===null||n===undefined?"—":"R$ "+n.toLocaleString("pt-BR",{maximumFractionDigits:0});}
 function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
 function clone(o){return JSON.parse(JSON.stringify(o));}
-const EMPTY_TXT=/^(null|nan|undefined|#?n\/a)$/i;
+const EMPTY_TXT=/^(null|nan|undefined|#?n\/a|-|--)$/i;
 function isEmptyVal(v){return v===""||v===null||v===undefined||(typeof v==="string"&&EMPTY_TXT.test(v.trim()));}
-function fmtDate(d){const p=n=>String(n).padStart(2,"0");const y=d.getUTCFullYear(),hh=d.getUTCHours(),mm=d.getUTCMinutes(),ss=d.getUTCSeconds();if(y<=1900)return `${p(hh)}:${p(mm)}:${p(ss)}`;const dp=`${p(d.getUTCDate())}/${p(d.getUTCMonth()+1)}/${y}`;return (hh||mm||ss)?`${dp} ${p(hh)}:${p(mm)}`:dp;}
+function fmtDate(d){const x=(d instanceof Date)?d:new Date(d);const y=x.getUTCFullYear(),hh=x.getUTCHours(),mm=x.getUTCMinutes(),ss=x.getUTCSeconds();
+  if(y<=1900)return `${P2(hh)}:${P2(mm)}:${P2(ss)}`;
+  const dp=`${P2(x.getUTCDate())}/${P2(x.getUTCMonth()+1)}/${y}`;return (hh||mm||ss)?`${dp} ${P2(hh)}:${P2(mm)}`:dp;}
 function valStr(v){return v instanceof Date?fmtDate(v):(v===null||v===undefined?"":String(v));}
 
-let RAW=[], COLS=[], FILENAME="", DEFS=[], REF=new Date(), SHOWHIDDEN=false;
-const PDEFAULT={emitCte:true,emitMdfe:true,emitThreshold:0,planBands:[50,150,300],semChurn:"Sem churn"};
+let RAW=[], COLS=[], FILENAME="", DEFS=[], REF=new Date(), REFT=Date.now(), SHOWHIDDEN=false, GEN=0;
+const CK=Symbol("cache");
+function bumpGen(){GEN++;}
+const PDEFAULT={emitCte:true,emitMdfe:true,emitThreshold:0,planBands:[50,150,300],semChurn:"Sem churn",
+  derived:[],dateOrder:"dmy",refMode:"maxdata",refDate:""};
 let PARAMS=clone(PDEFAULT);
 const DEFAULT_GROUPS=["Visão geral","Velocidade de ativação","Funil de ativação","Treinamento","Engajamento e risco","Churn","Financeiro","CES","Valor de plano","Personalizadas"];
 let GROUPS=DEFAULT_GROUPS.slice();
@@ -284,24 +368,151 @@ function ensureGroup(){if(!GROUPS.length)GROUPS.push("Minhas métricas");}
 const VIRT_CAT=[["__emitiu","emitiu?"],["__treinou","treinou?"],["__certificado","tem certificado?"],["__ativo","situação Ativa?"],["__churn","deu churn?"],["__faixa_plano","faixa de plano"]];
 const VIRT_NUM=[["__dias_desde_login","dias desde o último login"],["__dias_ate_1a_emissao","dias até a 1ª emissão"],["__dias_ate_churn","dias até o churn"]];
 const VIRTS=[...VIRT_CAT,...VIRT_NUM];
-function colLabel(c){const v=VIRTS.find(x=>x[0]===c);return v?v[1]:c;}
+function colLabel(c){if(c==="__hoje")return "data de referência";
+  const d=derivedDef(c);if(d)return derivedLabel(d);
+  const v=VIRTS.find(x=>x[0]===c);return v?v[1]:c;}
+
+/* ---- data de referência (usada por "__hoje" e pelas métricas de dormência) ---- */
+function computeRef(){
+  const now=new Date();const todayT=Date.UTC(now.getFullYear(),now.getMonth(),now.getDate());
+  if(PARAMS.refMode==="hoje")REFT=todayT;
+  else if(PARAMS.refMode==="fixa"){const d=asDate(PARAMS.refDate);REFT=d?d.t:todayT;}
+  else{let mx=0;const dc=COLS.filter(c=>c.type==="date").map(c=>c.name);
+    for(const r of RAW)for(const k of dc){const d=asDate(r[k],{serial:true});if(d&&d.t>mx&&d.t<=todayT)mx=d.t;}
+    REFT=mx||todayT;}
+  REF=new Date(REFT);}
 
 /* ---- derivation ---- */
+function bandList(){const b=PARAMS.planBands;return ["R$0",`R$ 1–${b[0]}`,`R$ ${b[0]+1}–${b[1]}`,`R$ ${b[1]+1}–${b[2]}`,`R$ ${b[2]}+`];}
 function bandOf(v){const b=PARAMS.planBands;if(v<=0)return "R$0";if(v<=b[0])return `R$ 1–${b[0]}`;if(v<=b[1])return `R$ ${b[0]+1}–${b[1]}`;if(v<=b[2])return `R$ ${b[1]+1}–${b[2]}`;return `R$ ${b[2]}+`;}
+
+/* ===== COLUNAS CALCULADAS (definidas pelo usuário, salvas no painel) =====
+   datediff: to − from em dias/semanas/meses/anos/horas   (from/to = coluna ou "__hoje")
+   datepart: recorta uma data em ano / ano-mês / trimestre / semana / dia da semana  → coorte
+   bucket  : transforma um número (ou um datediff) em faixas
+   arith   : conta simples entre duas colunas numéricas                              */
+const UNIT_LABEL={days:"dias",weeks:"semanas",months:"meses",years:"anos",hours:"horas",minutes:"minutos"};
+const PART_LABEL={year:"ano",month:"ano-mês",quarter:"trimestre",week:"semana",monthname:"mês (nome)",weekday:"dia da semana",day:"dia do mês"};
+const MONTH_PT=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const WD_PT=["dom","seg","ter","qua","qui","sex","sáb"];
+function derivedList(){return (PARAMS&&PARAMS.derived)||[];}
+function derivedDef(id){return id&&id.indexOf("__d_")===0?(derivedList().find(d=>d.id===id)||null):null;}
+function srcLabel(x){return x==="__hoje"?"data de referência":colLabel(x);}
+function derivedLabel(d){
+  if(d.label)return d.label;
+  if(d.kind==="datediff")return `${srcLabel(d.to)} − ${srcLabel(d.from)} (${UNIT_LABEL[d.unit||"days"]})`;
+  if(d.kind==="datepart")return `${srcLabel(d.col)} · ${PART_LABEL[d.part||"month"]}`;
+  if(d.kind==="bucket")return `faixa de ${srcLabel(d.col)}`;
+  if(d.kind==="arith")return `${srcLabel(d.a)} ${d.op||"-"} ${d.bType==="col"?srcLabel(d.b):(d.b??"")}`;
+  return d.id;}
+function derivedFormula(d){
+  if(d.kind==="datediff")return `${srcLabel(d.to)} − ${srcLabel(d.from)}, em ${UNIT_LABEL[d.unit||"days"]}${d.mode==="exact"?" (com hora)":" (dias de calendário)"}${d.clampNeg?", negativos descartados":""}`;
+  if(d.kind==="datepart")return `${PART_LABEL[d.part||"month"]} de ${srcLabel(d.col)}`;
+  if(d.kind==="bucket")return `${srcLabel(d.col)} em faixas: ${bucketLabels(d).join(" | ")}`;
+  if(d.kind==="arith")return `${srcLabel(d.a)} ${d.op||"-"} ${d.bType==="col"?srcLabel(d.b):(d.b??"")}`;
+  return "";}
+function derivedType(d){return (d.kind==="datepart"||d.kind==="bucket")?"cat":"number";}
+function derivedOrdered(d){return d.kind==="bucket"||(d.kind==="datepart"&&["year","month","quarter","week","day","monthname","weekday"].includes(d.part));}
+function depsOf(d){if(!d)return [];
+  if(d.kind==="datediff")return [d.from,d.to];
+  if(d.kind==="datepart"||d.kind==="bucket")return [d.col];
+  if(d.kind==="arith")return [d.a,d.bType==="col"?d.b:null];return [];}
+function bucketLabels(d){const cuts=(d.cuts||[]).slice().sort((a,b)=>a-b);const out=[];let prev=null;
+  cuts.forEach(c=>{out.push(prev===null?`≤ ${c}`:`${prev}–${c}`);prev=c;});
+  out.push(prev===null?"todos":`> ${prev}`);return out;}
+function cmpLabel(d){
+  if(d&&d.kind==="datepart"&&d.part==="monthname")return (a,b)=>MONTH_PT.indexOf(a)-MONTH_PT.indexOf(b);
+  if(d&&d.kind==="datepart"&&d.part==="weekday")return (a,b)=>WD_PT.indexOf(a)-WD_PT.indexOf(b);
+  if(d&&d.kind==="bucket"){const L=bucketLabels(d);return (a,b)=>L.indexOf(a)-L.indexOf(b);}
+  return (a,b)=>String(a).localeCompare(String(b));}
+function derivedValues(d){
+  if(d.kind==="bucket")return bucketLabels(d);
+  if(d.kind==="datepart"){const s=new Set();for(const r of RAW){const v=getVal(r,d.id);if(!isEmptyVal(v)){s.add(String(v));if(s.size>300)break;}}
+    return [...s].sort(cmpLabel(d));}
+  return [];}
+function isDateish(name){if(name==="__hoje")return true;const m=colMeta?colMeta(name):null;return m?m.type==="date":false;}
+function dateSrc(r,ref,depth){
+  if(ref==="__hoje")return {t:REFT,hasTime:false};
+  return asDate(getVal(r,ref,(depth||0)+1),{serial:isDateish(ref)});}
+function derivedVal(r,def,depth){
+  if((depth||0)>6)return null;
+  switch(def.kind){
+    case "datediff":{
+      const A=dateSrc(r,def.from,depth),B=dateSrc(r,def.to,depth);
+      if(!A||!B)return null;
+      const u=def.unit||"days";let n;
+      if(u==="months")n=monthsBetween(A.t,B.t);
+      else if(u==="years")n=monthsBetween(A.t,B.t)/12;
+      else{const cal=def.mode!=="exact"&&(u==="days"||u==="weeks");
+        const a=cal?midnight(A.t):A.t,b=cal?midnight(B.t):B.t;
+        n=(b-a)/({days:DAY,weeks:7*DAY,hours:HOUR,minutes:MIN}[u]||DAY);}
+      if(def.abs)n=Math.abs(n);
+      if(def.clampNeg&&n<0)return null;
+      return n;}
+    case "datepart":{
+      const D=dateSrc(r,def.col,depth);if(!D)return null;const d=new Date(D.t),y=d.getUTCFullYear();
+      switch(def.part||"month"){
+        case "year":return String(y);
+        case "quarter":return `${y}-T${Math.floor(d.getUTCMonth()/3)+1}`;
+        case "week":{const th=new Date(Date.UTC(y,d.getUTCMonth(),d.getUTCDate()));
+          th.setUTCDate(th.getUTCDate()-((th.getUTCDay()+6)%7)+3);
+          const first=new Date(Date.UTC(th.getUTCFullYear(),0,4));
+          const wk=1+Math.round(((th-first)/DAY-3+((first.getUTCDay()+6)%7))/7);
+          return `${th.getUTCFullYear()}-S${P2(wk)}`;}
+        case "monthname":return MONTH_PT[d.getUTCMonth()];
+        case "weekday":return WD_PT[d.getUTCDay()];
+        case "day":return P2(d.getUTCDate());
+        default:return `${y}-${P2(d.getUTCMonth()+1)}`;}}
+    case "bucket":{
+      const v=toNumOrNull(getVal(r,def.col,(depth||0)+1));if(v===null)return null;
+      const cuts=(def.cuts||[]).slice().sort((a,b)=>a-b),L=bucketLabels(def);
+      for(let i=0;i<cuts.length;i++)if(v<=cuts[i])return L[i];
+      return L[L.length-1];}
+    case "arith":{
+      const a=toNumOrNull(getVal(r,def.a,(depth||0)+1));
+      const b=def.bType==="col"?toNumOrNull(getVal(r,def.b,(depth||0)+1)):toNumOrNull(def.b);
+      if(a===null||b===null)return null;
+      if(def.op==="+")return a+b;if(def.op==="-")return a-b;if(def.op==="*")return a*b;
+      if(def.op==="/")return b===0?null:a/b;return null;}}
+  return null;}
+
 function virtualVal(r,id){const valor=num(r.epl_valor),motivo=String(r.motivo_churn||"").trim();const emitSum=(PARAMS.emitCte?num(r.qtd_cte):0)+(PARAMS.emitMdfe?num(r.qtd_mdfe):0);
+  const dd=(a,b)=>{const A=asDate(a,{serial:true}),B=asDate(b,{serial:true});return (A&&B)?(midnight(B.t)-midnight(A.t))/DAY:null;};
   switch(id){case "__emitiu":return emitSum>PARAMS.emitThreshold?"Sim":"Não";case "__treinou":return isFlag(r.treinamento_realizado)?"Sim":"Não";case "__certificado":return isFlag(r.certificado_configurado)?"Sim":"Não";case "__ativo":return String(r.emp_situacao||"").trim()==="Ativa"?"Sim":"Não";case "__churn":return (motivo!==""&&motivo!==PARAMS.semChurn)?"Sim":"Não";case "__faixa_plano":return bandOf(valor);
-  case "__dias_desde_login":{const d=parseDate(r.ultimo_login);return d?(REF-d)/DAY:null;}case "__dias_ate_1a_emissao":{const a=parseDate(r.emp_data_contratacao),b=parseDate(r.data_primeira_emissao_ces);return (a&&b)?(b-a)/DAY:null;}case "__dias_ate_churn":{const a=parseDate(r.emp_data_contratacao),b=parseDate(r.data_churn);return (a&&b)?(b-a)/DAY:null;}}}
-function getVal(r,col){return col&&col.startsWith("__")?virtualVal(r,col):r[col];}
+  case "__dias_desde_login":{const d=asDate(r.ultimo_login,{serial:true});return d?(midnight(REFT)-midnight(d.t))/DAY:null;}
+  case "__dias_ate_1a_emissao":return dd(r.emp_data_contratacao,r.data_primeira_emissao_ces);
+  case "__dias_ate_churn":return dd(r.emp_data_contratacao,r.data_churn);}}
+
+/* leitura de valor com cache por linha (invalidado quando muda planilha/parâmetros) */
+function getVal(r,col,depth){
+  if(!col)return undefined;
+  if(col==="__hoje")return new Date(REFT);
+  if(col.indexOf("__")===0){
+    let c=r[CK];if(!c||c.g!==GEN)c=r[CK]={g:GEN,v:{}};
+    if(col in c.v)return c.v[col];
+    const d=derivedDef(col);
+    const out=d?derivedVal(r,d,depth||0):virtualVal(r,col);
+    c.v[col]=out;return out;}
+  return r[col];}
 function rhsRaw(r,c){return c.valType==="col"?getVal(r,c.rcol):c.val;}
 function rhsNum(r,c){if(c.valType==="col"){let n=toNumOrNull(getVal(r,c.rcol));if(n===null)return null;
     if(c.aop){const a=toNumOrNull(c.aval);if(a!==null){if(c.aop==="+")n+=a;else if(c.aop==="-")n-=a;else if(c.aop==="*")n*=a;else if(c.aop==="/")n=(a!==0?n/a:null);}}return n;}
   return toNumOrNull(c.val);}
+/* lado direito como data — aceita "coluna + N dias/meses" (antes isso silenciosamente dava falso) */
+function rhsDate(r,c){
+  if(c.valType==="col"){
+    const d=asDate(getVal(r,c.rcol),{serial:isDateish(c.rcol)});if(!d)return null;
+    if(c.aop==="+"||c.aop==="-"){const a=toNumOrNull(c.aval);if(a===null)return d;
+      return {t:addUnits(d.t,c.aop==="-"?-a:a,c.aunit||"days"),hasTime:d.hasTime};}
+    if(c.aop)return null;
+    return d;}
+  return asDate(c.val);}
 function matchCond(r,c){const v=getVal(r,c.col);
   if(c.op==="preenchido")return !isEmptyVal(v);
   if(c.op==="vazio")return isEmptyVal(v);
   if(c.op==="contem")return valStr(v).toLowerCase().includes(valStr(rhsRaw(r,c)).toLowerCase());
-  const LD=asDate(v),RD=(c.valType==="col")?(c.aop?null:asDate(getVal(r,c.rcol))):asDate(c.val);
-  if(LD&&RD){const lt=LD.t;let ds,de;if(RD.hasTime){ds=de=RD.t;}else{ds=RD.t;de=RD.t+DAY-1;}
+  const LD=asDate(v,{serial:isDateish(c.col)}),RD=rhsDate(r,c);
+  if(LD&&RD){const lt=LD.t;let ds,de;if(RD.hasTime){ds=de=RD.t;}else{ds=midnight(RD.t);de=ds+DAY-1;}
     if(c.op==="="||c.op==="≠"){const inr=lt>=ds&&lt<=de;return c.op==="="?inr:!inr;}
     if(c.op===">")return lt>de; if(c.op==="<")return lt<ds; if(c.op==="≥")return lt>=ds; if(c.op==="≤")return lt<=de; return false;}
   const nv=toNumOrNull(v),nt=rhsNum(r,c);
@@ -319,6 +530,15 @@ function evalNode(r,n){
 function filterRows(node){let n=node;if(Array.isArray(n))n={logic:"and",children:n};if(!n)n={logic:"and",children:[]};return RAW.filter(r=>evalNode(r,n));}
 
 /* ---- eval ---- */
+function colIsDate(col){if(!col)return false;if(derivedDef(col))return false;if(col==="__hoje")return true;if(col.indexOf("__")===0)return false;return isDateish(col);}
+/* extrai a série numérica de uma coluna e informa quantas linhas ficaram sem valor.
+   Colunas de data viram timestamps, então mediana/mín/máx de datas funcionam. */
+function seriesOf(base,col){const isD=colIsDate(col);const vals=[];let missing=0;
+  for(const r of base){const raw=getVal(r,col);
+    const n=isD?((asDate(raw,{serial:true})||{}).t??null):toNumOrNull(raw);
+    if(n===null||n===undefined||isNaN(n))missing++;else vals.push(n);}
+  return {vals,missing,isDate:isD};}
+function covTxt(s,total){return `n=${s.vals.length}`+(s.missing?` · ${fmt(s.missing)} sem valor (${pct(total?s.missing/total:0)})`:"");}
 function rateOf(g){const base=filterRows(g.filters);if(!base.length)return null;return base.filter(r=>matchCond(r,g.num)).length/base.length;}
 function evalSingle(d){const base=filterRows(d.filters);
   if(d.calc==="count")return {val:base.length,kind:"int"};
@@ -326,27 +546,39 @@ function evalSingle(d){const base=filterRows(d.filters);
   if(d.calc==="rate"){const s=base.filter(r=>matchCond(r,d.num));return {val:base.length?s.length/base.length:null,kind:"pct",extra:`${s.length} de ${base.length}`};}
   if(d.calc==="compare"){const ra=rateOf(d.a),rb=rateOf(d.b);return {val:(ra===null||rb===null)?null:(ra-rb)*100,kind:"pp"};}
   if(d.calc==="moda"){const tally=new Map();let counted=0;for(const r of base){let v=getVal(r,d.col);if(isEmptyVal(v))continue;v=valStr(v);tally.set(v,(tally.get(v)||0)+1);counted++;}let best=null,bn=-1;for(const [k,c] of tally){if(c>bn){bn=c;best=k;}}const rare=best!==null&&(bn<=1||tally.size>counted*0.9);return {val:best,kind:"text",extra:best===null?"sem dados":`${fmt(bn)} ocorrências · ${pct(counted?bn/counted:0)} dos preenchidos${rare?" · ⚠ valores quase todos únicos, moda pouco significativa":""}`};}
-  const vals=base.map(r=>toNumOrNull(getVal(r,d.col))).filter(x=>x!==null);
-  if(d.calc==="median")return {val:median(vals),kind:"num",extra:`n=${vals.length}`};
-  if(d.calc==="mean")return {val:mean(vals),kind:"num",extra:`n=${vals.length}`};
-  if(d.calc==="sum")return {val:vals.reduce((s,x)=>s+x,0),kind:"num",extra:`n=${vals.length}`};
+  if(d.calc==="distinct"){const s=new Set();let counted=0;for(const r of base){const v=getVal(r,d.col);if(isEmptyVal(v))continue;s.add(valStr(v));counted++;}
+    return {val:s.size,kind:"int",extra:`entre ${fmt(counted)} preenchidos de ${fmt(base.length)}`};}
+  const s=seriesOf(base,d.col);const kind=s.isDate?"date":"num";const extra=covTxt(s,base.length);
+  if(d.calc==="median")return {val:median(s.vals),kind,extra};
+  if(d.calc==="mean")return {val:mean(s.vals),kind,extra};
+  if(d.calc==="min")return {val:s.vals.length?Math.min(...s.vals):null,kind,extra};
+  if(d.calc==="max")return {val:s.vals.length?Math.max(...s.vals):null,kind,extra};
+  if(d.calc==="p90")return {val:percentile(s.vals,0.9),kind,extra};
+  if(d.calc==="sum")return {val:s.isDate?null:s.vals.reduce((a,x)=>a+x,0),kind:"num",extra:s.isDate?"soma não se aplica a datas":extra};
   return {val:null,kind:"num"};}
 function segmentsOf(d){
   if(d.auto){const seen=new Set(),set=[];
     for(const r of RAW){const v=getVal(r,d.autoCol);if(isEmptyVal(v))continue;const k=valStr(v);
       if((d.exclude||[]).map(String).includes(k))continue;if(!seen.has(k)){seen.add(k);set.push(k);}}
-    let labels=set;const allNum=labels.every(x=>toNumOrNull(x)!==null);
-    if(allNum)labels.sort((a,b)=>toNumOrNull(a)-toNumOrNull(b));
+    let labels=set;const dd=derivedDef(d.autoCol);
+    if(dd&&derivedOrdered(dd))labels.sort(cmpLabel(dd));                       // coortes em ordem cronológica
+    else if(labels.every(x=>toNumOrNull(x)!==null))labels.sort((a,b)=>toNumOrNull(a)-toNumOrNull(b));
+    else if(colIsDate(d.autoCol))labels.sort((a,b)=>((asDate(a)||{}).t||0)-((asDate(b)||{}).t||0));
     else labels.sort((a,b)=>filterRows({logic:"and",children:[{col:d.autoCol,op:"=",val:b}]}).length-filterRows({logic:"and",children:[{col:d.autoCol,op:"=",val:a}]}).length);
+    if(d.topN>0&&labels.length>d.topN)labels=labels.slice(0,d.topN);
     return labels.map(v=>({label:String(v),filters:{logic:"and",children:[{col:d.autoCol,op:"=",val:v}]}}));}
   return d.segments||[];}
 function measureSeg(d,seg){const base=filterRows(seg.filters);const mk=d.measure?d.measure.kind:"count";
   if(mk==="count")return {v:base.length,disp:fmt(base.length)};
   if(mk==="rate"){const s=base.filter(r=>matchCond(r,d.measure.num)).length;const v=base.length?s/base.length:null;return {v,disp:pct(v)+" · "+base.length};}
-  const vals=base.map(r=>toNumOrNull(getVal(r,d.measure.col))).filter(x=>x!==null);
-  const v=mk==="mean"?mean(vals):mk==="median"?median(vals):vals.reduce((s,x)=>s+x,0);
-  return {v,disp:(v===null?"—":fmt(v,2))+" · "+vals.length};}
-function evalBars(d){return {orient:d.orient||"h",measureKind:d.measure?d.measure.kind:"count",segs:segmentsOf(d).map(s=>({label:s.label,...measureSeg(d,s)}))};}
+  const s=seriesOf(base,d.measure.col);
+  const v=mk==="mean"?mean(s.vals):mk==="median"?median(s.vals):mk==="p90"?percentile(s.vals,0.9):s.vals.reduce((a,x)=>a+x,0);
+  const shown=v===null?"—":(s.isDate?fmtDate(v):fmt(v,d.measure.dec??1));
+  return {v,disp:shown+" · n="+s.vals.length,isDate:s.isDate};}
+function evalBars(d){const segs=segmentsOf(d).map(s=>({label:s.label,...measureSeg(d,s)}));
+  if(segs.some(s=>s.isDate)){const vs=segs.map(s=>s.v).filter(v=>v!==null&&!isNaN(v));
+    if(vs.length){const mn=Math.min(...vs);segs.forEach(s=>{s.v=(s.v===null?null:(s.v-mn)/DAY+1);});}}
+  return {orient:d.orient||"h",measureKind:d.measure?d.measure.kind:"count",segs};}
 function evalFunnel(d){const top=d.steps&&d.steps.length?filterRows(d.steps[0].filters).length:0;return {top,steps:(d.steps||[]).map(s=>({label:s.label,v:filterRows(s.filters).length}))};}
 
 /* ---- "como é calculada" ---- */
@@ -366,11 +598,12 @@ function defText(d){
     if(d.calc==="rate")return `Entre clientes onde ${filtTxt(d.filters)}, a fração que também atende ${condTxt(d.num)}.`;
     if(d.calc==="compare")return `Taxa do grupo A (onde ${filtTxt(d.a.filters)} → ${condTxt(d.a.num)}) menos a do grupo B (onde ${filtTxt(d.b.filters)} → ${condTxt(d.b.num)}), em p.p.`;
     if(d.calc==="moda")return `Valor mais frequente de <code>${esc(colLabel(d.col))}</code> entre clientes onde ${filtTxt(d.filters)}.`;
-    const w={median:"Mediana",mean:"Média",sum:"Soma"}[d.calc];
-    return `${w} de <code>${esc(colLabel(d.col))}</code> entre clientes onde ${filtTxt(d.filters)}.`;}
+    if(d.calc==="distinct")return `Quantos valores diferentes de <code>${esc(colLabel(d.col))}</code> aparecem entre clientes onde ${filtTxt(d.filters)}.`;
+    const w={median:"Mediana",mean:"Média",sum:"Soma",min:"Menor valor",max:"Maior valor",p90:"Percentil 90"}[d.calc]||"Valor";
+    return `${w} de <code>${esc(colLabel(d.col))}</code> entre clientes onde ${filtTxt(d.filters)}. Linhas sem valor na coluna ficam fora da conta (o rodapé do cartão mostra quantas).`;}
   if(d.type==="funnel")return `Etapas (contagem de clientes): ${(d.steps||[]).map(s=>esc(s.label)).join(" → ")}.`;
   if(d.type==="bars"){const seg=d.auto?`cada valor de <code>${esc(colLabel(d.autoCol))}</code>`:`os segmentos definidos`;const mk=d.measure?d.measure.kind:"count";
-    const m={count:"a contagem de clientes",rate:`a fração que atende ${condTxt(d.measure.num)}`,mean:`a média de <code>${esc(colLabel(d.measure.col))}</code>`,median:`a mediana de <code>${esc(colLabel(d.measure.col))}</code>`}[mk];
+    const m={count:"a contagem de clientes",rate:`a fração que atende ${condTxt(d.measure.num)}`,mean:`a média de <code>${esc(colLabel(d.measure.col))}</code>`,median:`a mediana de <code>${esc(colLabel(d.measure.col))}</code>`,p90:`o percentil 90 de <code>${esc(colLabel(d.measure.col))}</code>`,sum:`a soma de <code>${esc(colLabel(d.measure.col))}</code>`}[mk];
     return `Para ${seg}, mede ${m}.`;}
   return "";}
 
@@ -462,7 +695,8 @@ const sbDelete=id=>sb("DELETE","dashboards?id=eq."+encodeURIComponent(id));
 function setStatus(s){const el=$("#syncStatus");if(!el)return;el.className="sync "+(s||"");
   el.textContent=s==="saving"?"salvando…":s==="saved"?"● salvo":s==="error"?"⚠ erro ao salvar":"";}
 function currentConfig(){return {params:PARAMS,defs:DEFS,groups:GROUPS};}
-function applyConfig(cfg){PARAMS=Object.assign(clone(PDEFAULT),(cfg&&cfg.params)||{});DEFS=((cfg&&cfg.defs)||[]).map(migrateDef);GROUPS=(cfg&&cfg.groups&&cfg.groups.length)?cfg.groups.slice():deriveGroups(DEFS);ensureGroup();}
+function applyConfig(cfg){PARAMS=Object.assign(clone(PDEFAULT),(cfg&&cfg.params)||{});DEFS=((cfg&&cfg.defs)||[]).map(migrateDef);GROUPS=(cfg&&cfg.groups&&cfg.groups.length)?cfg.groups.slice():deriveGroups(DEFS);ensureGroup();
+  DATE_ORDER=PARAMS.dateOrder||"dmy";bumpGen();if(RAW.length){COLS=detectCols(RAW);computeRef();}}
 function scheduleSave(){if(!sbOn()||!CURRENT)return;setStatus("saving");clearTimeout(saveTimer);
   saveTimer=setTimeout(async()=>{try{await sbSave(CURRENT,currentConfig());setStatus("saved");}catch(e){setStatus("error");console.error(e);}},800);}
 function populateDashSel(){const sel=$("#dashSel");if(!sel)return;sel.innerHTML=DASHBOARDS.map(d=>`<option value="${esc(d.id)}" ${d.id===CURRENT?"selected":""}>${esc(d.name)}</option>`).join("");}
@@ -506,45 +740,63 @@ function read(file){$("#err").classList.add("hidden");const r=new FileReader();
     const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:""});
     if(!rows.length)throw new Error("A planilha está vazia ou sem linhas de dados.");
     if(!Object.keys(rows[0]).length)throw new Error("Não encontrei colunas com cabeçalho na primeira aba.");
-    RAW=rows;FILENAME=file.name;COLS=detectCols(rows);
-    REF=new Date(0);RAW.forEach(r=>["emp_data_contratacao","ultimo_login","data_primeira_emissao_ces"].forEach(k=>{const d=parseDate(r[k]);if(d&&d>REF)REF=d;}));
-    if(REF.getTime()===0)REF=new Date();
+    RAW=rows;FILENAME=file.name;
+    DATE_CONV=detectDateConv(rows);            // meia-noite local x UTC, decidido pelos dados
+    DATE_ORDER=PARAMS.dateOrder||"dmy";
+    COLS=detectCols(rows);
+    bumpGen();computeRef();
     $("#empty").classList.add("hidden");$("#report").classList.remove("hidden");
     $("#bLoad0").hidden=true;$("#actions").hidden=false;afterDataLoaded();
   }catch(err){showErr(err.message||String(err));}};
   r.onerror=()=>showErr("Não consegui ler o arquivo.");r.readAsArrayBuffer(file);}
 function showErr(m){const e=$("#err");e.textContent="Erro: "+m;e.classList.remove("hidden");}
-function detectCols(rows){const keys=Object.keys(rows[0]);const sample=rows.slice(0,400);
-  return keys.map(k=>{const vals=[];for(const r of sample){const v=r[k];if(!isEmptyVal(v))vals.push(v);}
+/* nomes que sugerem data — só nessas colunas um número é interpretado como serial do Excel */
+const DATE_HINT=/(data|date|dt_|_dt|dia|prazo|vencim|nascim|login|churn|emiss|cadastr|contrat|inicio|início|fim|criad|atualiz|expir)/i;
+function detectCols(rows){const keys=Object.keys(rows[0]);const sample=rows.slice(0,800);
+  return keys.map(k=>{const hint=DATE_HINT.test(k);const vals=[];
+    for(const r of sample){const v=r[k];if(!isEmptyVal(v))vals.push(v);}
     const t=vals.length;let nd=0,nn=0;const distinct=new Set();
-    vals.forEach(v=>{if(asDate(v))nd++;else if(toNumOrNull(v)!==null)nn++;if(distinct.size<80)distinct.add(valStr(v));});
+    vals.forEach(v=>{if(asDate(v,{serial:hint}))nd++;else if(toNumOrNull(v)!==null)nn++;if(distinct.size<80)distinct.add(valStr(v));});
     let type="text";
     if(t){if(nd/t>0.8)type="date";else if(nn/t>0.8)type="number";else{const low=[...distinct].map(x=>String(x).toLowerCase());
       if(distinct.size<=2&&low.every(x=>["sim","não","nao","true","false","1","0","s","n","yes","no","verdadeiro","falso","x"].includes(x)))type="bool";
       else if(distinct.size<=15)type="cat";else type="text";}}
-    return {name:k,numeric:type==="number",type,values:[...distinct].slice(0,80)};});}
+    return {name:k,numeric:type==="number",type,serial:hint,filled:t,total:sample.length,values:[...distinct].slice(0,80)};});}
+function dateCols(){return COLS.filter(c=>c.type==="date").map(c=>c.name);}
+function numLikeCols(){return COLS.filter(c=>c.numeric).map(c=>c.name)
+  .concat(VIRT_NUM.map(v=>v[0]))
+  .concat(derivedList().filter(d=>derivedType(d)==="number").map(d=>d.id));}
 function distinctVals(col){const set=new Set();for(const r of RAW){const v=getVal(r,col);if(!isEmptyVal(v)){set.add(valStr(v));if(set.size>40)break;}}return [...set];}
 
 /* ---- render ---- */
 function fmtSingle(d,res){if(res.val===null||res.val===undefined)return "—";
   if(res.kind==="pct")return pct(res.val);
   if(res.kind==="text")return esc(res.val);
+  if(res.kind==="date")return fmtDate(res.val);
   if(res.kind==="pp")return (res.val>=0?"+":"")+res.val.toLocaleString("pt-BR",{maximumFractionDigits:1});
   if(res.kind==="int")return fmt(res.val);
   if(d.money)return brl(res.val);return fmt(res.val,d.dec??2);}
 function subSingle(d,res){if(d.calc==="count"&&d.filters&&(d.filters.children||[]).length)return pct(res.val/RAW.length)+" do total";
-  if(["rate","pct_base","median","mean","sum","moda"].includes(d.calc))return res.extra||"";return "";}
+  if(["rate","pct_base","median","mean","sum","moda","min","max","p90","distinct"].includes(d.calc))return res.extra||"";return "";}
 function tools(d){const seeded=SEED().some(s=>s.id===d.id);
   return `<div class="cardtools">
     <button data-act="edit" data-id="${d.id}">editar</button>
     <button data-act="hide" data-id="${d.id}">${d.hidden?"reexibir":"ocultar"}</button>
     <button data-act="up" data-id="${d.id}">↑</button><button data-act="down" data-id="${d.id}">↓</button>
     ${seeded?`<button data-act="reset" data-id="${d.id}">padrão</button>`:`<button class="danger" data-act="del" data-id="${d.id}">excluir</button>`}</div>`;}
-function calcDetails(d){return `<details class="calc"><summary>como é calculada</summary><div class="calcbody">${defText(d)}</div></details>`;}
+function derivedNote(d){const used=[...refCols(d)].map(derivedDef).filter(Boolean);
+  if(!used.length)return "";
+  return `<div class="hint" style="margin-top:8px">Colunas calculadas usadas — ${used.map(x=>`<b>${esc(derivedLabel(x))}</b>: ${esc(derivedFormula(x))}`).join(" · ")}</div>`;}
+function calcDetails(d){return `<details class="calc"><summary>como é calculada</summary><div class="calcbody">${defText(d)}${derivedNote(d)}</div></details>`;}
 function colsInNode(n,acc){if(!n)return;if(Array.isArray(n)){n.forEach(x=>colsInNode(x,acc));return;}if(n.children!==undefined){(n.children||[]).forEach(x=>colsInNode(x,acc));return;}if(n.col)acc.add(n.col);if(n.valType==="col"&&n.rcol)acc.add(n.rcol);}
 function colsInCond(c,acc){if(!c)return;if(c.col)acc.add(c.col);if(c.valType==="col"&&c.rcol)acc.add(c.rcol);}
-function refCols(d){const acc=new Set();if(d.type==="single"){colsInNode(d.filters,acc);if(d.num)colsInCond(d.num,acc);if(d.col)acc.add(d.col);if(d.a){colsInNode(d.a.filters,acc);colsInCond(d.a.num,acc);}if(d.b){colsInNode(d.b.filters,acc);colsInCond(d.b.num,acc);}}if(d.type==="bars"){if(d.measure){if(d.measure.num)colsInCond(d.measure.num,acc);if(d.measure.col)acc.add(d.measure.col);}(d.segments||[]).forEach(s=>colsInNode(s.filters,acc));if(d.autoCol)acc.add(d.autoCol);}if(d.type==="funnel")(d.steps||[]).forEach(s=>colsInNode(s.filters,acc));return acc;}
-function missingCols(d){const present=new Set(COLS.map(c=>c.name));const miss=[];refCols(d).forEach(c=>{if(c&&!String(c).startsWith("__")&&!present.has(c)&&miss.indexOf(c)<0)miss.push(c);});return miss;}
+function expandDeps(acc){let again=true,guard=0;
+  while(again&&guard++<8){again=false;
+    [...acc].forEach(c=>{const d=derivedDef(c);if(!d)return;
+      depsOf(d).forEach(x=>{if(x&&x!=="__hoje"&&!acc.has(x)){acc.add(x);again=true;}});});}
+  return acc;}
+function refCols(d){const acc=new Set();if(d.type==="single"){colsInNode(d.filters,acc);if(d.num)colsInCond(d.num,acc);if(d.col)acc.add(d.col);if(d.a&&d.a.filters!==undefined){colsInNode(d.a.filters,acc);colsInCond(d.a.num,acc);}if(d.b&&d.b.filters!==undefined){colsInNode(d.b.filters,acc);colsInCond(d.b.num,acc);}}if(d.type==="bars"){if(d.measure){if(d.measure.num)colsInCond(d.measure.num,acc);if(d.measure.col)acc.add(d.measure.col);}(d.segments||[]).forEach(s=>colsInNode(s.filters,acc));if(d.autoCol)acc.add(d.autoCol);}if(d.type==="funnel")(d.steps||[]).forEach(s=>colsInNode(s.filters,acc));return expandDeps(acc);}
+function missingCols(d){const present=new Set(COLS.map(c=>c.name));const miss=[];refCols(d).forEach(c=>{if(c&&String(c).indexOf("__")!==0&&!present.has(c)&&miss.indexOf(c)<0)miss.push(c);});return miss;}
 function renderCard(d){
   const miss=missingCols(d);
   const cls=`card${d.wide?" wide":""}${d.hidden?" hiddenc":""}${miss.length?" warnc":""}`;
@@ -561,7 +813,7 @@ function renderCard(d){
   }
   return `<div class="${cls}">${warn}${inner}${calcDetails(d)}${tools(d)}</div>`;}
 function render(){
-  $("#meta").innerHTML=`<span>arquivo <b>${esc(FILENAME)}</b></span><span>registros <b>${fmt(RAW.length)}</b></span><span>ref. <b>${REF.toLocaleDateString("pt-BR")}</b></span>`;
+  $("#meta").innerHTML=`<span>arquivo <b>${esc(FILENAME)}</b></span><span>registros <b>${fmt(RAW.length)}</b></span><span>ref. <b>${fmtDate(REFT)}</b></span><span>colunas de data <b>${fmt(dateCols().length)}</b></span>`;
   let html="";
   DEFS.forEach(d=>{if(d.group&&!GROUPS.includes(d.group))GROUPS.push(d.group);});
   if(!DEFS.length)html+=`<section class="panel"><div class="empty-note" style="font-size:15px;line-height:1.5">Painel em branco. Use <b>＋ Grupo</b> para criar seções e <b>Nova métrica</b> para montar métricas com as colunas desta planilha (${fmt(COLS.length)} colunas detectadas).</div></section>`;
@@ -602,9 +854,19 @@ function askGroupDelete(gi){const name=GROUPS[gi];const members=DEFS.filter(d=>d
 function el(tag,cls){const e=document.createElement(tag);if(cls)e.className=cls;return e;}
 const CTYPE_LABEL={number:"nº",date:"data",bool:"S/N",cat:"categoria",text:"texto"};
 function colMeta(name){return COLS.find(c=>c.name===name);}
-function colType(name){if(name&&name.startsWith("__"))return VIRT_NUM.some(v=>v[0]===name)?"number":(name==="__faixa_plano"?"cat":"bool");const m=colMeta(name);return m?m.type:"text";}
-function colValues(name){if(name==="__faixa_plano")return bandList();if(name&&name.startsWith("__")&&!VIRT_NUM.some(v=>v[0]===name))return ["Sim","Não"];const m=colMeta(name);return (m&&m.values)||[];}
-function columnOptions(){let arr=COLS.map(c=>({value:c.name,label:c.name,type:CTYPE_LABEL[c.type]||"texto"}));return arr.concat(VIRTS.map(v=>({value:v[0],label:v[1],type:"derivada"})));}
+function colType(name){if(name==="__hoje")return "date";
+  const d=derivedDef(name);if(d)return derivedType(d);
+  if(name&&name.indexOf("__")===0)return VIRT_NUM.some(v=>v[0]===name)?"number":(name==="__faixa_plano"?"cat":"bool");
+  const m=colMeta(name);return m?m.type:"text";}
+function colValues(name){
+  const d=derivedDef(name);if(d)return derivedValues(d);
+  if(name==="__faixa_plano")return bandList();
+  if(name&&name.indexOf("__")===0&&!VIRT_NUM.some(v=>v[0]===name))return ["Sim","Não"];
+  const m=colMeta(name);return (m&&m.values)||[];}
+function columnOptions(){
+  const arr=COLS.map(c=>({value:c.name,label:c.name,type:CTYPE_LABEL[c.type]||"texto"}));
+  const der=derivedList().map(d=>({value:d.id,label:derivedLabel(d),type:"calculada"}));
+  return arr.concat(der,VIRTS.map(v=>({value:v[0],label:v[1],type:"derivada"})),[{value:"__hoje",label:"data de referência",type:"data"}]);}
 function makeCombo(value){
   const options=columnOptions();const wrap=el("span","combo");const input=el("input","combo-inp");input.type="text";input.placeholder="buscar coluna…";input.setAttribute("autocomplete","off");
   const panel=el("div","combo-panel");wrap._val=value||"";
@@ -627,10 +889,10 @@ function makeValueField(colName,op,initVal){
   if(op==="contem")type="text";
   let manual=(type==="cat"||type==="bool")&&initVal&&!values.map(String).includes(String(initVal));
   function build(){wrap.innerHTML="";let read;
-    if(!manual&&type==="date"){const pd=initVal?parseDateStrict(initVal):null;const wt=!!(pd&&pd.hasTime);
+    if(!manual&&type==="date"){const pd=initVal?asDate(initVal):null;const wt=!!(pd&&pd.hasTime);
       const inp=el("input","c-date");inp.type=wt?"datetime-local":"date";if(pd)inp.value=wt?isoDateTime(pd.t):isoDate(pd.t);
       const lab=el("label","c-timechk");const chk=el("input");chk.type="checkbox";chk.checked=wt;lab.append(chk,document.createTextNode("hora"));
-      chk.onchange=()=>{let base=inp.value?parseDateStrict(inp.value.replace("T"," ")):null;inp.type=chk.checked?"datetime-local":"date";if(base)inp.value=chk.checked?isoDateTime(base.t):isoDate(base.t);};
+      chk.onchange=()=>{let base=inp.value?asDate(inp.value.replace("T"," ")):null;inp.type=chk.checked?"datetime-local":"date";if(base)inp.value=chk.checked?isoDateTime(base.t):isoDate(base.t);};
       wrap.append(inp,lab);read=()=>inp.value;
     }else if(!manual&&(type==="bool"||type==="cat")&&values.length){const sel=el("select","c-pick");values.forEach(v=>sel.add(new Option(v,v)));if(initVal!=null&&values.map(String).includes(String(initVal)))sel.value=initVal;wrap.append(sel);read=()=>sel.value;
     }else if(!manual&&type==="number"){const inp=el("input","c-num");inp.type="number";inp.placeholder="número";if(initVal!=null)inp.value=initVal;wrap.append(inp);read=()=>inp.value;
@@ -649,19 +911,26 @@ function condRow(preset){
   const rcolBox=makeCombo(preset&&preset.rcol);
   const aopSel=el("select","c-aop");[["","—"],["+","+"],["-","−"],["*","×"],["/","÷"]].forEach(([v,l])=>aopSel.add(new Option(l,v)));if(preset&&preset.aop)aopSel.value=preset.aop;
   const avalIn=el("input","c-aval");avalIn.type="number";avalIn.placeholder="nº";if(preset&&preset.aval!=null)avalIn.value=preset.aval;
-  colWrap.append(rcolBox,aopSel,avalIn);
+  const aunitSel=el("select","c-aunit");[["days","dias"],["weeks","semanas"],["months","meses"],["years","anos"],["hours","horas"]].forEach(([v,l])=>aunitSel.add(new Option(l,v)));if(preset&&preset.aunit)aunitSel.value=preset.aunit;
+  colWrap.append(rcolBox,aopSel,avalIn,aunitSel);
   const del=el("button","del");del.type="button";del.textContent="×";del.onclick=()=>div.remove();
   div.append(colBox,opSel,rhsSel,valWrap,colWrap,del);
   let initVal=(preset&&preset.valType!=="col")?(preset.val??""):"";
   function buildVal(){valWrap.innerHTML="";const f=makeValueField(colBox._get(),opSel.value,initVal);valWrap._field=f;valWrap.append(f);}
-  function sync(){const noRhs=["preenchido","vazio"].includes(opSel.value);rhsSel.style.display=noRhs?"none":"";const useCol=!noRhs&&rhsSel.value==="col";valWrap.style.display=(!noRhs&&!useCol)?"":"none";colWrap.style.display=useCol?"":"none";avalIn.style.display=(useCol&&aopSel.value!=="")?"":"none";}
+  function sync(){const noRhs=["preenchido","vazio"].includes(opSel.value);rhsSel.style.display=noRhs?"none":"";
+    const useCol=!noRhs&&rhsSel.value==="col";valWrap.style.display=(!noRhs&&!useCol)?"":"none";colWrap.style.display=useCol?"":"none";
+    const shift=useCol&&aopSel.value!=="";avalIn.style.display=shift?"":"none";
+    const rIsDate=colType(rcolBox._get())==="date";
+    aunitSel.style.display=(shift&&rIsDate&&["+","-"].includes(aopSel.value))?"":"none";}
   colBox._onChange=()=>{initVal="";buildVal();};
+  rcolBox._onChange=sync;
   opSel.onchange=()=>{sync();buildVal();};rhsSel.onchange=sync;aopSel.onchange=sync;
   if(preset&&preset.valType==="col")rhsSel.value="col";
   sync();buildVal();
   div._readCond=()=>{const col=colBox._get(),op=opSel.value;
     if(["preenchido","vazio"].includes(op))return {col,op,val:""};
-    if(rhsSel.value==="col"){const c={col,op,valType:"col",rcol:rcolBox._get()};if(aopSel.value){c.aop=aopSel.value;c.aval=avalIn.value;}return c;}
+    if(rhsSel.value==="col"){const c={col,op,valType:"col",rcol:rcolBox._get()};
+      if(aopSel.value){c.aop=aopSel.value;c.aval=avalIn.value;if(["+","-"].includes(aopSel.value))c.aunit=aunitSel.value;}return c;}
     return {col,op,valType:"value",val:(valWrap._field&&valWrap._field._read)?valWrap._field._read():""};};
   return div;}
 function readCondEl(el){return el._readCond?el._readCond():{col:"",op:"=",val:""};}
@@ -703,9 +972,14 @@ function openEdit(id){EDIT=clone(DEFS.find(d=>d.id===id));$("#editTitle").textCo
 function openNew(){ensureGroup();EDIT={id:"c"+Date.now(),group:GROUPS[GROUPS.length-1]||"Minhas métricas",type:"single",name:"",calc:"count",filters:{logic:"and",children:[]}};$("#editTitle").textContent="Nova métrica";buildEditor();openDrawer("#dEdit");}
 function buildEditor(){
   const d=EDIT;
-  const numCols=COLS.filter(c=>c.numeric).map(c=>c.name).concat(VIRT_NUM.map(v=>v[0]));
-  const colOptions=sel=>numCols.map(c=>`<option value="${esc(c)}" ${sel===c?"selected":""}>${esc(colLabel(c))}</option>`).join("");
-  const allColOptions=sel=>COLS.map(c=>`<option value="${esc(c.name)}" ${sel===c.name?"selected":""}>${esc(c.name)}</option>`).join("")+`<optgroup label="derivadas">`+VIRTS.map(v=>`<option value="${v[0]}" ${sel===v[0]?"selected":""}>${esc(v[1])}</option>`).join("")+`</optgroup>`;
+  const dateOK=["median","mean","min","max"].includes(d.calc);
+  const numCols=numLikeCols().concat(dateOK?dateCols():[]);
+  const colOptions=sel=>numCols.map(c=>`<option value="${esc(c)}" ${sel===c?"selected":""}>${esc(colLabel(c))}${colType(c)==="date"?" (data)":""}</option>`).join("");
+  const barCols=numLikeCols();
+  const barColOptions=sel=>barCols.map(c=>`<option value="${esc(c)}" ${sel===c?"selected":""}>${esc(colLabel(c))}</option>`).join("");
+  const allColOptions=sel=>COLS.map(c=>`<option value="${esc(c.name)}" ${sel===c.name?"selected":""}>${esc(c.name)}</option>`).join("")
+    +`<optgroup label="calculadas">`+derivedList().map(x=>`<option value="${esc(x.id)}" ${sel===x.id?"selected":""}>${esc(derivedLabel(x))}</option>`).join("")+`</optgroup>`
+    +`<optgroup label="derivadas">`+VIRTS.map(v=>`<option value="${v[0]}" ${sel===v[0]?"selected":""}>${esc(v[1])}</option>`).join("")+`</optgroup>`;
   let h=`<div class="fld"><label>Nome</label><input type="text" id="e_name" value="${esc(d.name)}"></div>
     <div class="fld"><label>Grupo</label><select id="e_group">${GROUPS.map(g=>`<option value="${esc(g)}" ${d.group===g?"selected":""}>${esc(g)}</option>`).join("")}<option value="__new__">＋ novo grupo…</option></select></div>
     <div class="fld"><label>Tipo de visual</label><select id="e_type"><option value="single" ${d.type==="single"?"selected":""}>Número único</option><option value="bars" ${d.type==="bars"?"selected":""}>Barras por segmento</option><option value="funnel" ${d.type==="funnel"?"selected":""}>Funil</option></select></div>`;
@@ -716,10 +990,15 @@ function buildEditor(){
         <option value="rate" ${d.calc==="rate"?"selected":""}>Taxa dentro do grupo</option>
         <option value="median" ${d.calc==="median"?"selected":""}>Mediana de coluna</option>
         <option value="mean" ${d.calc==="mean"?"selected":""}>Média de coluna</option>
+        <option value="min" ${d.calc==="min"?"selected":""}>Mínimo de coluna</option>
+        <option value="max" ${d.calc==="max"?"selected":""}>Máximo de coluna</option>
+        <option value="p90" ${d.calc==="p90"?"selected":""}>Percentil 90 de coluna</option>
         <option value="sum" ${d.calc==="sum"?"selected":""}>Soma de coluna</option>
         <option value="moda" ${d.calc==="moda"?"selected":""}>Moda (valor mais frequente)</option>
+        <option value="distinct" ${d.calc==="distinct"?"selected":""}>Valores distintos</option>
         <option value="compare" ${d.calc==="compare"?"selected":""}>Diferença entre dois grupos (p.p.)</option></select></div>
-      <div class="fld" id="e_colWrap" style="display:none"><label>${d.calc==="moda"?"Coluna":"Coluna numérica"}</label><select id="e_col">${d.calc==="moda"?allColOptions(d.col):colOptions(d.col)}</select>${d.calc==="moda"?"":`<div class="chk" style="margin-top:8px"><input type="checkbox" id="e_money" ${d.money?"checked":""}><label for="e_money" style="text-transform:none">mostrar em R$</label></div>`}</div>`;
+      <div class="fld" id="e_colWrap" style="display:none"><label>${["moda","distinct"].includes(d.calc)?"Coluna":"Coluna numérica ou de data"}</label><select id="e_col">${["moda","distinct"].includes(d.calc)?allColOptions(d.col):colOptions(d.col)}</select>${["moda","distinct"].includes(d.calc)?"":`<div class="chk" style="margin-top:8px"><input type="checkbox" id="e_money" ${d.money?"checked":""}><label for="e_money" style="text-transform:none">mostrar em R$</label></div><div class="fld" style="margin:8px 0 0"><label>Casas decimais</label><input type="number" id="e_dec" min="0" max="4" value="${d.dec??2}"></div>`}
+        <div class="hint">Datas contam como coluna válida em mediana/média/mín/máx — o resultado sai formatado como data.</div></div>`;
     if(d.calc!=="compare"){
       h+=`<div class="fld"><label>Filtros (grupo base)</label><div id="e_conds"></div></div>`;
       h+=`<div class="fld" id="e_numWrap" style="display:none"><label>Condição medida (numerador)</label><div id="e_num"></div></div>`;
@@ -731,11 +1010,14 @@ function buildEditor(){
   } else if(d.type==="bars"){
     const mk=d.measure?d.measure.kind:"count";
     h+=`<div class="fld"><label>Orientação</label><select id="e_orient"><option value="h" ${d.orient!=="v"?"selected":""}>Horizontal</option><option value="v" ${d.orient==="v"?"selected":""}>Vertical (colunas)</option></select></div>
-      <div class="fld"><label>O que medir em cada segmento</label><select id="e_mk"><option value="count" ${mk==="count"?"selected":""}>Contagem</option><option value="rate" ${mk==="rate"?"selected":""}>Taxa (fração que atende condição)</option><option value="mean" ${mk==="mean"?"selected":""}>Média de coluna</option><option value="median" ${mk==="median"?"selected":""}>Mediana de coluna</option></select></div>
-      <div class="fld" id="e_mkColWrap" style="display:none"><label>Coluna numérica</label><select id="e_mkCol">${colOptions(d.measure&&d.measure.col)}</select></div>
+      <div class="fld"><label>O que medir em cada segmento</label><select id="e_mk"><option value="count" ${mk==="count"?"selected":""}>Contagem</option><option value="rate" ${mk==="rate"?"selected":""}>Taxa (fração que atende condição)</option><option value="mean" ${mk==="mean"?"selected":""}>Média de coluna</option><option value="median" ${mk==="median"?"selected":""}>Mediana de coluna</option><option value="p90" ${mk==="p90"?"selected":""}>Percentil 90 de coluna</option><option value="sum" ${mk==="sum"?"selected":""}>Soma de coluna</option></select></div>
+      <div class="fld" id="e_mkColWrap" style="display:none"><label>Coluna numérica</label><select id="e_mkCol">${barColOptions(d.measure&&d.measure.col)}</select></div>
       <div class="fld" id="e_mkNumWrap" style="display:none"><label>Condição medida</label><div id="e_mkNum"></div></div>
       <div class="fld"><label>Segmentos</label><div class="chk"><input type="checkbox" id="e_auto" ${d.auto?"checked":""}><label for="e_auto" style="text-transform:none">automático: um por valor de uma coluna</label></div></div>
-      <div class="fld" id="e_autoWrap" style="display:none"><label>Coluna dos segmentos</label><select id="e_autoCol">${allColOptions(d.autoCol)}</select><label style="margin-top:8px">Excluir valores (vírgula)</label><input type="text" id="e_excl" value="${esc((d.exclude||[]).join(", "))}"></div>
+      <div class="fld" id="e_autoWrap" style="display:none"><label>Coluna dos segmentos</label><select id="e_autoCol">${allColOptions(d.autoCol)}</select>
+        <label style="margin-top:8px">Excluir valores (vírgula)</label><input type="text" id="e_excl" value="${esc((d.exclude||[]).join(", "))}">
+        <label style="margin-top:8px">Máximo de segmentos (0 = todos)</label><input type="number" id="e_topN" min="0" value="${d.topN||0}">
+        <div class="hint">Colunas de coorte (ano-mês, trimestre) já saem em ordem cronológica.</div></div>
       <div class="fld" id="e_segWrap"><label>Segmentos manuais</label><div id="e_segs"></div><button type="button" class="addbtn" id="e_addSeg">+ segmento</button></div>`;
   } else if(d.type==="funnel"){
     h+=`<div class="fld"><label>Etapas (cada uma é uma contagem)</label><div id="e_steps"></div><button type="button" class="addbtn" id="e_addStep">+ etapa</button></div>`;
@@ -745,13 +1027,13 @@ function buildEditor(){
   const gsel=$("#e_group");if(gsel)gsel.onchange=()=>{if(gsel.value==="__new__"){const nn=prompt("Nome do novo grupo:");if(nn&&!GROUPS.includes(nn))GROUPS.push(nn);const sel=(nn&&GROUPS.includes(nn))?nn:(EDIT.group||GROUPS[0]);gsel.innerHTML=GROUPS.map(g=>`<option value="${esc(g)}" ${g===sel?"selected":""}>${esc(g)}</option>`).join("")+`<option value="__new__">＋ novo grupo…</option>`;}};
   if(d.type==="single"){
     const calc=$("#e_calc");
-    const sync=()=>{const c=calc.value;$("#e_colWrap").style.display=["median","mean","sum","moda"].includes(c)?"block":"none";const nw=$("#e_numWrap");if(nw)nw.style.display=c==="rate"?"block":"none";};
+    const sync=()=>{const c=calc.value;$("#e_colWrap").style.display=["median","mean","sum","moda","min","max","p90","distinct"].includes(c)?"block":"none";const nw=$("#e_numWrap");if(nw)nw.style.display=c==="rate"?"block":"none";};
     if(calc)calc.onchange=()=>{EDIT=readEditor();EDIT.calc=calc.value;normalizeType(EDIT);buildEditor();};
     if(d.calc!=="compare"){mountGroup("#e_conds",d.filters,true);mountSingleCond("#e_num",d.num||{col:"__emitiu",op:"=",val:"Sim"});sync();}
     else{mountGroup("#e_aF",d.a&&d.a.filters,true);mountSingleCond("#e_aN",d.a&&d.a.num||{col:"__emitiu",op:"=",val:"Sim"});mountGroup("#e_bF",d.b&&d.b.filters,true);mountSingleCond("#e_bN",d.b&&d.b.num||{col:"__emitiu",op:"=",val:"Sim"});}
   } else if(d.type==="bars"){
     const mk=$("#e_mk"),auto=$("#e_auto");
-    const sync=()=>{$("#e_mkColWrap").style.display=["mean","median"].includes(mk.value)?"block":"none";$("#e_mkNumWrap").style.display=mk.value==="rate"?"block":"none";$("#e_autoWrap").style.display=auto.checked?"block":"none";$("#e_segWrap").style.display=auto.checked?"none":"block";};
+    const sync=()=>{$("#e_mkColWrap").style.display=["mean","median","p90","sum"].includes(mk.value)?"block":"none";$("#e_mkNumWrap").style.display=mk.value==="rate"?"block":"none";$("#e_autoWrap").style.display=auto.checked?"block":"none";$("#e_segWrap").style.display=auto.checked?"none":"block";};
     mk.onchange=sync;auto.onchange=sync;
     mountSingleCond("#e_mkNum",d.measure&&d.measure.num||{col:"__emitiu",op:"=",val:"Sim"});
     const segs=$("#e_segs");(d.segments||[]).forEach(s=>segs.appendChild(segBlock(s)));
@@ -762,7 +1044,7 @@ function buildEditor(){
   }
 }
 function normalizeType(d){
-  if(d.type==="single"){d.calc=["count","pct_base","rate","median","mean","sum","moda","compare"].includes(d.calc)?d.calc:"count";
+  if(d.type==="single"){d.calc=["count","pct_base","rate","median","mean","sum","moda","compare","min","max","p90","distinct"].includes(d.calc)?d.calc:"count";
     if(d.calc==="compare"){d.a=d.a||{filters:{logic:"and",children:[]},num:{col:"__emitiu",op:"=",val:"Sim"}};d.b=d.b||{filters:{logic:"and",children:[]},num:{col:"__emitiu",op:"=",val:"Sim"}};}
     else{d.filters=d.filters&&d.filters.children!==undefined?d.filters:{logic:"and",children:[]};}}
   if(d.type==="bars"){d.orient=d.orient||"h";d.measure=d.measure||{kind:"count"};d.segments=d.segments||[];}
@@ -773,29 +1055,124 @@ function readEditor(){const d=clone(EDIT);
   if(d.type==="single"){
     if($("#e_calc"))d.calc=$("#e_calc").value;
     d.style=$("#e_style")?$("#e_style").value:d.style;d.unit=$("#e_unit")?$("#e_unit").value:d.unit;
-    if($("#e_col")){d.col=$("#e_col").value;d.money=$("#e_money")?$("#e_money").checked:false;}
+    if($("#e_col")){d.col=$("#e_col").value;d.money=$("#e_money")?$("#e_money").checked:false;if($("#e_dec"))d.dec=Math.max(0,+$("#e_dec").value||0);}
     if(d.calc==="compare"){if($("#e_aF"))d.a={filters:readGroup($("#e_aF .fgroup")),num:readSingleCond("#e_aN")||{col:"__emitiu",op:"=",val:"Sim"}};if($("#e_bF"))d.b={filters:readGroup($("#e_bF .fgroup")),num:readSingleCond("#e_bN")||{col:"__emitiu",op:"=",val:"Sim"}};delete d.filters;delete d.num;}
     else{if($("#e_conds .fgroup"))d.filters=readGroup($("#e_conds .fgroup"));if(d.calc==="rate")d.num=readSingleCond("#e_num");delete d.a;delete d.b;}
   } else if(d.type==="bars"){
     d.orient=$("#e_orient")?$("#e_orient").value:d.orient;
     const mk=$("#e_mk")?$("#e_mk").value:"count";d.measure={kind:mk};
-    if(["mean","median"].includes(mk))d.measure.col=$("#e_mkCol").value;
+    if(["mean","median","p90","sum"].includes(mk))d.measure.col=$("#e_mkCol").value;
     if(mk==="rate")d.measure.num=readSingleCond("#e_mkNum")||{col:"__emitiu",op:"=",val:"Sim"};
     d.auto=$("#e_auto")?$("#e_auto").checked:d.auto;
-    if(d.auto){d.autoCol=$("#e_autoCol").value;d.exclude=$("#e_excl").value.split(",").map(s=>s.trim()).filter(Boolean);delete d.segments;}
-    else{if($("#e_segs"))d.segments=[...$("#e_segs").children].map(readSeg);delete d.autoCol;delete d.exclude;}
+    if(d.auto){d.autoCol=$("#e_autoCol").value;d.exclude=$("#e_excl").value.split(",").map(s=>s.trim()).filter(Boolean);d.topN=Math.max(0,+($("#e_topN")?$("#e_topN").value:0)||0);delete d.segments;}
+    else{if($("#e_segs"))d.segments=[...$("#e_segs").children].map(readSeg);delete d.autoCol;delete d.exclude;delete d.topN;}
   } else if(d.type==="funnel"){if($("#e_steps"))d.steps=[...$("#e_steps").children].map(readSeg);}
   return d;}
 $("#editSave").onclick=()=>{const d=readEditor();normalizeType(d);if(d.group&&!GROUPS.includes(d.group))GROUPS.push(d.group);const i=DEFS.findIndex(x=>x.id===d.id);if(i>=0)DEFS[i]=d;else DEFS.push(d);render();scheduleSave();closeAll();};
 
 /* ---- params ---- */
 function buildParamForm(){const b=PARAMS;$("#paramBody").innerHTML=`
-  <p class="hint" style="margin-top:0">Alimentam as colunas derivadas usadas por várias métricas (emitiu?, faixa de plano, deu churn?).</p>
+  <p class="hint" style="margin-top:0">Alimentam as colunas derivadas usadas por várias métricas (emitiu?, faixa de plano, deu churn?) e a leitura de datas.</p>
+  <div class="fld"><label>Como ler datas ambíguas</label><select id="p_order">
+      <option value="dmy" ${b.dateOrder!=="mdy"?"selected":""}>dia/mês/ano — 01/03/2026 = 1º de março</option>
+      <option value="mdy" ${b.dateOrder==="mdy"?"selected":""}>mês/dia/ano — 01/03/2026 = 3 de janeiro</option></select>
+    <div class="hint">Vale para textos como 01/03/2026. Datas em ISO (2026-03-01) e células de data reais não dependem disso.</div></div>
+  <div class="fld"><label>Data de referência (o "hoje" do painel)</label><select id="p_refmode">
+      <option value="maxdata" ${b.refMode!=="hoje"&&b.refMode!=="fixa"?"selected":""}>última data encontrada na planilha</option>
+      <option value="hoje" ${b.refMode==="hoje"?"selected":""}>hoje (data do computador)</option>
+      <option value="fixa" ${b.refMode==="fixa"?"selected":""}>data fixa</option></select>
+    <input type="date" id="p_refdate" value="${esc(b.refMode==="fixa"&&b.refDate?b.refDate:"")}" style="margin-top:8px;display:${b.refMode==="fixa"?"block":"none"}">
+    <div class="hint">Atual: <b>${fmtDate(REFT)}</b>. Usada em "dias desde o último login" e em toda coluna calculada com <code>data de referência</code>.</div></div>
   <div class="fld"><label>O que conta como "emitiu"</label><div class="chk"><input type="checkbox" id="p_cte" ${b.emitCte?"checked":""}><label for="p_cte" style="text-transform:none">somar qtd_cte</label></div><div class="chk"><input type="checkbox" id="p_mdfe" ${b.emitMdfe?"checked":""}><label for="p_mdfe" style="text-transform:none">somar qtd_mdfe</label></div><div style="margin-top:6px"><label style="font-size:11px">soma maior que</label><input type="number" id="p_thr" value="${b.emitThreshold}"></div></div>
   <div class="fld"><label>Faixas de plano (limites superiores)</label><div class="row2"><input type="number" id="p_b0" value="${b.planBands[0]}"><input type="number" id="p_b1" value="${b.planBands[1]}"><input type="number" id="p_b2" value="${b.planBands[2]}"></div></div>
-  <div class="fld"><label>Valor que significa "sem churn"</label><input type="text" id="p_sc" value="${esc(b.semChurn)}"></div>`;}
-$("#paramApply").onclick=()=>{PARAMS.emitCte=$("#p_cte").checked;PARAMS.emitMdfe=$("#p_mdfe").checked;PARAMS.emitThreshold=+$("#p_thr").value||0;PARAMS.planBands=[+$("#p_b0").value,+$("#p_b1").value,+$("#p_b2").value];PARAMS.semChurn=$("#p_sc").value.trim()||"Sem churn";render();scheduleSave();closeAll();};
-$("#paramReset").onclick=()=>{PARAMS=clone(PDEFAULT);buildParamForm();render();scheduleSave();};
+  <div class="fld"><label>Valor que significa "sem churn"</label><input type="text" id="p_sc" value="${esc(b.semChurn)}"></div>`;
+  const rm=$("#p_refmode");if(rm)rm.onchange=()=>{$("#p_refdate").style.display=rm.value==="fixa"?"block":"none";};}
+$("#paramApply").onclick=()=>{PARAMS.emitCte=$("#p_cte").checked;PARAMS.emitMdfe=$("#p_mdfe").checked;PARAMS.emitThreshold=+$("#p_thr").value||0;
+  PARAMS.planBands=[+$("#p_b0").value,+$("#p_b1").value,+$("#p_b2").value];PARAMS.semChurn=$("#p_sc").value.trim()||"Sem churn";
+  PARAMS.dateOrder=$("#p_order").value;DATE_ORDER=PARAMS.dateOrder;
+  PARAMS.refMode=$("#p_refmode").value;PARAMS.refDate=$("#p_refdate").value;
+  bumpGen();if(RAW.length){COLS=detectCols(RAW);computeRef();}
+  render();scheduleSave();closeAll();};
+$("#paramReset").onclick=()=>{PARAMS=clone(PDEFAULT);DATE_ORDER="dmy";bumpGen();if(RAW.length){COLS=detectCols(RAW);computeRef();}buildParamForm();render();scheduleSave();};
+
+/* ---- colunas calculadas ---- */
+let CDRAFT=[];
+function newDerivedId(){let i=1;while(derivedList().some(d=>d.id==="__d_"+i)||CDRAFT.some(d=>d.id==="__d_"+i))i++;return "__d_"+i;}
+function dateSrcOptions(sel){const opts=dateCols().map(n=>`<option value="${esc(n)}" ${sel===n?"selected":""}>${esc(n)}</option>`).join("");
+  return opts+`<option value="__hoje" ${sel==="__hoje"?"selected":""}>⏱ data de referência (hoje)</option>`;}
+function numSrcOptions(sel){return numLikeCols().map(n=>`<option value="${esc(n)}" ${sel===n?"selected":""}>${esc(colLabel(n))}</option>`).join("");}
+function buildColsForm(){
+  const body=$("#colsBody");
+  if(!dateCols().length&&!COLS.length){body.innerHTML=`<p class="hint">Carregue uma planilha primeiro.</p>`;return;}
+  const dcount=dateCols().length;
+  let h=`<p class="hint" style="margin-top:0">Colunas criadas por você a partir das que existem na planilha. Aparecem em todos os seletores de coluna (filtros, média, mediana, barras) e são salvas junto com o painel.<br>Detectadas nesta planilha: <b>${dcount}</b> coluna(s) de data${dcount?": "+dateCols().map(esc).join(", "):""}.</p>`;
+  if(!CDRAFT.length)h+=`<p class="hint">Nenhuma coluna calculada ainda. Use os botões abaixo.</p>`;
+  CDRAFT.forEach((d,i)=>{
+    h+=`<div class="segblock" data-i="${i}">
+      <div class="seghead"><input class="seglabel" data-f="label" placeholder="${esc(derivedLabel(Object.assign({},d,{label:""})))}" value="${esc(d.label||"")}"><button class="delseg" type="button" data-del="${i}">×</button></div>
+      <div class="fld" style="margin-bottom:10px"><label>Tipo</label><select data-f="kind">
+        <option value="datediff" ${d.kind==="datediff"?"selected":""}>Diferença entre duas datas</option>
+        <option value="datepart" ${d.kind==="datepart"?"selected":""}>Recorte de data (coorte: ano, mês, trimestre…)</option>
+        <option value="bucket" ${d.kind==="bucket"?"selected":""}>Faixas de um número</option>
+        <option value="arith" ${d.kind==="arith"?"selected":""}>Conta entre duas colunas numéricas</option></select></div>`;
+    if(d.kind==="datediff"){
+      h+=`<div class="fld" style="margin-bottom:10px"><label>Data inicial</label><select data-f="from">${dateSrcOptions(d.from)}</select></div>
+        <div class="fld" style="margin-bottom:10px"><label>Data final (menos a inicial)</label><select data-f="to">${dateSrcOptions(d.to)}</select></div>
+        <div class="fld" style="margin-bottom:10px"><label>Unidade</label><div class="row2">
+          <select data-f="unit">${Object.entries(UNIT_LABEL).map(([v,l])=>`<option value="${v}" ${(d.unit||"days")===v?"selected":""}>${l}</option>`).join("")}</select>
+          <select data-f="mode"><option value="cal" ${d.mode!=="exact"?"selected":""}>dias de calendário</option><option value="exact" ${d.mode==="exact"?"selected":""}>exato (com hora)</option></select></div></div>
+        <div class="chk"><input type="checkbox" data-f="clampNeg" ${d.clampNeg?"checked":""}><label style="text-transform:none">ignorar resultados negativos (data final antes da inicial)</label></div>
+        <div class="chk"><input type="checkbox" data-f="abs" ${d.abs?"checked":""}><label style="text-transform:none">usar valor absoluto</label></div>`;
+    } else if(d.kind==="datepart"){
+      h+=`<div class="fld" style="margin-bottom:10px"><label>Coluna de data</label><select data-f="col">${dateSrcOptions(d.col)}</select></div>
+        <div class="fld" style="margin-bottom:0"><label>Recorte</label><select data-f="part">${Object.entries(PART_LABEL).map(([v,l])=>`<option value="${v}" ${(d.part||"month")===v?"selected":""}>${l}</option>`).join("")}</select>
+        <div class="hint">Vira categoria — use em "Barras por segmento" com segmentos automáticos para ver coortes.</div></div>`;
+    } else if(d.kind==="bucket"){
+      h+=`<div class="fld" style="margin-bottom:10px"><label>Coluna numérica</label><select data-f="col">${numSrcOptions(d.col)}</select></div>
+        <div class="fld" style="margin-bottom:0"><label>Cortes (separados por vírgula)</label><input type="text" data-f="cuts" value="${esc((d.cuts||[]).join(", "))}" placeholder="7, 30, 90">
+        <div class="hint">Resultado: ${esc(bucketLabels(d).join(" | "))}</div></div>`;
+    } else {
+      h+=`<div class="fld" style="margin-bottom:10px"><label>Coluna A</label><select data-f="a">${numSrcOptions(d.a)}</select></div>
+        <div class="fld" style="margin-bottom:10px"><label>Operação</label><div class="row2">
+          <select data-f="op">${["+","-","*","/"].map(o=>`<option value="${o}" ${d.op===o?"selected":""}>${o}</option>`).join("")}</select>
+          <select data-f="bType"><option value="col" ${d.bType!=="num"?"selected":""}>outra coluna</option><option value="num" ${d.bType==="num"?"selected":""}>número fixo</option></select></div></div>
+        <div class="fld" style="margin-bottom:0"><label>B</label>${d.bType==="num"?`<input type="number" data-f="b" value="${esc(d.b??"")}">`:`<select data-f="b">${numSrcOptions(d.b)}</select>`}</div>`;
+    }
+    h+=`<div class="hint" style="margin-top:8px">Fórmula: ${esc(derivedFormula(d))}</div></div>`;});
+  body.innerHTML=h;
+  body.querySelectorAll("[data-i]").forEach(box=>{const i=+box.dataset.i;
+    box.querySelectorAll("[data-f]").forEach(inp=>{
+      const f=inp.dataset.f;
+      const handler=()=>{
+        if(inp.type==="checkbox")CDRAFT[i][f]=inp.checked;
+        else if(f==="cuts")CDRAFT[i].cuts=inp.value.split(",").map(x=>toNumOrNull(x.trim())).filter(x=>x!==null);
+        else CDRAFT[i][f]=inp.value;
+        if(["kind","bType","cuts","unit","part","from","to","col","a","b","op","mode"].includes(f))buildColsForm();};
+      if(inp.tagName==="SELECT"||inp.type==="checkbox")inp.onchange=handler;else inp.onchange=handler;});});
+  body.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{CDRAFT.splice(+b.dataset.del,1);buildColsForm();});}
+function addDerived(kind){
+  const dc=dateCols();
+  const base={id:newDerivedId(),kind,label:""};
+  if(kind==="datediff")Object.assign(base,{from:dc[0]||"",to:dc[1]||"__hoje",unit:"days",mode:"cal",clampNeg:false});
+  if(kind==="datepart")Object.assign(base,{col:dc[0]||"",part:"month"});
+  if(kind==="bucket")Object.assign(base,{col:numLikeCols()[0]||"",cuts:[7,30,90]});
+  if(kind==="arith")Object.assign(base,{a:numLikeCols()[0]||"",op:"-",bType:"col",b:numLikeCols()[1]||""});
+  CDRAFT.push(base);buildColsForm();}
+function openCols(){CDRAFT=clone(derivedList());buildColsForm();openDrawer("#dCols");}
+$("#colsApply").onclick=()=>{
+  const seen=new Set();
+  PARAMS.derived=CDRAFT.filter(d=>{if(!d.id||seen.has(d.id))return false;seen.add(d.id);
+    if(d.kind==="datediff")return d.from&&d.to;
+    if(d.kind==="datepart")return !!d.col;
+    if(d.kind==="bucket")return !!d.col;
+    if(d.kind==="arith")return !!d.a&&(d.bType==="num"?d.b!=="":!!d.b);
+    return false;});
+  bumpGen();render();scheduleSave();closeAll();};
+$("#colsAddDiff").onclick=()=>addDerived("datediff");
+$("#colsAddPart").onclick=()=>addDerived("datepart");
+$("#colsAddBucket").onclick=()=>addDerived("bucket");
+$("#colsAddArith").onclick=()=>addDerived("arith");
+$("#bCols").onclick=()=>openCols();
 
 /* ---- drawers ---- */
 function openDrawer(id){closeAll();$(id).classList.add("open");$("#backdrop").classList.add("on");}
@@ -810,7 +1187,7 @@ $("#showHidden").onchange=e=>{SHOWHIDDEN=e.target.checked;render();};
 $("#bResetAll").onclick=()=>{if(confirm("Restaurar todas as métricas e parâmetros ao padrão?")){DEFS=SEED();PARAMS=clone(PDEFAULT);GROUPS=DEFAULT_GROUPS.slice();SHOWHIDDEN=false;$("#showHidden").checked=false;render();scheduleSave();}};
 
 /* ---- export / import ---- */
-$("#bExport").onclick=()=>{const blob=new Blob([JSON.stringify({version:4,params:PARAMS,defs:DEFS},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="config_painel_ativacao.json";a.click();URL.revokeObjectURL(a.href);};
+$("#bExport").onclick=()=>{const blob=new Blob([JSON.stringify({version:5,params:PARAMS,defs:DEFS,groups:GROUPS},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="config_painel_ativacao.json";a.click();URL.revokeObjectURL(a.href);};
 $("#bImport").onclick=()=>$("#cfg").click();
 $("#cfg").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
   r.onload=ev=>{try{const j=JSON.parse(ev.target.result);if(j.params)PARAMS=Object.assign(clone(PDEFAULT),j.params);if(Array.isArray(j.defs))DEFS=j.defs.map(migrateDef);GROUPS=(Array.isArray(j.groups)&&j.groups.length)?j.groups.slice():deriveGroups(DEFS);ensureGroup();render();scheduleSave();}catch(err){alert("JSON inválido: "+err.message);}};
